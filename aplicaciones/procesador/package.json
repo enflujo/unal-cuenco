@@ -1,0 +1,22 @@
+{
+  "name": "procesador",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": " nodemon ./fuente/aplicacion.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "nodemon": "^3.0.2",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "./datos/*"
+    ],
+    "ext": "ts, js"
+  }
+}
