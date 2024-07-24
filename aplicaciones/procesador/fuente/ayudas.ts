@@ -36,9 +36,9 @@ export const normalizar = (texto: string): string => {
 
 export const enMinusculas = (texto: string) => texto === texto.toLowerCase();
 
-export function separarPartes(entrada: string, separador: string) {
+export function separarPartes(entrada: string, separador?: string) {
   const valores = entrada.trim();
-  const partes = valores.includes(separador) ? valores.trim().split(separador) : valores.trim().split(',');
+  const partes = separador ? valores.trim().split(separador) : valores.trim().split(',');
   return partes.map((p) => p.trim());
 }
 
