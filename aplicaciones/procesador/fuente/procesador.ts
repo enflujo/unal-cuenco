@@ -1,10 +1,9 @@
 import { getXlsxStream } from 'xlstream';
-import slugificar from 'slug';
+//import slugificar from 'slug';
 
-import { enMinusculas, guardarJSON, logBloque, mensajeExito, ordenarListaObjetos, separarPartes } from './ayudas.js';
+//import { separarPartes } from './ayudas.ts';
 
-import { emojify } from 'node-emoji';
-import { procesarNombresAutores } from 'autores.js';
+//import { emojify } from 'node-emoji';
 
 type FilaProduccionAcademica = [
   /** Nombre de los autores separados por ; y apellido nombre separado por , */
@@ -34,9 +33,25 @@ async function procesarProduccion(): Promise<void> {
   return new Promise((resolver) => {
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaProduccionAcademica;
-      const nombre = fila[0];
+      const autores = fila[0] ? separarPartes(fila[0].trim(), ';') : [];
+      const fecha = fila[2];
+      const tipo = fila[3].trim();
       const titulo = fila[4];
-      console.log(numeroFila, nombre?.trim(), titulo);
+      const dependencia = fila[7];
+
+      console.log(
+        numeroFila,
+        'autor: ',
+        autores,
+        '| año: ',
+        fecha,
+        ' | ',
+        titulo,
+        '| tipo: ',
+        tipo,
+        '| dependencia: ',
+        dependencia
+      );
       // const nombreProcesado = procesarNombresAutores(nombre, numeroFila);
 
       numeroFila++;
@@ -51,6 +66,13 @@ async function procesarProduccion(): Promise<void> {
       throw new Error(JSON.stringify(error, null, 2));
     });
   });
+}
+
+// Pasar a ayudas
+function separarPartes(entrada: string, separador?: string) {
+  const valores = entrada.trim();
+  const partes = separador ? valores.trim().split(separador) : valores.trim().split(',');
+  return partes.map((p) => p.trim());
 }
 
 async function inicio() {
