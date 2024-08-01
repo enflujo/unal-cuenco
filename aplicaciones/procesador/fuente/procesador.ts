@@ -1,7 +1,7 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
-import { separarPartes, ordenarListaObjetos } from './ayudas';
+import { separarPartes, ordenarListaObjetos, guardarJSON } from './ayudas';
 import { ElementoLista, Listas } from './tipos';
 
 type FilaProduccionAcademica = [
@@ -43,7 +43,7 @@ async function procesarProduccion(): Promise<void> {
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaProduccionAcademica;
       const id = fila[0];
-      const autores = fila[1] ? separarPartes(fila[1].trim(), ';') : null;
+      const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
       const resumen = fila[2].trim();
       const fecha = fila[3];
       const tipo = fila[4].trim();
@@ -75,20 +75,26 @@ async function procesarProduccion(): Promise<void> {
       procesar(`${fecha}`, listas.años);
       procesar(indicador, listas.indicadores);
 
+      // En proceso
+      /*   for (let autor in autores) {
+        console.log(autores[+elemento]);
+        console.log(autores[autor]);
+        procesar(autor, listas.autores);
+      } */
+
+      guardarJSON(listas, 'listas');
       imprimirErratas(autores, fecha, tipo, titulo, dependencia, numeroFila);
       numeroFila++;
     });
 
-    ordenarListaObjetos(listas.dependencias, 'slug', true);
-    ordenarListaObjetos(listas.tipos, 'slug', true);
-    ordenarListaObjetos(listas.años, 'slug', true);
-    ordenarListaObjetos(listas.indicadores, 'slug', true);
-
     flujo.on('close', () => {
       // Aquí ya terminó de leer toda la tabla
       resolver();
-
-      //console.log(listas);
+      ordenarListaObjetos(listas.dependencias, 'slug', true);
+      ordenarListaObjetos(listas.tipos, 'slug', true);
+      ordenarListaObjetos(listas.años, 'slug', true);
+      ordenarListaObjetos(listas.indicadores, 'slug', true);
+      console.log(listas.autores);
     });
 
     flujo.on('error', (error) => {
@@ -116,7 +122,7 @@ function procesar(elemento: string, lista: ElementoLista[]) {
 }
 
 function imprimirErratas(
-  autores: string[] | null,
+  autores: (string | undefined)[],
   fecha: string | number | undefined,
   tipo: string,
   titulo: string,
@@ -124,9 +130,12 @@ function imprimirErratas(
   numeroFila: number
 ) {
   // Imprimir datos que faltan
-  if (!autores) {
-    console.log('sin autor: ', numeroFila);
+  for (let autor in autores) {
+    if (!autor) {
+      console.log('sin autor: ', numeroFila);
+    }
   }
+
   if (!fecha) {
     console.log('sin fecha: ', numeroFila);
   }
