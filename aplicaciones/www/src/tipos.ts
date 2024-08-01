@@ -4,9 +4,14 @@ export interface ElementoLista {
   slug: string;
   conteo: number;
   relaciones: { tipo: keyof Listas | string; conteo: number; indice: number; slug: string }[];
-  // proyectos?: number[];
-  // egresados?: number[];
-  // academia?: number;
+  publicaciones?: number[];
+}
+
+export interface Indicador {
+  nombre: string;
+  descripcion?: string;
+  slug: string;
+  subindicadores?: [];
 }
 
 export type DefinicionSimple = { nombre: string; slug: string };
@@ -18,5 +23,5 @@ export type Listas = {
   tipos: ElementoLista[];
   dependencias: ElementoLista[];
   indicadores: ElementoLista[];
-  subdindicadores: ElementoLista[];
+  subindicadores: ElementoLista[];
 };
