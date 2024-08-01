@@ -1,11 +1,11 @@
 import { getXlsxStream } from 'xlstream';
-//import slugificar from 'slug';
-
-//import { separarPartes } from './ayudas.ts';
-
+import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
+import { separarPartes, ordenarListaObjetos } from './ayudas';
+import { ElementoLista, Listas } from './tipos';
 
 type FilaProduccionAcademica = [
+  id: number,
   /** Nombre de los autores separados por ; y apellido nombre separado por , */
   autores: string | undefined,
   resumen: string,
@@ -18,6 +18,15 @@ type FilaProduccionAcademica = [
   indicador: string,
   subindicador: string,
 ];
+
+const listas: Listas = {
+  autores: [],
+  años: [],
+  tipos: [],
+  dependencias: [],
+  indicadores: [],
+  subdindicadores: [],
+};
 
 async function procesarProduccion(): Promise<void> {
   const archivo = './datos/base_produccion_ academica_100724.xlsx';
@@ -33,12 +42,19 @@ async function procesarProduccion(): Promise<void> {
   return new Promise((resolver) => {
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaProduccionAcademica;
-      const autores = fila[0] ? separarPartes(fila[0].trim(), ';') : [];
-      const fecha = fila[2];
-      const tipo = fila[3].trim();
-      const titulo = fila[4];
-      const dependencia = fila[7];
-
+      const id = fila[0];
+      const autores = fila[1] ? separarPartes(fila[1].trim(), ';') : null;
+      const resumen = fila[2].trim();
+      const fecha = fila[3];
+      const tipo = fila[4].trim();
+      const titulo = fila[5].trim();
+      const referencia = fila[6].trim();
+      const fuente = fila[7];
+      const dependencia = fila[8].trim();
+      // POR HACER: Procesar indicadores y subindicadores
+      const indicador = fila[9].trim();
+      const subindicador = fila[10];
+      /* 
       console.log(
         numeroFila,
         'autor: ',
@@ -51,15 +67,28 @@ async function procesarProduccion(): Promise<void> {
         tipo,
         '| dependencia: ',
         dependencia
-      );
-      // const nombreProcesado = procesarNombresAutores(nombre, numeroFila);
+      ); */
 
+      // Llenar listas
+      procesar(dependencia, listas.dependencias);
+      procesar(tipo, listas.tipos);
+      procesar(`${fecha}`, listas.años);
+      procesar(indicador, listas.indicadores);
+
+      imprimirErratas(autores, fecha, tipo, titulo, dependencia, numeroFila);
       numeroFila++;
     });
+
+    ordenarListaObjetos(listas.dependencias, 'slug', true);
+    ordenarListaObjetos(listas.tipos, 'slug', true);
+    ordenarListaObjetos(listas.años, 'slug', true);
+    ordenarListaObjetos(listas.indicadores, 'slug', true);
 
     flujo.on('close', () => {
       // Aquí ya terminó de leer toda la tabla
       resolver();
+
+      //console.log(listas);
     });
 
     flujo.on('error', (error) => {
@@ -68,12 +97,52 @@ async function procesarProduccion(): Promise<void> {
   });
 }
 
-// Pasar a ayudas
-function separarPartes(entrada: string, separador?: string) {
-  const valores = entrada.trim();
-  const partes = separador ? valores.trim().split(separador) : valores.trim().split(',');
-  return partes.map((p) => p.trim());
+// Pasar a ayudas?
+function procesar(elemento: string, lista: ElementoLista[]) {
+  const slug = slugificar(elemento);
+  const existe = lista.find((obj) => obj.slug === slug);
+  if (!existe) {
+    const objeto: ElementoLista = {
+      nombre: elemento,
+      conteo: 1,
+      slug: slug,
+      relaciones: [],
+      publicaciones: [],
+    };
+    lista.push(objeto);
+  } else {
+    existe.conteo++;
+  }
 }
+
+function imprimirErratas(
+  autores: string[] | null,
+  fecha: string | number | undefined,
+  tipo: string,
+  titulo: string,
+  dependencia: string,
+  numeroFila: number
+) {
+  // Imprimir datos que faltan
+  if (!autores) {
+    console.log('sin autor: ', numeroFila);
+  }
+  if (!fecha) {
+    console.log('sin fecha: ', numeroFila);
+  }
+  if (!tipo) {
+    console.log('sin tipo: ', numeroFila);
+  }
+  if (!titulo) {
+    console.log('sin titulo: ', numeroFila);
+  }
+  if (!dependencia) {
+    console.log('sin dependencia: ', numeroFila);
+  }
+}
+
+// Ver haciendocaminos procesador.ts 240
+function construirRelacionesDePublicaciones() {}
 
 async function inicio() {
   await procesarProduccion();
