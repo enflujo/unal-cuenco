@@ -75,13 +75,16 @@ async function procesarProduccion(): Promise<void> {
       procesar(`${fecha}`, listas.años);
       procesar(indicador, listas.indicadores);
 
-      // En proceso
-      /*   for (let autor in autores) {
-        console.log(autores[+elemento]);
-        console.log(autores[autor]);
-        procesar(autor, listas.autores);
-      } */
+      for (let fila in autores) {
+        if (!autores[fila]) return;
+        procesar(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
+      }
 
+      ordenarListaObjetos(listas.dependencias, 'slug', true);
+      ordenarListaObjetos(listas.tipos, 'slug', true);
+      ordenarListaObjetos(listas.años, 'slug', true);
+      ordenarListaObjetos(listas.indicadores, 'slug', true);
+      ordenarListaObjetos(listas.autores, 'slug', true);
       guardarJSON(listas, 'listas');
       imprimirErratas(autores, fecha, tipo, titulo, dependencia, numeroFila);
       numeroFila++;
@@ -90,10 +93,7 @@ async function procesarProduccion(): Promise<void> {
     flujo.on('close', () => {
       // Aquí ya terminó de leer toda la tabla
       resolver();
-      ordenarListaObjetos(listas.dependencias, 'slug', true);
-      ordenarListaObjetos(listas.tipos, 'slug', true);
-      ordenarListaObjetos(listas.años, 'slug', true);
-      ordenarListaObjetos(listas.indicadores, 'slug', true);
+
       console.log(listas.autores);
     });
 
@@ -130,8 +130,8 @@ function imprimirErratas(
   numeroFila: number
 ) {
   // Imprimir datos que faltan
-  for (let autor in autores) {
-    if (!autor) {
+  for (let fila in autores) {
+    if (!autores[fila]) {
       console.log('sin autor: ', numeroFila);
     }
   }
