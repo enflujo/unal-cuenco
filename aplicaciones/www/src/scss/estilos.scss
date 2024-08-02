@@ -3,3 +3,54 @@
 :root {
   --colorFuente: #252424;
 }
+
+// Nodos listas
+.contenedorElementos {
+  height: 100vh;
+  // opacity: 0;
+  // overflow: hidden;
+  transition: opacity 0.35s ease-in-out;
+
+  &.abierto {
+    height: 100%;
+    opacity: 1;
+  }
+
+  li {
+    cursor: pointer;
+
+    &:hover {
+      background-color: white;
+    }
+  }
+
+  .titulo {
+    cursor: pointer;
+  }
+
+  .nombre {
+    margin: 0;
+    font-size: 0.85em;
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+
+    .linea {
+      height: 0.25rem;
+      background-color: salmon;
+    }
+
+    .conteo {
+      margin-left: 3px;
+    }
+  }
+}
+
+#contenedorListas {
+  .lista {
+    max-height: 50vh;
+    overflow: auto;
+  }
+}
