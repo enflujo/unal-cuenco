@@ -70,14 +70,14 @@ async function procesarProduccion(): Promise<void> {
       ); */
 
       // Llenar listas
-      procesar(dependencia, listas.dependencias);
-      procesar(tipo, listas.tipos);
-      procesar(`${fecha}`, listas.años);
-      procesar(indicador, listas.indicadores);
+      procesarLista(dependencia, listas.dependencias);
+      procesarLista(tipo, listas.tipos);
+      procesarLista(`${fecha}`, listas.años);
+      procesarLista(indicador, listas.indicadores);
 
       for (let fila in autores) {
         if (!autores[fila]) return;
-        procesar(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
+        procesarLista(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
       }
 
       ordenarListaObjetos(listas.dependencias, 'slug', true);
@@ -94,7 +94,7 @@ async function procesarProduccion(): Promise<void> {
       // Aquí ya terminó de leer toda la tabla
       resolver();
 
-      console.log(listas.autores);
+      // console.log(listas.autores);
     });
 
     flujo.on('error', (error) => {
@@ -104,7 +104,7 @@ async function procesarProduccion(): Promise<void> {
 }
 
 // Pasar a ayudas?
-function procesar(elemento: string, lista: ElementoLista[]) {
+function procesarLista(elemento: string, lista: ElementoLista[]) {
   const slug = slugificar(elemento);
   const existe = lista.find((obj) => obj.slug === slug);
   if (!existe) {
