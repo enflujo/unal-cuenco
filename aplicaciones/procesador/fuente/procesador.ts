@@ -88,6 +88,9 @@ async function procesarProduccion(): Promise<void> {
         procesarLista(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
       }
 
+      for (const lista in listas) {
+        ordenarListaObjetos(listas[lista as keyof Listas], 'slug', true);
+      }
       guardarJSON(listas, 'listas');
       guardarJSON(publicaciones, 'publicaciones');
 
