@@ -100,7 +100,6 @@ async function procesarProduccion(): Promise<void> {
       // Aquí ya terminó de leer toda la tabla
       totalFilas = conteoFilas;
 
-      //guardarJSON(listas, 'listas');
       guardarJSON(publicaciones, 'publicaciones');
 
       if (!filasPreprocesadas && totalFilas === filasProcesadas) {
@@ -262,8 +261,6 @@ function construirRelacionesDePublicaciones() {
       return 0;
     });
   });
-  // no sé si esto debería guardarse también en el JSON de listas. Estoy un poco confundida porque si lo guardo ahí,
-  // sobre escribo el procesamiento de las listas que hice antes
   guardarJSON(listas, 'listas');
 }
 
