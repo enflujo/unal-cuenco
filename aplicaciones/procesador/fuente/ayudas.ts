@@ -16,7 +16,7 @@ export const gorila = emojify(':gorilla:');
 export const chulo = emojify(':white_check_mark:');
 
 export const guardarJSON = (json: any, nombre: string) => {
-  writeFileSync(`../estaticos/${nombre}.json`, JSON.stringify(json));
+  writeFileSync(`../www/estaticos/datos/${nombre}.json`, JSON.stringify(json));
 };
 
 export function ordenarListaObjetos(lista: any[], llave: string, descendente = false) {

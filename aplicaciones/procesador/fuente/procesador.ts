@@ -91,8 +91,6 @@ async function procesarProduccion(): Promise<void> {
       for (const lista in listas) {
         ordenarListaObjetos(listas[lista as keyof Listas], 'slug', true);
       }
-      guardarJSON(listas, 'listas');
-      guardarJSON(publicaciones, 'publicaciones');
 
       imprimirErratas(autores, años, tipos, titulo, dependencia, numeroFila);
       numeroFila++;
@@ -102,12 +100,14 @@ async function procesarProduccion(): Promise<void> {
       // Aquí ya terminó de leer toda la tabla
       totalFilas = conteoFilas;
 
-      resolver();
-
       if (!filasPreprocesadas && totalFilas === filasProcesadas) {
         filasPreprocesadas = true;
         construirRelacionesDePublicaciones();
       }
+
+      guardarJSON(publicaciones, 'publicaciones');
+      guardarJSON(listas, 'listas');
+      resolver();
     });
 
     flujo.on('error', (error) => {
@@ -207,7 +207,6 @@ function construirRelacionesDePublicaciones() {
 
     campos.forEach((campoRelacion) => {
       const datosRelacion = publicacion[campoRelacion.llave];
-
       campos.forEach((campo) => {
         // Agregar datos de cada campo en todos los otros, excepto en sí mismo.
         if (campoRelacion.llave !== campo.llave && datosRelacion) {
