@@ -100,13 +100,13 @@ async function procesarProduccion(): Promise<void> {
       // Aquí ya terminó de leer toda la tabla
       totalFilas = conteoFilas;
 
-      guardarJSON(publicaciones, 'publicaciones');
-
       if (!filasPreprocesadas && totalFilas === filasProcesadas) {
         filasPreprocesadas = true;
         construirRelacionesDePublicaciones();
       }
 
+      guardarJSON(publicaciones, 'publicaciones');
+      guardarJSON(listas, 'listas');
       resolver();
     });
 
@@ -261,7 +261,6 @@ function construirRelacionesDePublicaciones() {
       return 0;
     });
   });
-  guardarJSON(listas, 'listas');
 }
 
 async function inicio() {
