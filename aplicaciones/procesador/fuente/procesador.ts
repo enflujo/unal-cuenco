@@ -2,7 +2,16 @@ import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
 import { separarPartes, ordenarListaObjetos, guardarJSON, logAviso, chulo } from './ayudas';
-import { ElementoLista, Listas, Campos, DefinicionSimple, Publicacion, Indicador, Subindicador } from './tipos';
+import {
+  ElementoLista,
+  Listas,
+  Campos,
+  DefinicionSimple,
+  Publicacion,
+  Indicador,
+  Subindicador,
+  ElementoListaIndicadores,
+} from './tipos';
 import { procesarIndicadores, procesarSubindicadores } from './indicadores';
 
 const archivoPA = './datos/base_produccion_ academica_100724.xlsx';
@@ -30,12 +39,13 @@ const campos: Campos = [
   { llave: 'tipos', indice: 4 },
   { llave: 'dependencias', indice: 8 },
   { llave: 'indicadores', indice: 9 },
-  { llave: 'subindicadores', indice: 10 },
+  //{ llave: 'subindicadores', indice: 10 },
 ];
 
 const publicaciones: Publicacion[] = [];
 const indicadoresPA: Indicador[] = [];
 const SubindicadoresPA: Subindicador[] = [];
+let indicadoresProcesados: Indicador[] = [];
 
 const listas: Listas = {
   autores: [],
@@ -43,7 +53,6 @@ const listas: Listas = {
   tipos: [],
   dependencias: [],
   indicadores: [],
-  subindicadores: [],
 };
 
 async function procesarProduccion(): Promise<void> {
@@ -89,7 +98,7 @@ async function procesarProduccion(): Promise<void> {
       procesarLista(dependencia, listas.dependencias);
       procesarLista(tipos, listas.tipos);
       procesarLista(`${años}`, listas.años);
-      procesarLista(indicador, listas.indicadores);
+      procesarListaIndicadores(indicador);
 
       for (let fila in autores) {
         procesarLista(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
@@ -114,7 +123,6 @@ async function procesarProduccion(): Promise<void> {
 
       guardarJSON(publicaciones, 'publicaciones');
       guardarJSON(listas, 'listas');
-      console.log(indicadoresPA);
       resolver();
     });
 
@@ -127,12 +135,15 @@ async function procesarProduccion(): Promise<void> {
 function procesarFila(fila: string[], numeroFila: number) {
   const tituloPublicacion = fila[5].trim();
   const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
-  const indicador = fila[9].trim();
   const subindicador = fila[10] ? fila[10].trim() : 'undefined';
 
   // Convertir autores en tipo DefinicionSimple
   const autoresProcesados = autores.map((autor) => {
     return { nombre: autor, slug: autor ? slugificar(autor) : '' };
+  });
+
+  const indicador = indicadoresProcesados.find((obj) => {
+    return slugificar(fila[9].trim()) === obj.slug;
   });
 
   const respuesta: Publicacion = {
@@ -145,7 +156,7 @@ function procesarFila(fila: string[], numeroFila: number) {
     referencia: fila[6].trim(),
     fuente: fila[7],
     dependencias: { nombre: fila[8].trim(), slug: slugificar(fila[8].trim()) },
-    //indicadores: { nombre: indicador, slug: slugificar(indicador) },
+    indicadores: indicador,
     //subindicadores: subindicador ? { nombre: subindicador, slug: slugificar(subindicador) } : undefined,
   };
 
@@ -177,6 +188,33 @@ function procesarLista(valor: string, lista: ElementoLista[]) {
     lista.push(objeto);
   } else {
     existe.conteo++;
+  }
+}
+
+function procesarListaIndicadores(indicador: string) {
+  const slug = indicador ? slugificar(indicador) : '';
+  const existe = listas.indicadores.find((obj) => obj.slug === slug);
+
+  if (!indicadoresProcesados.length) {
+    console.log('No hay indicadores procesados');
+  }
+  const existeEnIndicadoresProcesados = indicadoresProcesados.find((obj) => obj.slug === slug);
+
+  if (existeEnIndicadoresProcesados) {
+    const nombre = existeEnIndicadoresProcesados.nombre;
+    if (!existe) {
+      const objeto: ElementoListaIndicadores = {
+        nombre: nombre,
+        conteo: 1,
+        slug: slug,
+        relaciones: [],
+        publicaciones: [],
+        subindicadores: [],
+      };
+      listas.indicadores.push(objeto);
+    } else {
+      existe.conteo++;
+    }
   }
 }
 
@@ -238,7 +276,6 @@ function construirRelacionesDePublicaciones() {
               const elementosDondeConectar = Array.isArray(datosRelacion)
                 ? (datosRelacion as DefinicionSimple[]).map(({ slug }) => slug)
                 : [(datosRelacion as DefinicionSimple).slug];
-
               elementosDondeConectar.forEach((elementoConector) => {
                 const elementoALlenar = listas[llaveDondeLlenar].find((obj) => obj.slug === elementoConector);
 
@@ -276,14 +313,14 @@ function construirRelacionesDePublicaciones() {
 }
 
 async function inicio() {
-  const indicadoresProcesados = await procesarIndicadores(archivoPA, hojaPA, indicadoresPA);
+  indicadoresProcesados = await procesarIndicadores(archivoPA, hojaPA, indicadoresPA);
   const subindicadoresProcesados = await procesarSubindicadores(
     archivoPA,
     hojaSubindicadoresPA,
     SubindicadoresPA,
     indicadoresProcesados
   );
-  //await procesarProduccion();
+  await procesarProduccion();
 
   subindicadoresProcesados.forEach((subI) => {
     const indicadorId = subI.indicadorMadre;
@@ -300,7 +337,6 @@ async function inicio() {
     }
   });
 
-  console.log(indicadoresProcesados);
   guardarJSON(indicadoresProcesados, `indicadores-produccionAcademica`);
 
   console.log(chulo, logAviso('Procesados indicadores'));

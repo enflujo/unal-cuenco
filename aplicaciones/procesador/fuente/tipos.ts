@@ -9,6 +9,10 @@ export interface ElementoLista {
   publicaciones?: number[];
 }
 
+export interface ElementoListaIndicadores extends ElementoLista {
+  subindicadores: ElementoLista[];
+}
+
 export interface Indicador {
   id: number;
   nombre: string;
@@ -32,11 +36,10 @@ export type Listas = {
   años: ElementoLista[];
   tipos: ElementoLista[];
   dependencias: ElementoLista[];
-  indicadores: ElementoLista[];
-  subindicadores: ElementoLista[];
+  indicadores: ElementoListaIndicadores[];
 };
 
-export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
+export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
 
 export type Campos = { llave: LlavesProdAcademica; indice: number }[];
 
