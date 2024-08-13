@@ -151,12 +151,16 @@ function procesarFila(fila: string[], numeroFila: number) {
 }
 
 // Pasar a ayudas?
-function procesarLista(elemento: string, lista: ElementoLista[]) {
-  const slug = elemento ? slugificar(elemento) : '';
+function procesarLista(valor: string, lista: ElementoLista[]) {
+  const slug = valor ? slugificar(valor) : '';
   const existe = lista.find((obj) => obj.slug === slug);
+  if (!valor || valor === 'No aplica' || valor === 'undefined' || valor === 'Sin Información' || valor === '(s.f)')
+    return;
+  const nombre = `${valor}`.trim();
+
   if (!existe) {
     const objeto: ElementoLista = {
-      nombre: elemento,
+      nombre: nombre,
       conteo: 1,
       slug: slug,
       relaciones: [],
