@@ -16,7 +16,6 @@
   - Múnera, Leopoldo | Múnera Ruíz, Leopoldo
   - Sáenz Obregón, Javier | Sáenz Obregón,Javier
   - Vásquez, Johanna | Vásquez Velásquez, Johana | Vásquez Velásquez, Johanna
-
 - AUTORES: Revisar ortografía de los nombres o nombre en general:
 
   - Belmonte Carrasco, Lucia -> ¿Falta tilde?
@@ -42,7 +41,9 @@
   - Suarez, Francy -> ¿Suarez sin tilde?
   - Varela Torres,Jorge -> Falta espacio entre la ',' y el nombre
   - Vélez, Castaño -> ¿Castaño es el nombre?
-
 - INDICADORES:
 
   - ¿"POLÍTICAS EDUCATIVAS" o "POLÍTICAS DE EDUCACIÓN"? -> En los campos de publicaciones y en el diccionario se usa uno y en "Contenidos P.A. otra. -> Unificar
+
+  ### Preguntas
+- En la tabla todas las publicaciones parecen tener subindicador. Sin embargo, muchos son el mismo indicador y no un subindicador. ¿Se puede vaciar ese campo si es el mismo indicador?

@@ -39,13 +39,14 @@ const campos: Campos = [
   { llave: 'tipos', indice: 4 },
   { llave: 'dependencias', indice: 8 },
   { llave: 'indicadores', indice: 9 },
-  //{ llave: 'subindicadores', indice: 10 },
+  { llave: 'subindicadores', indice: 10 },
 ];
 
 const publicaciones: Publicacion[] = [];
 const indicadoresPA: Indicador[] = [];
 const SubindicadoresPA: Subindicador[] = [];
 let indicadoresProcesados: Indicador[] = [];
+let subindicadoresProcesados: Subindicador[] = [];
 
 const listas: Listas = {
   autores: [],
@@ -53,6 +54,7 @@ const listas: Listas = {
   tipos: [],
   dependencias: [],
   indicadores: [],
+  subindicadores: [],
 };
 
 async function procesarProduccion(): Promise<void> {
@@ -98,6 +100,7 @@ async function procesarProduccion(): Promise<void> {
       procesarLista(dependencia, listas.dependencias);
       procesarLista(tipos, listas.tipos);
       procesarLista(`${años}`, listas.años);
+      procesarLista(subindicador, listas.subindicadores);
       procesarListaIndicadores(indicador);
 
       for (let fila in autores) {
@@ -135,7 +138,20 @@ async function procesarProduccion(): Promise<void> {
 function procesarFila(fila: string[], numeroFila: number) {
   const tituloPublicacion = fila[5].trim();
   const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
-  const subindicador = fila[10] ? fila[10].trim() : 'undefined';
+  const subindicador = fila[10]?.trim();
+
+  if (!subindicador) {
+    console.log(`No hay subindicador en ${numeroFila}`);
+    return;
+  }
+
+  const subindicadorProcesado = subindicadoresProcesados.find((obj) => {
+    return obj.slug === slugificar(subindicador);
+  });
+
+  if (!subindicadorProcesado) {
+    console.log(`No existe el subindicador ${subindicador} en la lista de subindicadores procesados`);
+  }
 
   // Convertir autores en tipo DefinicionSimple
   const autoresProcesados = autores.map((autor) => {
@@ -146,6 +162,8 @@ function procesarFila(fila: string[], numeroFila: number) {
     return slugificar(fila[9].trim()) === obj.slug;
   });
 
+  // En la tabla todas las publicaciones parecen tener subindicador pero muchos son el mismo indicador repetido.
+  // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
   const respuesta: Publicacion = {
     id: +fila[0],
     titulo: { nombre: tituloPublicacion, slug: slugificar(tituloPublicacion) },
@@ -157,7 +175,14 @@ function procesarFila(fila: string[], numeroFila: number) {
     fuente: fila[7],
     dependencias: { nombre: fila[8].trim(), slug: slugificar(fila[8].trim()) },
     indicadores: indicador,
-    //subindicadores: subindicador ? { nombre: subindicador, slug: slugificar(subindicador) } : undefined,
+    subindicadores: subindicadorProcesado
+      ? {
+          id: subindicadorProcesado.id,
+          nombre: subindicadorProcesado.nombre,
+          slug: subindicadorProcesado.slug,
+          indicadorMadre: subindicadorProcesado.indicadorMadre,
+        }
+      : undefined,
   };
 
   // ¿Esto qué hace?
@@ -209,7 +234,6 @@ function procesarListaIndicadores(indicador: string) {
         slug: slug,
         relaciones: [],
         publicaciones: [],
-        subindicadores: [],
       };
       listas.indicadores.push(objeto);
     } else {
@@ -280,21 +304,23 @@ function construirRelacionesDePublicaciones() {
                 const elementoALlenar = listas[llaveDondeLlenar].find((obj) => obj.slug === elementoConector);
 
                 if (elementoALlenar) {
-                  const existe = elementoALlenar.relaciones.find((obj) => obj.slug === slug);
+                  if (elementoALlenar.relaciones) {
+                    const existe = elementoALlenar.relaciones.find((obj) => obj.slug === slug);
 
-                  if (!elementoALlenar.publicaciones?.includes(id)) {
-                    elementoALlenar.publicaciones?.push(id);
-                  }
+                    if (!elementoALlenar.publicaciones?.includes(id)) {
+                      elementoALlenar.publicaciones?.push(id);
+                    }
 
-                  if (!existe) {
-                    elementoALlenar.relaciones.push({
-                      conteo: 1,
-                      indice: i,
-                      tipo: llaveALlenar,
-                      slug,
-                    });
-                  } else {
-                    existe.conteo++;
+                    if (!existe) {
+                      elementoALlenar.relaciones.push({
+                        conteo: 1,
+                        indice: i,
+                        tipo: llaveALlenar,
+                        slug,
+                      });
+                    } else {
+                      existe.conteo++;
+                    }
                   }
                 }
               });
@@ -314,7 +340,7 @@ function construirRelacionesDePublicaciones() {
 
 async function inicio() {
   indicadoresProcesados = await procesarIndicadores(archivoPA, hojaPA, indicadoresPA);
-  const subindicadoresProcesados = await procesarSubindicadores(
+  subindicadoresProcesados = await procesarSubindicadores(
     archivoPA,
     hojaSubindicadoresPA,
     SubindicadoresPA,

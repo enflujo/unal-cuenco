@@ -5,12 +5,12 @@ export interface ElementoLista {
   descripcion?: string;
   slug: string;
   conteo: number;
-  relaciones: { tipo: keyof Listas | string; conteo: number; indice: number; slug: string }[];
+  relaciones?: { tipo: keyof Listas | string; conteo: number; indice: number; slug: string }[];
   publicaciones?: number[];
 }
 
 export interface ElementoListaIndicadores extends ElementoLista {
-  subindicadores: ElementoLista[];
+  //subindicadores: ElementoLista[];
 }
 
 export interface Indicador {
@@ -37,9 +37,10 @@ export type Listas = {
   tipos: ElementoLista[];
   dependencias: ElementoLista[];
   indicadores: ElementoListaIndicadores[];
+  subindicadores: ElementoLista[];
 };
 
-export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
+export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
 
 export type Campos = { llave: LlavesProdAcademica; indice: number }[];
 
@@ -54,5 +55,5 @@ export type Publicacion = {
   fuente?: string;
   dependencias?: DefinicionSimple;
   indicadores?: Indicador;
-  subindicadores?: Indicador;
+  subindicadores?: Subindicador;
 };
