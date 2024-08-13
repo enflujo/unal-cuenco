@@ -10,11 +10,18 @@ export interface ElementoLista {
 }
 
 export interface Indicador {
+  id: number;
   nombre: string;
-  descripcion?: string;
   slug: string;
-  esIndicador?: boolean;
-  subindicadores?: [];
+  descripcion?: string;
+  subindicadores?: number[];
+}
+
+export interface Subindicador {
+  id: number;
+  nombre: string;
+  slug: string;
+  indicadorMadre: number;
 }
 
 export type DefinicionSimple = { nombre: string; slug: string };

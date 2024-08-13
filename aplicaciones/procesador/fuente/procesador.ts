@@ -1,8 +1,13 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
-import { separarPartes, ordenarListaObjetos, guardarJSON } from './ayudas';
-import { ElementoLista, Listas, Campos, DefinicionSimple, Publicacion } from './tipos';
+import { separarPartes, ordenarListaObjetos, guardarJSON, logAviso, chulo } from './ayudas';
+import { ElementoLista, Listas, Campos, DefinicionSimple, Publicacion, Indicador, Subindicador } from './tipos';
+import { procesarIndicadores, procesarSubindicadores } from './indicadores';
+
+const archivoPA = './datos/base_produccion_ academica_100724.xlsx';
+const hojaPA = 'Diccionario de Indicadores';
+const hojaSubindicadoresPA = 'Contenidos P.A';
 
 type FilaProduccionAcademica = [
   id: number,
@@ -29,6 +34,8 @@ const campos: Campos = [
 ];
 
 const publicaciones: Publicacion[] = [];
+const indicadoresPA: Indicador[] = [];
+const SubindicadoresPA: Subindicador[] = [];
 
 const listas: Listas = {
   autores: [],
@@ -107,6 +114,7 @@ async function procesarProduccion(): Promise<void> {
 
       guardarJSON(publicaciones, 'publicaciones');
       guardarJSON(listas, 'listas');
+      console.log(indicadoresPA);
       resolver();
     });
 
@@ -137,8 +145,8 @@ function procesarFila(fila: string[], numeroFila: number) {
     referencia: fila[6].trim(),
     fuente: fila[7],
     dependencias: { nombre: fila[8].trim(), slug: slugificar(fila[8].trim()) },
-    indicadores: { nombre: indicador, slug: slugificar(indicador) },
-    subindicadores: subindicador ? { nombre: subindicador, slug: slugificar(subindicador) } : undefined,
+    //indicadores: { nombre: indicador, slug: slugificar(indicador) },
+    //subindicadores: subindicador ? { nombre: subindicador, slug: slugificar(subindicador) } : undefined,
   };
 
   // ¿Esto qué hace?
@@ -268,7 +276,36 @@ function construirRelacionesDePublicaciones() {
 }
 
 async function inicio() {
-  await procesarProduccion();
+  const indicadoresProcesados = await procesarIndicadores(archivoPA, hojaPA, indicadoresPA);
+  const subindicadoresProcesados = await procesarSubindicadores(
+    archivoPA,
+    hojaSubindicadoresPA,
+    SubindicadoresPA,
+    indicadoresProcesados
+  );
+  //await procesarProduccion();
+
+  subindicadoresProcesados.forEach((subI) => {
+    const indicadorId = subI.indicadorMadre;
+    const indicadorI = indicadoresProcesados.findIndex((obj) => obj.id === indicadorId);
+
+    if (indicadorI >= 0) {
+      if (!indicadoresProcesados[indicadorI].subindicadores) {
+        indicadoresProcesados[indicadorI].subindicadores = [];
+      }
+
+      indicadoresProcesados[indicadorI].subindicadores?.push(subI.id);
+    } else {
+      console.log(`No existe el indicador con ID ${subI.indicadorMadre}!`);
+    }
+  });
+
+  console.log(indicadoresProcesados);
+  guardarJSON(indicadoresProcesados, `indicadores-produccionAcademica`);
+
+  console.log(chulo, logAviso('Procesados indicadores'));
+  guardarJSON(subindicadoresProcesados, `subIndicadores-produccionAcademica`);
+  console.log(chulo, logAviso('Procesados subindicadores'));
 }
 
 inicio().catch(console.error);
