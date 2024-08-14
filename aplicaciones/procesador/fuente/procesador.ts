@@ -23,7 +23,7 @@ type FilaProduccionAcademica = [
   /** Nombre de los autores separados por ; y apellido nombre separado por , */
   autores: string | undefined,
   resumen: string,
-  años: string | number | undefined,
+  años: string,
   tipos: string,
   titulo: string,
   referencia: string,
@@ -95,11 +95,10 @@ async function procesarProduccion(): Promise<void> {
         procesarFila(raw.arr, numeroFila);
         filasProcesadas++;
       }
-
       // Llenar listas
       procesarLista(dependencia, listas.dependencias);
       procesarLista(tipos, listas.tipos);
-      procesarLista(`${años}`, listas.años);
+      procesarLista(años, listas.años);
       procesarLista(subindicador, listas.subindicadores);
       procesarListaIndicadores(indicador);
 
@@ -196,7 +195,8 @@ function procesarFila(fila: string[], numeroFila: number) {
 
 // Pasar a ayudas?
 function procesarLista(valor: string, lista: ElementoLista[]) {
-  const slug = valor ? slugificar(valor) : '';
+  if (!valor) return;
+  const slug = valor ? slugificar(`${valor}`) : '';
   const existe = lista.find((obj) => obj.slug === slug);
   if (!valor || valor === 'No aplica' || valor === 'undefined' || valor === 'Sin Información' || valor === '(s.f)')
     return;
