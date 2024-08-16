@@ -27,12 +27,12 @@ export function ordenarListaObjetos(lista: any[], llave: string, descendente = f
   });
 }
 
-export const normalizar = (texto: string): string => {
-  return texto
-    .toLocaleLowerCase()
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '');
-};
+// export const normalizar = (texto: string): string => {
+//   return texto
+//     .toLocaleLowerCase()
+//     .normalize('NFD')
+//     .replace(/\p{Diacritic}/gu, '');
+// };
 
 export const enMinusculas = (texto: string) => texto === texto.toLowerCase();
 

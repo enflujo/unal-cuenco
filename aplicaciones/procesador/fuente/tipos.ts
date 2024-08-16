@@ -5,7 +5,12 @@ export interface ElementoLista {
   descripcion?: string;
   slug: string;
   conteo: number;
-  relaciones?: { tipo: keyof Listas | string; conteo: number; indice: number; slug: string }[];
+  relaciones?: {
+    tipo: keyof ListasPublicaciones | keyof ListasColectivos | string;
+    conteo: number;
+    indice: number;
+    slug: string;
+  }[];
   publicaciones?: number[];
 }
 
@@ -31,7 +36,7 @@ export interface Subindicador {
 export type DefinicionSimple = { nombre: string; slug: string };
 export type Año = { año: number; valor: string };
 
-export type Listas = {
+export type ListasPublicaciones = {
   autores: ElementoLista[];
   años: ElementoLista[];
   tipos: ElementoLista[];
@@ -40,9 +45,16 @@ export type Listas = {
   subindicadores: ElementoLista[];
 };
 
-export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
+export type ListasColectivos = {
+  años: ElementoLista[];
+  indicadores: ElementoListaIndicadores[];
+  subindicadores: ElementoLista[];
+};
 
-export type Campos = { llave: LlavesProdAcademica; indice: number }[];
+export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
+export type LlavesColectivos = 'tipos';
+
+export type Campos = { llave: LlavesProdAcademica | LlavesColectivos; indice: number }[];
 
 export type Publicacion = {
   id: number;
@@ -57,3 +69,6 @@ export type Publicacion = {
   indicadores?: Indicador;
   subindicadores?: Subindicador;
 };
+
+// POR HACER: Completar
+export type Colectivo = {};
