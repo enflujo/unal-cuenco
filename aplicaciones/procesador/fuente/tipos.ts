@@ -47,6 +47,11 @@ export type ListasPublicaciones = {
 
 export type ListasColectivos = {
   años: ElementoLista[];
+  tipos: ElementoLista[];
+  responsables: ElementoLista[];
+  sedes: ElementoLista[];
+  dependencias: ElementoLista[];
+  modalidades: ElementoLista[];
   indicadores: ElementoListaIndicadores[];
   subindicadores: ElementoLista[];
 };
