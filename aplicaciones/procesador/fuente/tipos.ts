@@ -47,6 +47,7 @@ export type ListasPublicaciones = {
 
 export type ListasColectivos = {
   años: ElementoLista[];
+  estados: ElementoLista[];
   tipos: ElementoLista[];
   responsables: ElementoLista[];
   sedes: ElementoLista[];
@@ -56,10 +57,19 @@ export type ListasColectivos = {
   subindicadores: ElementoLista[];
 };
 
-export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
-export type LlavesColectivos = 'tipos';
+export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
+export type LlavesColectivos =
+  | 'responsables'
+  | 'tipos'
+  | 'años'
+  | 'sedes'
+  | 'dependencias'
+  | 'modalidades'
+  | 'indicadores'
+  | 'subindicadores';
 
-export type Campos = { llave: LlavesProdAcademica | LlavesColectivos; indice: number }[];
+export type CamposPA = { llave: LlavesPA; indice: number }[];
+export type CamposColectivos = { llave: LlavesColectivos; indice: number }[];
 
 export type Publicacion = {
   id: number;
@@ -76,4 +86,19 @@ export type Publicacion = {
 };
 
 // POR HACER: Completar
-export type Colectivo = {};
+export type Colectivo = {
+  nombre: DefinicionSimple;
+  tipos?: DefinicionSimple;
+  descripcion?: string;
+  años?: Año;
+  estados?: string;
+  fuente?: string;
+  enlaceFuente?: string;
+  responsables?: DefinicionSimple;
+  contacto?: string;
+  sedes?: DefinicionSimple;
+  dependencias?: DefinicionSimple;
+  modalidades?: DefinicionSimple;
+  indicadores?: Indicador;
+  subindicadores?: Subindicador;
+};

@@ -1,11 +1,11 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
-import { separarPartes, ordenarListaObjetos, guardarJSON, logAviso, chulo } from './ayudas';
+import { separarPartes, ordenarListaObjetos, guardarJSON, logAviso, chulo, procesarLista } from './ayudas';
 import {
   ElementoLista,
   ListasPublicaciones,
-  Campos,
+  CamposPA,
   DefinicionSimple,
   Publicacion,
   Indicador,
@@ -16,7 +16,7 @@ import { procesarIndicadores, procesarSubindicadores } from './indicadores';
 
 const archivoPA = './datos/base_produccion_ academica_100724.xlsx';
 const hojaPA = 'Diccionario de Indicadores';
-const hojaSubindicadoresPA = 'Contenidos P.A';
+const hojaSubindicadoresCol = 'Contenidos C.A';
 
 type FilaProduccionAcademica = [
   id: number,
@@ -33,7 +33,7 @@ type FilaProduccionAcademica = [
   subindicador: string,
 ];
 
-const campos: Campos = [
+const campos: CamposPA = [
   { llave: 'autores', indice: 1 },
   { llave: 'años', indice: 3 },
   { llave: 'tipos', indice: 4 },
@@ -44,7 +44,7 @@ const campos: Campos = [
 
 const publicaciones: Publicacion[] = [];
 const indicadoresPA: Indicador[] = [];
-const SubindicadoresPA: Subindicador[] = [];
+const subindicadoresPA: Subindicador[] = [];
 let indicadoresProcesados: Indicador[] = [];
 let subindicadoresProcesados: Subindicador[] = [];
 
@@ -61,8 +61,8 @@ export default async () => {
   indicadoresProcesados = await procesarIndicadores(archivoPA, hojaPA, indicadoresPA);
   subindicadoresProcesados = await procesarSubindicadores(
     archivoPA,
-    hojaSubindicadoresPA,
-    SubindicadoresPA,
+    hojaSubindicadoresCol,
+    subindicadoresPA,
     indicadoresProcesados
   );
   await procesarProduccion();
@@ -223,29 +223,6 @@ function procesarFila(fila: string[], numeroFila: number) {
   }); */
 
   publicaciones.push(respuesta);
-}
-
-// Pasar a ayudas?
-function procesarLista(valor: string, lista: ElementoLista[]) {
-  if (!valor) return;
-  const slug = valor ? slugificar(`${valor}`) : '';
-  const existe = lista.find((obj) => obj.slug === slug);
-  if (!valor || valor === 'No aplica' || valor === 'undefined' || valor === 'Sin Información' || valor === '(s.f)')
-    return;
-  const nombre = `${valor}`.trim();
-
-  if (!existe) {
-    const objeto: ElementoLista = {
-      nombre: nombre,
-      conteo: 1,
-      slug: slug,
-      relaciones: [],
-      publicaciones: [],
-    };
-    lista.push(objeto);
-  } else {
-    existe.conteo++;
-  }
 }
 
 function procesarListaIndicadores(indicador: string) {
