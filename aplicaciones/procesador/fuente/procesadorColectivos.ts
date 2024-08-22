@@ -121,11 +121,11 @@ async function procesarColectivo(): Promise<void> {
       const tipos = fila[1].trim();
       const años = fila[3] ? fila[3] : fila[4];
       const estados = fila[3] ? 'activo' : 'inactivo';
-      const responsables = fila[7].trim();
+      const responsables = fila[7] ? fila[7].trim() : 'no hay responsables';
       const sedes = fila[9].trim();
-      const dependencias = fila[10].trim();
+      const dependencias = fila[10] ? fila[10].trim() : 'no hay dependencia';
 
-      const modalidades = fila[11].trim();
+      const modalidades = fila[11] ? fila[11].trim() : 'no hay modalidades';
 
       const indicador = fila[12].trim();
       const subindicador = fila[13]?.trim();
@@ -216,7 +216,9 @@ function procesarFila(fila: string[], numeroFila: number) {
     responsables: { nombre: fila[7].trim(), slug: slugificar(fila[7].trim()) },
     contacto: fila[8],
     sedes: { nombre: fila[9].trim(), slug: slugificar(fila[9].trim()) },
-    dependencias: { nombre: fila[10].trim(), slug: slugificar(fila[10].trim()) },
+    dependencias: { nombre: 'no hay nombre', slug: '' } /* fila[10]
+      ? { nombre: fila[10].trim(), slug: slugificar(fila[10].trim()) }
+      : { nombre: 'no hay nombre', slug: '' }, */,
     indicadores: indicador,
     subindicadores: subindicadorProcesado
       ? {
