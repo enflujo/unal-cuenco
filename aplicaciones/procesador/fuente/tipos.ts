@@ -5,7 +5,12 @@ export interface ElementoLista {
   descripcion?: string;
   slug: string;
   conteo: number;
-  relaciones?: { tipo: keyof Listas | string; conteo: number; indice: number; slug: string }[];
+  relaciones?: {
+    tipo: keyof ListasPublicaciones | keyof ListasColectivos | string;
+    conteo: number;
+    indice: number;
+    slug: string;
+  }[];
   publicaciones?: number[];
 }
 
@@ -31,7 +36,7 @@ export interface Subindicador {
 export type DefinicionSimple = { nombre: string; slug: string };
 export type Año = { año: number; valor: string };
 
-export type Listas = {
+export type ListasPublicaciones = {
   autores: ElementoLista[];
   años: ElementoLista[];
   tipos: ElementoLista[];
@@ -40,9 +45,31 @@ export type Listas = {
   subindicadores: ElementoLista[];
 };
 
-export type LlavesProdAcademica = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
+export type ListasColectivos = {
+  años: ElementoLista[];
+  estados: ElementoLista[];
+  tipos: ElementoLista[];
+  responsables: ElementoLista[];
+  sedes: ElementoLista[];
+  dependencias: ElementoLista[];
+  modalidades: ElementoLista[];
+  indicadores: ElementoListaIndicadores[];
+  subindicadores: ElementoLista[];
+};
 
-export type Campos = { llave: LlavesProdAcademica; indice: number }[];
+export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
+export type LlavesColectivos =
+  | 'responsables'
+  | 'tipos'
+  | 'años'
+  | 'sedes'
+  | 'dependencias'
+  | 'modalidades'
+  | 'indicadores'
+  | 'subindicadores';
+
+export type CamposPA = { llave: LlavesPA; indice: number }[];
+export type CamposColectivos = { llave: LlavesColectivos; indice: number }[];
 
 export type Publicacion = {
   id: number;
@@ -54,6 +81,25 @@ export type Publicacion = {
   referencia?: string;
   fuente?: string;
   dependencias?: DefinicionSimple;
+  indicadores?: Indicador;
+  subindicadores?: Subindicador;
+};
+
+// POR HACER: Completar
+export type Colectivo = {
+  id: number;
+  nombre: DefinicionSimple;
+  tipos?: DefinicionSimple;
+  descripcion?: string;
+  años?: Año;
+  estados?: string;
+  fuente?: string;
+  enlaceFuente?: string;
+  responsables?: DefinicionSimple;
+  contacto?: string;
+  sedes?: DefinicionSimple;
+  dependencias?: DefinicionSimple;
+  modalidades?: DefinicionSimple;
   indicadores?: Indicador;
   subindicadores?: Subindicador;
 };

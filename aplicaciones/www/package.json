@@ -11,7 +11,8 @@
     "check": "astro check"
   },
   "dependencies": {
-    "astro": "^4.4.0"
+    "astro": "^4.4.0",
+    "nanostores": "^0.11.3"
   },
   "devDependencies": {
     "sass": "^1.71.0"

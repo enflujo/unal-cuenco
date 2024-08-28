@@ -1,7 +1,7 @@
 import { atom, map } from 'nanostores';
 import type { Listas } from '@/tipos';
 
-export const nombresListasProyectos = {
+export const nombresListas = {
   publicacion: 'Publicacion',
   autores: 'Autores',
   tipos: 'Tipos',
@@ -9,4 +9,8 @@ export const nombresListasProyectos = {
   dependencias: 'Dependencias',
   indicadores: 'Indicadores',
   subindicadores: 'Subindicadores',
+  responsables: 'Responsables',
+  sedes: 'Sedes',
+  modalidades: 'Modalidades',
+  estados: 'Estado',
 };

@@ -50,3 +50,7 @@
   ### Preguntas
 
 - En la tabla todas las publicaciones parecen tener subindicador. Sin embargo, muchos son el mismo indicador y no un subindicador. ¿Se puede vaciar ese campo si es el mismo indicador?
+
+### EXCEL DE COLECTIVOS
+
+- Los nombres de las personas están escritos un formato distinto que en el otro excel. ¿Unificamos?

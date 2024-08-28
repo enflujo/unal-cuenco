@@ -1,6 +1,8 @@
 import { writeFileSync } from 'fs';
 import colores from 'cli-color';
 import { emojify } from 'node-emoji';
+import { ElementoLista } from 'tipos';
+import slugificar from 'slug';
 
 export const logError = colores.red.bold;
 export const logAviso = colores.bold.xterm(214);
@@ -19,6 +21,28 @@ export const guardarJSON = (json: any, nombre: string) => {
   writeFileSync(`../www/estaticos/datos/${nombre}.json`, JSON.stringify(json));
 };
 
+export function procesarLista(valor: string, lista: ElementoLista[]) {
+  if (!valor) return;
+  const slug = valor ? slugificar(`${valor}`) : '';
+  const existe = lista.find((obj) => obj.slug === slug);
+  if (!valor || valor === 'No aplica' || valor === 'undefined' || valor === 'Sin Información' || valor === '(s.f)')
+    return;
+  const nombre = `${valor}`.trim();
+
+  if (!existe) {
+    const objeto: ElementoLista = {
+      nombre: nombre,
+      conteo: 1,
+      slug: slug,
+      relaciones: [],
+      publicaciones: [],
+    };
+    lista.push(objeto);
+  } else {
+    existe.conteo++;
+  }
+}
+
 export function ordenarListaObjetos(lista: any[], llave: string, descendente = false) {
   lista.sort((a, b) => {
     if (a[llave] < b[llave]) return descendente ? -1 : 1;
@@ -28,10 +52,10 @@ export function ordenarListaObjetos(lista: any[], llave: string, descendente = f
 }
 
 export const normalizar = (texto: string): string => {
-  return texto
-    .toLocaleLowerCase()
+  return texto;
+  /* .toLocaleLowerCase()
     .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '');
+    .replace(/[\u0300-\u036f]/g, ''); */
 };
 
 export const enMinusculas = (texto: string) => texto === texto.toLowerCase();

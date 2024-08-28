@@ -1,12 +1,50 @@
 @import './normalizar';
+@import './constantes';
 
-:root {
-  --colorFuente: #252424;
+@font-face {
+  font-family: Ancizar;
+  src: url('/fuentes/AncizarSans/AncizarSans-Regular_02042016.otf');
+}
+
+/* use */
+body {
+  font-family: Ancizar, Arial, Helvetica, sans-serif;
+}
+
+main {
+  padding: 1em 5vw;
+}
+
+#menu {
+  width: 80vw;
+  display: flex;
+  padding: 0.5em;
+
+  .elementoMenu {
+    display: flex;
+    align-items: center;
+    background-color: var(--verdeCuenco);
+    padding: 0.5em 0.7em;
+    color: black;
+    border-radius: 5px;
+    margin: 0 0.4em;
+
+    &:hover {
+      color: var(--blanco);
+      background-color: var(--azulClaroCuenco);
+    }
+  }
+}
+
+// Página principal
+#presentacion {
+  width: 70vw;
+  margin: 2em 0;
 }
 
 // Nodos listas
 .contenedorElementos {
-  height: 100vh;
+  height: fit-content;
   // opacity: 0;
   // overflow: hidden;
   transition: opacity 0.35s ease-in-out;

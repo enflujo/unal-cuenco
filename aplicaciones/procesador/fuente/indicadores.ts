@@ -1,4 +1,3 @@
-import { guardarJSON } from './ayudas';
 import slugificar from 'slug';
 import { Indicador, Subindicador } from 'tipos.js';
 import { getXlsxStream } from 'xlstream';
@@ -35,7 +34,7 @@ export async function procesarIndicadores(archivo: string, hoja: string, lista: 
           id: +fila[0], // revisar si es número
           nombre: nombre,
           slug: slug,
-          descripcion: fila[2].trim(),
+          descripcion: fila[2] ? fila[2].trim() : 'no hay descripción',
         };
 
         lista.push(respuesta);
@@ -130,7 +129,6 @@ export async function procesarSubindicadores(
 
       if (!filasPreprocesadas && totalFilas === filasProcesadas) {
         filasPreprocesadas = true;
-        // construirRelacionesDePublicaciones();
       }
 
       resolver(lista);

@@ -18,10 +18,14 @@ export type DefinicionSimple = { nombre: string; slug: string };
 
 // Listas Producción Académica
 export type Listas = {
-  autores: ElementoLista[];
+  autores?: ElementoLista[];
   años: ElementoLista[];
   tipos: ElementoLista[];
   dependencias: ElementoLista[];
   indicadores: ElementoLista[];
   subindicadores: ElementoLista[];
+  responsables?: ElementoLista[];
+  estados?: ElementoLista[];
+  sedes?: ElementoLista[];
+  modalidades?: ElementoLista[];
 };

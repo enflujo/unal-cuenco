@@ -16,8 +16,5 @@
   },
   "devDependencies": {
     "prettier": "^3.2.5"
-  },
-  "dependencies": {
-    "nanostores": "^0.10.3"
   }
 }

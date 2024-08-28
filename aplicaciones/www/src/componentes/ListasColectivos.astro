@@ -1,0 +1,17 @@
+---
+import ListaNodos from '@/componentes/ListaNodos.astro';
+import listasColectivos from '../../estaticos/datos/listasColectivos.json';
+---
+
+<div id="contenedorListas" class="todoVisible">
+  <h2>Colectivos y Ámbitos</h2>
+  <ListaNodos id="años" lista={listasColectivos.años} />
+  <ListaNodos id="estados" lista={listasColectivos.estados} />
+  <ListaNodos id="responsables" lista={listasColectivos.responsables} />
+  <ListaNodos id="sedes" lista={listasColectivos.sedes} />
+  <ListaNodos id="dependencias" lista={listasColectivos.dependencias} />
+  <ListaNodos id="modalidades" lista={listasColectivos.modalidades} />
+  <ListaNodos id="indicadores" lista={listasColectivos.indicadores} />
+  <ListaNodos id="tipos" lista={listasColectivos.tipos} />
+</div>
+<script></script>
