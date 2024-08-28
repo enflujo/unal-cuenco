@@ -52,10 +52,10 @@ export function ordenarListaObjetos(lista: any[], llave: string, descendente = f
 }
 
 export const normalizar = (texto: string): string => {
-  return texto
-    .toLocaleLowerCase()
+  return texto;
+  /* .toLocaleLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+    .replace(/[\u0300-\u036f]/g, ''); */
 };
 
 export const enMinusculas = (texto: string) => texto === texto.toLowerCase();

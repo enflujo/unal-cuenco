@@ -66,8 +66,9 @@ const listas: ListasColectivos = {
 };
 
 export default async () => {
-  /*  indicadoresProcesados = await procesarIndicadores(archivoColectivos, hojaCol, indicadoresCol);
-  subindicadoresProcesados = await procesarSubindicadores(
+  indicadoresProcesados = await procesarIndicadores(archivoColectivos, hojaCol, indicadoresCol);
+
+  /*   subindicadoresProcesados = await procesarSubindicadores(
     archivoColectivos,
     hojaSubindicadoresCol,
     subindicadoresCol,
@@ -91,7 +92,7 @@ export default async () => {
     }
   }); */
 
-  // guardarJSON(indicadoresProcesados, `indicadores-colectivos`);
+  guardarJSON(indicadoresProcesados, `indicadores-colectivos`);
 
   console.log(chulo, logAviso('Procesados indicadores'));
   // guardarJSON(subindicadoresProcesados, `subIndicadores-colectivos`);
@@ -133,8 +134,8 @@ async function procesarColectivo(): Promise<void> {
       conteoFilas++;
 
       if (numeroFila > datosEmpiezanEnFila) {
-        /*  procesarFila(raw.arr, numeroFila);
-        filasProcesadas++; */
+        procesarFila(raw.arr, numeroFila);
+        filasProcesadas++;
       }
       // Llenar listas
       procesarLista(tipos, listas.tipos);
@@ -188,7 +189,7 @@ function procesarFila(fila: string[], numeroFila: number) {
     return;
   }
 
-  const subindicadorProcesado = subindicadoresProcesados.find((obj) => {
+  /*   const subindicadorProcesado = subindicadoresProcesados.find((obj) => {
     return obj.slug === slugificar(subindicador);
   });
 
@@ -196,7 +197,7 @@ function procesarFila(fila: string[], numeroFila: number) {
     console.log(
       `En Colectivos y Ámbitos no existe el subindicador ${subindicador} en la lista de subindicadores procesados`
     );
-  }
+  } */
 
   const indicador = indicadoresProcesados.find((obj) => {
     return slugificar(fila[12].trim()) === obj.slug;
@@ -205,29 +206,31 @@ function procesarFila(fila: string[], numeroFila: number) {
   // En la tabla todas las publicaciones parecen tener subindicador pero muchos son el mismo indicador repetido.
   // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
   const respuesta: Colectivo = {
-    // id: +fila[0],
+    id: numeroFila,
     nombre: { nombre: nombreColectivo, slug: slugificar(nombreColectivo) },
     tipos: { nombre: fila[1].trim(), slug: slugificar(fila[1].trim()) },
-    descripcion: fila[2].trim(),
+    descripcion: fila[2] ? fila[2].trim() : 'No hay descripción',
     años: fila[3] ? { año: +fila[3], valor: fila[3] } : { año: +fila[4], valor: fila[4] },
     estados: fila[3] ? 'activo' : 'inactivo',
     fuente: fila[5],
     enlaceFuente: fila[6],
-    responsables: { nombre: fila[7].trim(), slug: slugificar(fila[7].trim()) },
+    responsables: fila[7]
+      ? { nombre: fila[7].trim(), slug: slugificar(fila[7].trim()) }
+      : { nombre: 'sin información', slug: '' },
     contacto: fila[8],
     sedes: { nombre: fila[9].trim(), slug: slugificar(fila[9].trim()) },
-    dependencias: { nombre: 'no hay nombre', slug: '' } /* fila[10]
+    dependencias: fila[10]
       ? { nombre: fila[10].trim(), slug: slugificar(fila[10].trim()) }
-      : { nombre: 'no hay nombre', slug: '' }, */,
+      : { nombre: 'sin información', slug: '' },
     indicadores: indicador,
-    subindicadores: subindicadorProcesado
+    /* subindicadores: subindicadorProcesado
       ? {
           id: subindicadorProcesado.id,
           nombre: subindicadorProcesado.nombre,
           slug: subindicadorProcesado.slug,
           indicadorMadre: subindicadorProcesado.indicadorMadre,
         }
-      : undefined,
+      : undefined, */
   };
 
   // ¿Esto qué hace?

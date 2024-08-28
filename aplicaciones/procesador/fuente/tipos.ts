@@ -87,6 +87,7 @@ export type Publicacion = {
 
 // POR HACER: Completar
 export type Colectivo = {
+  id: number;
   nombre: DefinicionSimple;
   tipos?: DefinicionSimple;
   descripcion?: string;
