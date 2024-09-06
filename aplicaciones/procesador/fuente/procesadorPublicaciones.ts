@@ -16,7 +16,7 @@ import { procesarIndicadores, procesarSubindicadores } from './indicadores';
 
 const archivoPA = './datos/base_produccion_ academica_100724.xlsx';
 const hojaPA = 'Diccionario de Indicadores';
-const hojaSubindicadoresCol = 'Contenidos C.A';
+const hojaSubindicadoresCol = 'Contenidos P.A';
 
 type FilaProduccionAcademica = [
   id: number,
