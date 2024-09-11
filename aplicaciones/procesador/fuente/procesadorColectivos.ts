@@ -14,7 +14,7 @@ import {
 } from './tipos';
 import { procesarIndicadores, procesarSubindicadores } from './indicadores';
 
-const archivoColectivos = './datos/base_colectivos_y_ambitos_100724.xlsx';
+const archivoColectivos = './datos/base_colectivos_y_ambitos_anonimizado20240902.xlsx';
 const hojaCol = 'Diccionario Indicadores';
 const hojaSubindicadoresCol = 'Contenidos P.A';
 
@@ -103,7 +103,7 @@ async function procesarColectivo(): Promise<void> {
   const archivo = archivoColectivos;
   const flujo = await getXlsxStream({
     filePath: archivo,
-    sheet: 'Colectivos y ámbitos (C.A)',
+    sheet: 'Colectivos y ámbitos CUANTIFICA',
     withHeader: true,
     ignoreEmpty: true,
   });
@@ -117,47 +117,50 @@ async function procesarColectivo(): Promise<void> {
 
   return new Promise((resolver) => {
     flujo.on('data', async ({ raw }) => {
-      const fila = raw.arr as FilaColectivos;
+      try {
+        const fila = raw.arr as FilaColectivos;
 
-      const tipos = fila[1].trim();
-      const años = fila[3] ? fila[3] : fila[4];
-      const estados = fila[3] ? 'activo' : 'inactivo';
-      const responsables = fila[7] ? fila[7].trim() : 'no hay responsables';
-      const sedes = fila[9].trim();
-      const dependencias = fila[10] ? fila[10].trim() : 'no hay dependencia';
+        const tipos = fila[1] ? fila[1].trim() : 'no hay tipo';
+        const años = fila[3] ? fila[3] : fila[4];
+        const estados = fila[3] ? 'activo' : 'inactivo';
+        const responsables = fila[7] ? fila[7].trim() : 'no hay responsables';
+        const sedes = fila[9] ? fila[9].trim() : 'no hay sede';
+        const dependencias = fila[10] ? fila[10].trim() : 'no hay dependencia';
+        const modalidades = fila[11] ? fila[11].trim() : 'no hay modalidades';
 
-      const modalidades = fila[11] ? fila[11].trim() : 'no hay modalidades';
+        const indicador = fila[12] ? fila[12].trim() : 'no hay indicador asociado';
+        const subindicador = fila[13] ? fila[13].trim() : 'no hay subindicador asociado';
 
-      const indicador = fila[12].trim();
-      const subindicador = fila[13]?.trim();
+        conteoFilas++;
 
-      conteoFilas++;
+        if (numeroFila > datosEmpiezanEnFila) {
+          procesarFila(raw.arr, numeroFila);
+          filasProcesadas++;
+        }
+        // Llenar listas
+        procesarLista(tipos, listas.tipos);
+        procesarLista(años, listas.años);
+        procesarLista(estados, listas.estados);
+        procesarLista(responsables, listas.responsables);
+        procesarLista(sedes, listas.sedes);
+        procesarLista(dependencias, listas.dependencias);
+        procesarLista(modalidades, listas.modalidades);
+        procesarLista(subindicador, listas.subindicadores);
+        procesarListaIndicadores(indicador);
 
-      if (numeroFila > datosEmpiezanEnFila) {
-        procesarFila(raw.arr, numeroFila);
-        filasProcesadas++;
-      }
-      // Llenar listas
-      procesarLista(tipos, listas.tipos);
-      procesarLista(años, listas.años);
-      procesarLista(estados, listas.estados);
-      procesarLista(responsables, listas.responsables);
-      procesarLista(sedes, listas.sedes);
-      procesarLista(dependencias, listas.dependencias);
-      procesarLista(modalidades, listas.modalidades);
-      procesarLista(subindicador, listas.subindicadores);
-      procesarListaIndicadores(indicador);
-
-      /*   for (let fila in autores) {
+        /*   for (let fila in autores) {
         procesarLista(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
       } */
 
-      for (const lista in listas) {
-        ordenarListaObjetos(listas[lista as keyof ListasColectivos], 'slug', true);
-      }
+        for (const lista in listas) {
+          ordenarListaObjetos(listas[lista as keyof ListasColectivos], 'slug', true);
+        }
 
-      //imprimirErratas(autores, años, tipos, titulo, dependencia, numeroFila);
-      numeroFila++;
+        //imprimirErratas(autores, años, tipos, titulo, dependencia, numeroFila);
+        numeroFila++;
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     flujo.on('close', () => {

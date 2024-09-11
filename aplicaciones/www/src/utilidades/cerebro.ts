@@ -1,5 +1,4 @@
 import { atom, map } from 'nanostores';
-import type { Listas } from '@/tipos';
 
 export const nombresListas = {
   publicacion: 'Publicacion',

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "astro": "^4.15.3",
+    "mapbox-gl": "^3.6.0",
     "nanostores": "^0.11.3"
   },
   "devDependencies": {

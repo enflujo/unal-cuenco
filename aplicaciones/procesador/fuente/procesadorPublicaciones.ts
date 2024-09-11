@@ -90,7 +90,7 @@ export default async () => {
 };
 
 async function procesarProduccion(): Promise<void> {
-  const archivo = './datos/base_produccion_ academica_100724.xlsx';
+  const archivo = './datos/base_produccion_ academica_anonimizado_V25_090924.xlsx';
   const flujo = await getXlsxStream({
     filePath: archivo,
     sheet: 'Producción académica (P.A.)',
@@ -110,16 +110,16 @@ async function procesarProduccion(): Promise<void> {
       const fila = raw.arr as FilaProduccionAcademica;
       const id = fila[0];
       const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
-      const resumen = fila[2].trim();
-      const años = fila[3];
-      const tipos = fila[4].trim();
-      const titulo = fila[5].trim();
-      const referencia = fila[6].trim();
-      const fuente = fila[7];
-      const dependencia = fila[8].trim();
+      const resumen = fila[2] ? fila[2].trim() : '';
+      const años = fila[3] ? fila[3] : '';
+      const tipos = fila[4] ? fila[4].trim() : '';
+      const titulo = fila[5] ? fila[5].trim() : '';
+      const referencia = fila[6] ? fila[6].trim() : '';
+      const fuente = fila[7] ? fila[7] : '';
+      const dependencia = fila[8] ? fila[8].trim() : '';
       // POR HACER: Procesar indicadores y subindicadores
-      const indicador = fila[9].trim();
-      const subindicador = fila[10];
+      const indicador = fila[9] ? fila[9].trim() : '';
+      const subindicador = fila[10] ? fila[10].trim() : '';
 
       conteoFilas++;
 
@@ -167,9 +167,9 @@ async function procesarProduccion(): Promise<void> {
 }
 
 function procesarFila(fila: string[], numeroFila: number) {
-  const tituloPublicacion = fila[5].trim();
+  const tituloPublicacion = fila[5] ? fila[5].trim() : '';
   const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
-  const subindicador = fila[10]?.trim();
+  const subindicador = fila[10] ? fila[10].trim() : '';
 
   if (!subindicador) {
     console.log(`No hay subindicador en ${numeroFila}`);
@@ -198,13 +198,13 @@ function procesarFila(fila: string[], numeroFila: number) {
   const respuesta: Publicacion = {
     id: +fila[0],
     titulo: { nombre: tituloPublicacion, slug: slugificar(tituloPublicacion) },
-    resumen: fila[2].trim(),
+    resumen: fila[2] ? fila[2].trim() : '',
     autores: autoresProcesados,
     años: { año: +fila[3], valor: fila[3] },
     tipos: { nombre: fila[4].trim(), slug: slugificar(fila[4].trim()) },
-    referencia: fila[6].trim(),
-    fuente: fila[7],
-    dependencias: { nombre: fila[8].trim(), slug: slugificar(fila[8].trim()) },
+    referencia: fila[6] ? fila[6].trim() : '',
+    fuente: fila[7] ? fila[7] : '',
+    dependencias: { nombre: fila[8] ? fila[8].trim() : '', slug: fila[8] ? slugificar(fila[8].trim()) : '' },
     indicadores: indicador,
     subindicadores: subindicadorProcesado
       ? {
