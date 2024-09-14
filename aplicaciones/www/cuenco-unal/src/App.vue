@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import Inicio from './views/VistaInicio.vue'
 </script>
 
 <template>
@@ -21,15 +20,6 @@ header {
   line-height: 1.5;
   max-height: 100vh;
 }
-
-/* nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-  position: absolute;
-  top: 0;
-} */
 
 nav a.router-link-exact-active {
   color: var(--color-text);

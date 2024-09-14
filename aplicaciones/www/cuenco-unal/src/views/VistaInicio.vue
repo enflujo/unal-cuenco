@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Mapa from '../components/Mapa.vue'
+import ComponenteMapa from '../components/ComponenteMapa.vue'
 </script>
 
 <template>
@@ -27,7 +27,7 @@ import Mapa from '../components/Mapa.vue'
         con ella, más allá de los intereses de usufructo.
       </p>
     </div>
-    <Mapa />
+    <ComponenteMapa />
   </div>
 </template>
 
