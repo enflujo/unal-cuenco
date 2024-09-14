@@ -122,16 +122,19 @@ onMounted(() => {
 })
 </script>
 
-<template ref="contenedorMapa">
-  <div></div>
+<template>
+  <div id="contenedorMapa" ref="contenedorMapa"></div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #contenedorMapa {
   position: absolute;
-  top: 0;
-  left: 30vw;
-  width: 68vw;
-  height: 100vh;
+  top: 7vw;
+  left: 40vw;
+  width: 55vw;
+  height: 80vh;
+}
+.mapboxgl-map {
+  // overflow: unset;
 }
 </style>
