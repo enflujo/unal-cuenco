@@ -8,7 +8,7 @@ defineProps<{}>()
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { onMounted, useTemplateRef, ref, type Ref } from 'vue'
 
-// PASAR A ARCHIVO
+// POR HACER: PASAR A ARCHIVO
 const datosGeo: FeatureCollection = {
   type: 'FeatureCollection',
   features: [
@@ -133,8 +133,5 @@ onMounted(() => {
   left: 40vw;
   width: 55vw;
   height: 80vh;
-}
-.mapboxgl-map {
-  // overflow: unset;
 }
 </style>
