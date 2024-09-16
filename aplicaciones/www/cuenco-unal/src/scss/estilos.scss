@@ -1,0 +1,120 @@
+@import './normalizar';
+@import './constantes';
+
+@font-face {
+  font-family: Ancizar;
+  src: url('/fuentes/AncizarSans/AncizarSans-Regular_02042016.otf');
+}
+
+/* use */
+body {
+  font-family: Ancizar, Arial, Helvetica, sans-serif;
+}
+
+#app {
+  padding: 1em 2em;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+#menu {
+  width: 80vw;
+  display: flex;
+  padding: 1em 3em;
+  position: relative;
+  z-index: 9;
+
+  .elementoMenu {
+    display: flex;
+    align-items: center;
+    background-color: var(--verdeCuenco);
+    padding: 0.5em 0.7em;
+    color: black;
+    border-radius: 5px;
+    margin: 0 0.4em 0 0;
+
+    &:hover {
+      color: var(--blanco);
+      background-color: var(--azulClaroCuenco);
+    }
+  }
+}
+
+// Página principal
+#presentacion {
+  height: 85vh;
+  overflow: auto;
+  margin-left: 4em;
+  padding-right: 1em;
+  width: 25vw;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Ocultar scroll en Chrome, Safari and Opera */
+#presentacion::-webkit-scrollbar {
+  display: none;
+}
+
+// Nodos listas
+.contenedorElementos {
+  height: fit-content;
+  // opacity: 0;
+  // overflow: hidden;
+  transition: opacity 0.35s ease-in-out;
+
+  &.abierto {
+    height: 100%;
+    opacity: 1;
+  }
+
+  li {
+    cursor: pointer;
+
+    &:hover {
+      background-color: white;
+    }
+  }
+
+  .titulo {
+    cursor: pointer;
+  }
+
+  .nombre {
+    margin: 0;
+    font-size: 0.85em;
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+
+    .linea {
+      height: 0.25rem;
+      background-color: salmon;
+    }
+
+    .conteo {
+      margin-left: 3px;
+    }
+  }
+}
+
+#contenedorListas {
+  .lista {
+    max-height: 50vh;
+    overflow: auto;
+  }
+}
