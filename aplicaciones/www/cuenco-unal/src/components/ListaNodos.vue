@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { ElementoLista, Listas } from '../tipos'
-import { nombresListas } from '../utilidades/cerebro'
+import type { ElementoLista, Listas } from '../tipos';
+import { nombresListas } from '../utilidades/cerebro';
 
 defineProps<{
-  id: keyof Listas
-  lista: ElementoLista[]
-}>()
+  id: keyof Listas;
+  lista: ElementoLista[];
+}>();
 </script>
 
 <template>

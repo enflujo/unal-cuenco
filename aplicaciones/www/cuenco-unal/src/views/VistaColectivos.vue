@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ListasColectivos from '@/components/ListasColectivos.vue'
+import ListasColectivos from '@/components/ListasColectivos.vue';
 </script>
 
 <template>

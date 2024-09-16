@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { Ref } from 'vue'
-import ListaNodos from '../components/ListaNodos.vue'
-import { Listas } from '@/tipos'
+import { onMounted, ref } from 'vue';
+import type { Ref } from 'vue';
+import ListaNodos from '../components/ListaNodos.vue';
+import { Listas } from '@/tipos';
 
-defineProps<{}>()
+defineProps<{}>();
 
-const listas: Ref<Listas | undefined> = ref()
+const listas: Ref<Listas | undefined> = ref();
 
 onMounted(async () => {
   try {
-    const datosListas = await fetch('datos/listasColectivos.json').then((res) => res.json())
-    if (datosListas) listas.value = datosListas
+    const datosListas = await fetch('datos/listasColectivos.json').then((res) => res.json());
+    if (datosListas) listas.value = datosListas;
   } catch (error) {
-    console.error('Problema descargando datos de listas de colectivos', error)
+    console.error('Problema descargando datos de listas de colectivos', error);
   }
-})
+});
 </script>
 
 <template>

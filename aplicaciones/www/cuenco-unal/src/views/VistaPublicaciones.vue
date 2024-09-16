@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ListasPublicaciones from '../components/ListasPublicaciones.vue'
+import ListasPublicaciones from '../components/ListasPublicaciones.vue';
 </script>
 
 <template>

@@ -9,5 +9,5 @@ export const nombresListas = {
   responsables: 'Responsables',
   sedes: 'Sedes',
   modalidades: 'Modalidades',
-  estados: 'Estado'
-}
+  estados: 'Estado',
+};
