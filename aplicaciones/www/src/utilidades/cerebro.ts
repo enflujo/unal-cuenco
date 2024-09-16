@@ -1,5 +1,3 @@
-import { atom, map } from 'nanostores';
-
 export const nombresListas = {
   publicacion: 'Publicacion',
   autores: 'Autores',

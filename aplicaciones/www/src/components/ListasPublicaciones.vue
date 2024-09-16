@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import type { Ref } from 'vue';
-import ListaNodos from '../components/ListaNodos.vue';
+import ListaNodos from './ListaNodos.vue';
 import { Listas } from '@/tipos';
 
 const listas: Ref<Listas | undefined> = ref();

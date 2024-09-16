@@ -3,19 +3,30 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev --host",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "check": "astro check"
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
-    "astro": "^4.15.3",
     "mapbox-gl": "^3.6.0",
-    "nanostores": "^0.11.3"
+    "pinia": "^2.1.7",
+    "vue": "^3.4.29",
+    "vue-router": "^4.3.3"
   },
   "devDependencies": {
-    "sass": "^1.78.0"
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^20.14.5",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vue/tsconfig": "^0.5.1",
+    "autoprefixer": "^10.4.20",
+    "cssnano": "^7.0.6",
+    "npm-run-all2": "^6.2.0",
+    "postcss": "^8.4.47",
+    "sass": "^1.78.0",
+    "typescript": "~5.4.0",
+    "vite": "^5.3.1",
+    "vue-tsc": "^2.0.21"
   }
 }
