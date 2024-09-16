@@ -1,20 +1,26 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import type { Ref } from 'vue'
 import ListaNodos from '../components/ListaNodos.vue'
-import listasColectivos from '../../public/datos/listasColectivos.json'
+import { Listas } from '@/tipos'
 
 defineProps<{}>()
+
+const listas: Ref<Listas | undefined> = ref()
+
+onMounted(async () => {
+  try {
+    const datosListas = await fetch('datos/listasColectivos.json').then((res) => res.json())
+    if (datosListas) listas.value = datosListas
+  } catch (error) {
+    console.error('Problema descargando datos de listas de colectivos', error)
+  }
+})
 </script>
 
 <template>
-  <div id="contenedorListas" class="todoVisible">
-    <ListaNodos id="años" :lista="listasColectivos.años" />
-    <ListaNodos id="estados" :lista="listasColectivos.estados" />
-    <ListaNodos id="responsables" :lista="listasColectivos.responsables" />
-    <ListaNodos id="sedes" :lista="listasColectivos.sedes" />
-    <ListaNodos id="dependencias" :lista="listasColectivos.dependencias" />
-    <ListaNodos id="modalidades" :lista="listasColectivos.modalidades" />
-    <ListaNodos id="indicadores" :lista="listasColectivos.indicadores" />
-    <ListaNodos id="tipos" :lista="listasColectivos.tipos" />
+  <div id="contenedorListas" class="todoVisible" v-if="listas">
+    <ListaNodos v-for="(lista, llave) in listas" :id="llave" :lista="lista" />
   </div>
 </template>
 
