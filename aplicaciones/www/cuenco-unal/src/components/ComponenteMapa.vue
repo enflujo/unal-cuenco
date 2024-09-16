@@ -6,7 +6,7 @@ import type { FeatureCollection } from 'geojson'
 defineProps<{}>()
 
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { onMounted, useTemplateRef, ref, type Ref } from 'vue'
+import { onMounted, ref, type Ref } from 'vue'
 
 // POR HACER: PASAR A ARCHIVO
 const datosGeo: FeatureCollection = {

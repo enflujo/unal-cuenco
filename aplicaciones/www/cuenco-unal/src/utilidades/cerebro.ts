@@ -1,5 +1,3 @@
-import { atom, map } from 'nanostores';
-
 export const nombresListas = {
   publicacion: 'Publicacion',
   autores: 'Autores',
@@ -11,5 +9,5 @@ export const nombresListas = {
   responsables: 'Responsables',
   sedes: 'Sedes',
   modalidades: 'Modalidades',
-  estados: 'Estado',
-};
+  estados: 'Estado'
+}
