@@ -1,9 +1,7 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-//import { emojify } from 'node-emoji';
-import { separarPartes, ordenarListaObjetos, guardarJSON, logAviso, chulo, procesarLista } from './ayudas';
+import { separarPartes, ordenarListaObjetos, guardarJSON, procesarLista } from './ayudas';
 import {
-  ElementoLista,
   ListasPublicaciones,
   CamposPA,
   DefinicionSimple,
@@ -12,11 +10,6 @@ import {
   Subindicador,
   ElementoListaIndicadores,
 } from './tipos';
-import { procesarIndicadores, procesarSubindicadores } from './indicadores';
-
-const archivoPA = './datos/base_produccion_ academica_100724.xlsx';
-const hojaPA = 'Diccionario de Indicadores';
-const hojaSubindicadoresCol = 'Contenidos P.A';
 
 type FilaProduccionAcademica = [
   id: number,
@@ -42,9 +35,6 @@ const campos: CamposPA = [
   { llave: 'subindicadores', indice: 10 },
 ];
 
-const publicaciones: Publicacion[] = [];
-const indicadoresPA: Indicador[] = [];
-const subindicadoresPA: Subindicador[] = [];
 let indicadoresProcesados: Indicador[] = [];
 let subindicadoresProcesados: Subindicador[] = [];
 
@@ -57,39 +47,7 @@ const listas: ListasPublicaciones = {
   subindicadores: [],
 };
 
-export default async () => {
-  indicadoresProcesados = await procesarIndicadores(archivoPA, hojaPA, indicadoresPA);
-  subindicadoresProcesados = await procesarSubindicadores(
-    archivoPA,
-    hojaSubindicadoresCol,
-    subindicadoresPA,
-    indicadoresProcesados
-  );
-  await procesarProduccion();
-
-  subindicadoresProcesados.forEach((subI) => {
-    const indicadorId = subI.indicadorMadre;
-    const indicadorI = indicadoresProcesados.findIndex((obj) => obj.id === indicadorId);
-
-    if (indicadorI >= 0) {
-      if (!indicadoresProcesados[indicadorI].subindicadores) {
-        indicadoresProcesados[indicadorI].subindicadores = [];
-      }
-
-      indicadoresProcesados[indicadorI].subindicadores?.push(subI.id);
-    } else {
-      console.log(`No existe el indicador con ID ${subI.indicadorMadre}!`);
-    }
-  });
-
-  guardarJSON(indicadoresProcesados, `indicadores-produccionAcademica`);
-
-  console.log(chulo, logAviso('Procesados indicadores'));
-  guardarJSON(subindicadoresProcesados, `subIndicadores-produccionAcademica`);
-  console.log(chulo, logAviso('Procesados subindicadores'));
-};
-
-async function procesarProduccion(): Promise<void> {
+export default async (): Promise<void> => {
   const archivo = './datos/base_produccion_ academica_anonimizado_V25_090924.xlsx';
   const flujo = await getXlsxStream({
     filePath: archivo,
@@ -100,12 +58,10 @@ async function procesarProduccion(): Promise<void> {
 
   let numeroFila = 2;
   let datosEmpiezanEnFila = 0;
-  let filasProcesadas = 0;
-  let conteoFilas = -datosEmpiezanEnFila;
-  let totalFilas = Infinity;
-  let filasPreprocesadas = false;
 
   return new Promise((resolver) => {
+    const publicaciones: Publicacion[] = [];
+
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaProduccionAcademica;
       const id = fila[0];
@@ -121,12 +77,9 @@ async function procesarProduccion(): Promise<void> {
       const indicador = fila[9] ? fila[9].trim() : '';
       const subindicador = fila[10] ? fila[10].trim() : '';
 
-      conteoFilas++;
+      const publicacion = procesarFila(raw.arr, numeroFila);
+      publicaciones.push(publicacion);
 
-      if (numeroFila > datosEmpiezanEnFila) {
-        procesarFila(raw.arr, numeroFila);
-        filasProcesadas++;
-      }
       // Llenar listas
       procesarLista(dependencia, listas.dependencias);
       procesarLista(tipos, listas.tipos);
@@ -148,12 +101,7 @@ async function procesarProduccion(): Promise<void> {
 
     flujo.on('close', () => {
       // Aquí ya terminó de leer toda la tabla
-      totalFilas = conteoFilas;
-
-      if (!filasPreprocesadas && totalFilas === filasProcesadas) {
-        filasPreprocesadas = true;
-        construirRelacionesDePublicaciones();
-      }
+      construirRelacionesDePublicaciones(publicaciones);
 
       guardarJSON(publicaciones, 'publicaciones');
       guardarJSON(listas, 'listas');
@@ -164,16 +112,15 @@ async function procesarProduccion(): Promise<void> {
       throw new Error(JSON.stringify(error, null, 2));
     });
   });
-}
+};
 
-function procesarFila(fila: string[], numeroFila: number) {
+function procesarFila(fila: FilaProduccionAcademica, numeroFila: number): Publicacion {
   const tituloPublicacion = fila[5] ? fila[5].trim() : '';
   const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
   const subindicador = fila[10] ? fila[10].trim() : '';
 
   if (!subindicador) {
     console.log(`No hay subindicador en ${numeroFila}`);
-    return;
   }
 
   const subindicadorProcesado = subindicadoresProcesados.find((obj) => {
@@ -221,8 +168,7 @@ function procesarFila(fila: string[], numeroFila: number) {
       const validacion = validarValorMultiple(fila[campo.indice], listas[campo.llave], campo.llave);
       if (validacion) respuesta[campo.llave] = validacion;
   }); */
-
-  publicaciones.push(respuesta);
+  return respuesta;
 }
 
 function procesarListaIndicadores(indicador: string) {
@@ -281,7 +227,7 @@ function imprimirErratas(
 }
 
 // Ver haciendocaminos procesador.ts 240
-function construirRelacionesDePublicaciones() {
+function construirRelacionesDePublicaciones(publicaciones: Publicacion[]) {
   for (const lista in listas) {
     ordenarListaObjetos(listas[lista as keyof ListasPublicaciones], 'slug', true);
   }
