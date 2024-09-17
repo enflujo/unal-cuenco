@@ -22,7 +22,7 @@ export interface Indicador {
   id: number;
   nombre: string;
   slug: string;
-  descripcion?: string;
+  definicion?: string;
   subindicadores?: number[];
 }
 
