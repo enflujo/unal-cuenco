@@ -1,18 +1,16 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
-import { separarPartes, ordenarListaObjetos, guardarJSON, logAviso, chulo, procesarLista } from './ayudas';
-import {
-  ElementoLista,
-  ListasColectivos,
-  DefinicionSimple,
-  Colectivo,
-  Indicador,
-  Subindicador,
-  ElementoListaIndicadores,
+import { ordenarListaObjetos, guardarJSON, logAviso, chulo, procesarLista } from './ayudas';
+import type {
   CamposColectivos,
-} from './tipos';
-import { procesarIndicadores, procesarSubindicadores } from './indicadores';
+  Colectivo,
+  DefinicionSimple,
+  ElementoListaIndicadores,
+  Indicador,
+  ListasColectivos,
+  Subindicador,
+} from '@/tipos/compartidos';
 
 const archivoColectivos = './datos/base_colectivos_y_ambitos_anonimizado20240902.xlsx';
 const hojaCol = 'Diccionario Indicadores';
@@ -66,8 +64,6 @@ const listas: ListasColectivos = {
 };
 
 export default async () => {
-  indicadoresProcesados = await procesarIndicadores(archivoColectivos, hojaCol, indicadoresCol);
-
   /*   subindicadoresProcesados = await procesarSubindicadores(
     archivoColectivos,
     hojaSubindicadoresCol,

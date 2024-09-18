@@ -14,8 +14,6 @@ export interface Indicador {
   subindicadores?: [];
 }
 
-export type DefinicionSimple = { nombre: string; slug: string };
-
 // Listas Producción Académica
 export type Listas = {
   autores?: ElementoLista[];
