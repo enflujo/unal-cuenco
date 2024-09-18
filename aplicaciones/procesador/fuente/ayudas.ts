@@ -1,8 +1,8 @@
 import { writeFileSync } from 'fs';
 import colores from 'cli-color';
 import { emojify } from 'node-emoji';
-import { ElementoLista } from 'tipos';
 import slugificar from 'slug';
+import type { ElementoLista } from '@/tipos/compartidos';
 
 export const logError = colores.red.bold;
 export const logAviso = colores.bold.xterm(214);
@@ -16,10 +16,19 @@ export const cadena = emojify(':link:');
 export const conector = emojify(':electric_plug:');
 export const gorila = emojify(':gorilla:');
 export const chulo = emojify(':white_check_mark:');
+export const alerta = emojify(':warning:');
 
 export const guardarJSON = (json: any, nombre: string) => {
   writeFileSync(`../www/estaticos/datos/${nombre}.json`, JSON.stringify(json));
 };
+
+/**
+ * Limpia un texto para borrar espacio al principio y final, le quita cortes de línea como `\n`.
+ *
+ * @param texto Texto que se quiere limpiar
+ * @returns texto procesado
+ */
+export const limpiarTextoSimple = (texto: string) => texto.trim().replace(/[\n\r\s\t]+/g, ' ');
 
 export function procesarLista(valor: string, lista: ElementoLista[]) {
   if (!valor) return;
