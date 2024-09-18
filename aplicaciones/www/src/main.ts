@@ -3,12 +3,12 @@ import './scss/estilos.scss';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import App from './App.vue';
-import router from './router';
+import Aplicacion from './Aplicacion.vue';
+import rutas from './rutas';
 
-const app = createApp(App);
+const app = createApp(Aplicacion);
 
 app.use(createPinia());
-app.use(router);
+app.use(rutas);
 
-app.mount('#app');
+app.mount('#aplicacion');
