@@ -1,6 +1,7 @@
 import slugificar from 'slug';
+import type { DefinicionSimple, ElementoLista } from '@/tipos/compartidos';
+
 //import { separarPartes } from './ayudas.js';
-import { DefinicionSimple, ElementoLista } from 'tipos.js';
 
 export function procesarNombresAutores(
   apellidoNombreSinProcesar: string,
