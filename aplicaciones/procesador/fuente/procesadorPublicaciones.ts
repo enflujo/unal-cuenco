@@ -1,15 +1,15 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 import { separarPartes, ordenarListaObjetos, guardarJSON, procesarLista } from './ayudas';
-import {
-  ListasPublicaciones,
+import type {
   CamposPA,
   DefinicionSimple,
-  Publicacion,
-  Indicador,
-  Subindicador,
   ElementoListaIndicadores,
-} from './tipos';
+  Indicador,
+  ListasPublicaciones,
+  Publicacion,
+  Subindicador,
+} from '@/tipos/compartidos';
 
 type FilaProduccionAcademica = [
   id: number,

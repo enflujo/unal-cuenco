@@ -2,16 +2,15 @@ import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
 import { ordenarListaObjetos, guardarJSON, logAviso, chulo, procesarLista } from './ayudas';
-import {
-  ElementoLista,
-  ListasColectivos,
-  DefinicionSimple,
-  Colectivo,
-  Indicador,
-  Subindicador,
-  ElementoListaIndicadores,
+import type {
   CamposColectivos,
-} from './tipos';
+  Colectivo,
+  DefinicionSimple,
+  ElementoListaIndicadores,
+  Indicador,
+  ListasColectivos,
+  Subindicador,
+} from '@/tipos/compartidos';
 
 const archivoColectivos = './datos/base_colectivos_y_ambitos_anonimizado20240902.xlsx';
 const hojaCol = 'Diccionario Indicadores';

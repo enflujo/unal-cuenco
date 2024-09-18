@@ -1,6 +1,6 @@
 import slugificar from 'slug';
-import { Indicador, Subindicador } from 'tipos.js';
 import { getXlsxStream } from 'xlstream';
+import type { Indicador, Subindicador } from '@/tipos/compartidos';
 
 type FilaIdicador = [id: string, nombre: string, descripcion: string, subindicadores?: Subindicador[]];
 type FilaSubindicador = [id: string, nombre: string, idIndicadorMadre: string];
