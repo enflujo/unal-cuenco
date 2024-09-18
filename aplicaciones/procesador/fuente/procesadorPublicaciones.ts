@@ -1,6 +1,6 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import { separarPartes, ordenarListaObjetos, guardarJSON, procesarLista } from './ayudas';
+import { separarPartes, ordenarListaObjetos, guardarJSON, procesarLista, limpiarTextoSimple } from './ayudas';
 import type {
   CamposPA,
   DefinicionSimple,
@@ -10,21 +10,7 @@ import type {
   Publicacion,
   Subindicador,
 } from '@/tipos/compartidos';
-
-type FilaProduccionAcademica = [
-  id: number,
-  /** Nombre de los autores separados por ; y apellido nombre separado por , */
-  autores: string | undefined,
-  resumen: string,
-  años: string,
-  tipos: string,
-  titulo: string,
-  referencia: string,
-  fuente: string,
-  dependencia: string,
-  indicador: string,
-  subindicador: string,
-];
+import type { Errata, FilaProduccionAcademica } from './tipos';
 
 const campos: CamposPA = [
   { llave: 'autores', indice: 1 },
@@ -35,9 +21,6 @@ const campos: CamposPA = [
   { llave: 'subindicadores', indice: 10 },
 ];
 
-let indicadoresProcesados: Indicador[] = [];
-let subindicadoresProcesados: Subindicador[] = [];
-
 const listas: ListasPublicaciones = {
   autores: [],
   años: [],
@@ -47,7 +30,10 @@ const listas: ListasPublicaciones = {
   subindicadores: [],
 };
 
-export default async (): Promise<void> => {
+export default async (
+  indicadores: Indicador[],
+  subindicadores: Subindicador[]
+): Promise<{ datos: Publicacion[]; errata: Errata[] }> => {
   const archivo = './datos/base_produccion_ academica_anonimizado_V25_090924.xlsx';
   const flujo = await getXlsxStream({
     filePath: archivo,
@@ -55,9 +41,8 @@ export default async (): Promise<void> => {
     withHeader: true,
     ignoreEmpty: true,
   });
-
+  const errata: Errata[] = [];
   let numeroFila = 2;
-  let datosEmpiezanEnFila = 0;
 
   return new Promise((resolver) => {
     const publicaciones: Publicacion[] = [];
@@ -105,97 +90,97 @@ export default async (): Promise<void> => {
 
       guardarJSON(publicaciones, 'publicaciones');
       guardarJSON(listas, 'listas');
-      resolver();
+      resolver({ datos: publicaciones, errata });
     });
 
     flujo.on('error', (error) => {
       throw new Error(JSON.stringify(error, null, 2));
     });
   });
-};
 
-function procesarFila(fila: FilaProduccionAcademica, numeroFila: number): Publicacion {
-  const tituloPublicacion = fila[5] ? fila[5].trim() : '';
-  const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
-  const subindicador = fila[10] ? fila[10].trim() : '';
+  function procesarFila(fila: FilaProduccionAcademica, numeroFila: number): Publicacion {
+    const tituloPublicacion = fila[5] ? limpiarTextoSimple(fila[5]) : '';
+    const autores = fila[1]?.includes(';') ? separarPartes(fila[1], ';') : [fila[1]?.trim()];
+    const subindicador = fila[10] ? fila[10].trim() : '';
 
-  if (!subindicador) {
-    console.log(`No hay subindicador en ${numeroFila}`);
+    if (!subindicador) {
+      console.log(`No hay subindicador en ${numeroFila}`);
+    }
+
+    const subindicadorProcesado = subindicadores.find((obj) => {
+      return obj.slug === slugificar(subindicador);
+    });
+
+    if (!subindicadorProcesado) {
+      console.log(`No existe el subindicador ${subindicador} en la lista de subindicadores procesados`);
+    }
+
+    // Convertir autores en tipo DefinicionSimple
+    const autoresProcesados = autores.map((autor) => {
+      return { nombre: autor ? autor : '', slug: autor ? slugificar(autor) : '' };
+    });
+
+    const indicador = indicadores.find((obj) => {
+      return slugificar(fila[9].trim()) === obj.slug;
+    });
+
+    // En la tabla todas las publicaciones parecen tener subindicador pero muchos son el mismo indicador repetido.
+    // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
+    const respuesta: Publicacion = {
+      id: +fila[0],
+      titulo: { nombre: tituloPublicacion, slug: slugificar(tituloPublicacion) },
+      resumen: fila[2] ? fila[2].trim() : '',
+      autores: autoresProcesados,
+      años: { año: +fila[3], valor: fila[3] },
+      tipos: { nombre: fila[4].trim(), slug: slugificar(fila[4].trim()) },
+      referencia: fila[6] ? fila[6].trim() : '',
+      fuente: fila[7] ? fila[7] : '',
+      dependencias: { nombre: fila[8] ? fila[8].trim() : '', slug: fila[8] ? slugificar(fila[8].trim()) : '' },
+      indicadores: indicador,
+      subindicadores: subindicadorProcesado
+        ? {
+            id: subindicadorProcesado.id,
+            nombre: subindicadorProcesado.nombre,
+            slug: subindicadorProcesado.slug,
+            indicadorMadre: subindicadorProcesado.indicadorMadre,
+          }
+        : undefined,
+    };
+
+    // ¿Esto qué hace?
+    /*  campos.forEach((campo) => {
+        const validacion = validarValorMultiple(fila[campo.indice], listas[campo.llave], campo.llave);
+        if (validacion) respuesta[campo.llave] = validacion;
+    }); */
+    return respuesta;
   }
 
-  const subindicadorProcesado = subindicadoresProcesados.find((obj) => {
-    return obj.slug === slugificar(subindicador);
-  });
+  function procesarListaIndicadores(indicador: string) {
+    const slug = indicador ? slugificar(indicador) : '';
+    const existe = listas.indicadores.find((obj) => obj.slug === slug);
 
-  if (!subindicadorProcesado) {
-    console.log(`No existe el subindicador ${subindicador} en la lista de subindicadores procesados`);
-  }
+    if (!indicadores.length) {
+      console.log('No hay indicadores procesados');
+    }
+    const existeEnIndicadoresProcesados = indicadores.find((obj) => obj.slug === slug);
 
-  // Convertir autores en tipo DefinicionSimple
-  const autoresProcesados = autores.map((autor) => {
-    return { nombre: autor, slug: autor ? slugificar(autor) : '' };
-  });
-
-  const indicador = indicadoresProcesados.find((obj) => {
-    return slugificar(fila[9].trim()) === obj.slug;
-  });
-
-  // En la tabla todas las publicaciones parecen tener subindicador pero muchos son el mismo indicador repetido.
-  // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
-  const respuesta: Publicacion = {
-    id: +fila[0],
-    titulo: { nombre: tituloPublicacion, slug: slugificar(tituloPublicacion) },
-    resumen: fila[2] ? fila[2].trim() : '',
-    autores: autoresProcesados,
-    años: { año: +fila[3], valor: fila[3] },
-    tipos: { nombre: fila[4].trim(), slug: slugificar(fila[4].trim()) },
-    referencia: fila[6] ? fila[6].trim() : '',
-    fuente: fila[7] ? fila[7] : '',
-    dependencias: { nombre: fila[8] ? fila[8].trim() : '', slug: fila[8] ? slugificar(fila[8].trim()) : '' },
-    indicadores: indicador,
-    subindicadores: subindicadorProcesado
-      ? {
-          id: subindicadorProcesado.id,
-          nombre: subindicadorProcesado.nombre,
-          slug: subindicadorProcesado.slug,
-          indicadorMadre: subindicadorProcesado.indicadorMadre,
-        }
-      : undefined,
-  };
-
-  // ¿Esto qué hace?
-  /*  campos.forEach((campo) => {
-      const validacion = validarValorMultiple(fila[campo.indice], listas[campo.llave], campo.llave);
-      if (validacion) respuesta[campo.llave] = validacion;
-  }); */
-  return respuesta;
-}
-
-function procesarListaIndicadores(indicador: string) {
-  const slug = indicador ? slugificar(indicador) : '';
-  const existe = listas.indicadores.find((obj) => obj.slug === slug);
-
-  if (!indicadoresProcesados.length) {
-    console.log('No hay indicadores procesados');
-  }
-  const existeEnIndicadoresProcesados = indicadoresProcesados.find((obj) => obj.slug === slug);
-
-  if (existeEnIndicadoresProcesados) {
-    const nombre = existeEnIndicadoresProcesados.nombre;
-    if (!existe) {
-      const objeto: ElementoListaIndicadores = {
-        nombre: nombre,
-        conteo: 1,
-        slug: slug,
-        relaciones: [],
-        publicaciones: [],
-      };
-      listas.indicadores.push(objeto);
-    } else {
-      existe.conteo++;
+    if (existeEnIndicadoresProcesados) {
+      const nombre = existeEnIndicadoresProcesados.nombre;
+      if (!existe) {
+        const objeto: ElementoListaIndicadores = {
+          nombre: nombre,
+          conteo: 1,
+          slug: slug,
+          relaciones: [],
+          publicaciones: [],
+        };
+        listas.indicadores.push(objeto);
+      } else {
+        existe.conteo++;
+      }
     }
   }
-}
+};
 
 function imprimirErratas(
   autores: (string | undefined)[],

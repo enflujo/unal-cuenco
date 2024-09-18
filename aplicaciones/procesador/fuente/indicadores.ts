@@ -1,13 +1,15 @@
 import slugificar from 'slug';
 import { getXlsxStream } from 'xlstream';
 import type { Indicador, Subindicador } from '@/tipos/compartidos';
+import type { Errata } from './tipos';
+import { limpiarTextoSimple } from './ayudas';
 
 type FilaIdicador = [id: string, nombre: string, descripcion: string, subindicadores?: Subindicador[]];
 type FilaSubindicador = [id: string, nombre: string, idIndicadorMadre: string];
 
 const archivo = './datos/base_produccion_ academica_anonimizado_V25_090924.xlsx';
 
-export async function procesarIndicadores(): Promise<Indicador[]> {
+export async function procesarIndicadores(): Promise<{ datos: Indicador[]; errata: Errata[] }> {
   const flujo = await getXlsxStream({
     filePath: archivo,
     sheet: 'Diccionario de Indicadores',
@@ -19,12 +21,13 @@ export async function procesarIndicadores(): Promise<Indicador[]> {
     let numeroFila = 1;
     let contadorIds = 1;
     const lista: Indicador[] = [];
+    const errata: Errata[] = [];
 
     flujo.on('data', async ({ raw }) => {
       const [nombre, definicion] = raw.arr as FilaIdicador;
 
       if (nombre) {
-        const nombreProcesado = nombre.trim().replace(/[\n\r\s\t]+/g, ' ');
+        const nombreProcesado = limpiarTextoSimple(nombre);
         const slug = slugificar(nombreProcesado);
         const existe = lista.find((elemento) => elemento.slug === slug);
 
@@ -38,7 +41,10 @@ export async function procesarIndicadores(): Promise<Indicador[]> {
 
           contadorIds++;
         } else {
-          console.log(`En fila ${numeroFila} hay indicador con nombre ${nombre} que ya existe con ID ${existe.id}`);
+          errata.push({
+            fila: numeroFila,
+            error: `Hay indicador con nombre ${nombre} que ya existe con ID ${existe.id}`,
+          });
         }
       }
 
@@ -46,7 +52,7 @@ export async function procesarIndicadores(): Promise<Indicador[]> {
     });
 
     flujo.on('close', () => {
-      resolver(lista);
+      resolver({ datos: lista, errata });
     });
 
     flujo.on('error', (error) => {
@@ -55,7 +61,9 @@ export async function procesarIndicadores(): Promise<Indicador[]> {
   });
 }
 
-export async function procesarSubindicadores(indicadores: Indicador[]): Promise<Subindicador[]> {
+export async function procesarSubindicadores(
+  indicadores: Indicador[]
+): Promise<{ datos: Subindicador[]; errata: Errata[] }> {
   const flujo = await getXlsxStream({
     filePath: archivo,
     sheet: 'Contenidos P.A',
@@ -67,6 +75,7 @@ export async function procesarSubindicadores(indicadores: Indicador[]): Promise<
     let numeroFila = 1;
     let contadorIds = 1;
     const lista: Subindicador[] = [];
+    const errata: Errata[] = [];
 
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaSubindicador;
@@ -76,7 +85,7 @@ export async function procesarSubindicadores(indicadores: Indicador[]): Promise<
         const slug = slugificar(nombre);
 
         if (!fila[0] || !fila[0].length) {
-          console.log(`En la fila ${numeroFila} no hay indicador`);
+          errata.push({ fila: numeroFila, error: 'No hay indicador' });
           return;
         }
 
@@ -100,12 +109,13 @@ export async function procesarSubindicadores(indicadores: Indicador[]): Promise<
 
             lista.push(respuesta);
           } else {
-            console.log(
-              `El subindicador ${nombre} con indicador ${existeIndicador.nombre} en fila ${numeroFila} ya existe con nombre ${existeSubIndicador.nombre} e indicador ${indicadores.find((obj) => obj.id === existeSubIndicador.indicadorMadre)?.nombre}`
-            );
+            errata.push({
+              fila: numeroFila,
+              error: `El subindicador ${nombre} con indicador ${existeIndicador.nombre} en fila ${numeroFila} ya existe con nombre ${existeSubIndicador.nombre} e indicador ${indicadores.find((obj) => obj.id === existeSubIndicador.indicadorMadre)?.nombre}`,
+            });
           }
         } else {
-          console.log(`No se puede encontrar el indicador ${indicadorMadre}`);
+          errata.push({ fila: numeroFila, error: `No se puede encontrar el indicador ${indicadorMadre}` });
         }
       }
 
@@ -124,11 +134,11 @@ export async function procesarSubindicadores(indicadores: Indicador[]): Promise<
 
           indicadores[indicadorI].subindicadores?.push(subI.id);
         } else {
-          console.log(`No existe el indicador con ID ${subI.indicadorMadre}!`);
+          errata.push({ fila: 0, error: `No existe el indicador con ID ${subI.indicadorMadre}!` });
         }
       });
 
-      resolver(lista);
+      resolver({ datos: lista, errata });
     });
 
     flujo.on('error', (error) => {
