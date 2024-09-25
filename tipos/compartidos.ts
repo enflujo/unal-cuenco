@@ -74,7 +74,7 @@ export type Publicacion = {
   titulo: DefinicionSimple;
   resumen?: string;
   autores?: DefinicionSimple[];
-  años?: Año;
+  años?: number;
   tipos?: DefinicionSimple;
   referencia?: string;
   fuente?: string;

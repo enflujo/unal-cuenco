@@ -54,3 +54,6 @@ export function separarPartes(entrada: string, separador?: string) {
 export function mensajeExito(mensaje: string) {
   console.log(chulo, logAviso(mensaje));
 }
+
+export const esNumero = (valor: string | number): boolean => !isNaN(parseInt(`${valor}`));
+export const esFecha = (valor: string) => !isNaN(new Date(valor).getTime());

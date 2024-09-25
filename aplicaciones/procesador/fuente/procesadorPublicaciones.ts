@@ -1,6 +1,6 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import { separarPartes, ordenarListaObjetos, guardarJSON, limpiarTextoSimple } from './ayudas';
+import { separarPartes, ordenarListaObjetos, guardarJSON, limpiarTextoSimple, esNumero } from './ayudas';
 import type {
   CamposPA,
   DefinicionSimple,
@@ -50,35 +50,35 @@ export default async (
 
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaProduccionAcademica;
-      // const resumen = fila[2] ? fila[2].trim() : '';
-      // const titulo = fila[5] ? fila[5].trim() : '';
-      // const referencia = fila[6] ? fila[6].trim() : '';
-      // const fuente = fila[7] ? fila[7] : '';
-      publicaciones.push(procesarFila(raw.arr, numeroFila));
+      const publicacion = procesarFila(raw.arr, numeroFila);
 
-      // Llenar listas
-      procesarLista(fila[8], listas.dependencias);
-      procesarLista(fila[4], listas.tipos);
-      procesarLista(fila[3], listas.años);
-      procesarLista(fila[10], listas.subindicadores);
-      procesarListaIndicadores(fila[9]);
+      if (publicacion) {
+        publicaciones.push(publicacion);
+        // Llenar listas
+        procesarLista(fila[8], listas.dependencias);
+        procesarLista(fila[4], listas.tipos);
+        procesarLista(fila[3], listas.años);
+        procesarLista(fila[10], listas.subindicadores);
+        procesarListaIndicadores(fila[9]);
 
-      if (fila[1]) {
-        const autores = fila[1].includes(';') ? separarPartes(fila[1], ';') : [fila[1].trim()];
-        autores.forEach((autor) => {
-          if (autor) {
-            procesarLista(autor, listas.autores);
-          } else {
-            errata.push({
-              fila: numeroFila,
-              error: `No hay autor en la parte: ${autor} dentro del campo autores ${fila[1]}`,
-            });
-          }
-        });
-      }
+        if (fila[1]) {
+          const autores = fila[1].includes(';') ? separarPartes(fila[1], ';') : [fila[1].trim()];
 
-      for (const lista in listas) {
-        ordenarListaObjetos(listas[lista as keyof ListasPublicaciones], 'slug', true);
+          autores.forEach((autor) => {
+            if (autor) {
+              procesarLista(autor, listas.autores);
+            } else {
+              errata.push({
+                fila: numeroFila,
+                error: `No hay autor en la parte: ${autor} dentro del campo autores ${fila[1]}`,
+              });
+            }
+          });
+        }
+
+        for (const lista in listas) {
+          ordenarListaObjetos(listas[lista as keyof ListasPublicaciones], 'slug', true);
+        }
       }
 
       numeroFila++;
@@ -97,9 +97,23 @@ export default async (
     });
   });
 
-  function procesarFila(fila: FilaProduccionAcademica, numeroFila: number): Publicacion {
-    const tituloPublicacion = fila[5] ? limpiarTextoSimple(fila[5]) : '';
-    const autores: DefinicionSimple[] = [];
+  function procesarFila(fila: FilaProduccionAcademica, numeroFila: number): Publicacion | undefined {
+    if (!fila[0] || !esNumero(fila[0])) {
+      errata.push({ fila: numeroFila, error: `La fila no tiene ID o no es un número` });
+      return;
+    }
+
+    if (!fila[5]) {
+      errata.push({
+        fila: numeroFila,
+        error: `La fila no tiene titulo de publicación, el valor de la celda es ${fila[5]}`,
+      });
+
+      return;
+    }
+
+    const tituloPublicacion = limpiarTextoSimple(fila[5]);
+
     const subindicador = fila[10] ? fila[10].trim() : '';
 
     if (!subindicador) {
@@ -114,6 +128,8 @@ export default async (
       console.log(`No existe el subindicador ${subindicador} en la lista de subindicadores procesados`);
     }
 
+    const autores: DefinicionSimple[] = [];
+
     if (fila[1]) {
       const partes = fila[1].includes(';') ? separarPartes(fila[1], ';') : [fila[1].trim()];
       // Convertir autores en tipo DefinicionSimple
@@ -122,9 +138,21 @@ export default async (
       });
     }
 
-    const indicador = indicadores.find((obj) => {
-      return slugificar(fila[9].trim()) === obj.slug;
-    });
+    const indicador = indicadores.find((obj) => slugificar(fila[9].trim()) === obj.slug);
+
+    let años: number | undefined;
+
+    if (fila[3] && esNumero(fila[3])) {
+      años = +fila[3];
+    } else {
+      // Sólo registrar errata si la celda de fecha no tiene nada o es distinto a las convenciones que se usan para indicar que no hay fecha.
+      if (fila[3] !== '(s.f)') {
+        errata.push({
+          fila: numeroFila,
+          error: `No hay fecha para la publicación, el valor en la celda es: ${fila[3]}`,
+        });
+      }
+    }
 
     // En la tabla todas las publicaciones parecen tener subindicador pero muchos son el mismo indicador repetido.
     // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
@@ -133,7 +161,7 @@ export default async (
       titulo: { nombre: tituloPublicacion, slug: slugificar(tituloPublicacion) },
       resumen: fila[2] ? fila[2].trim() : '',
       autores,
-      años: { año: +fila[3], valor: fila[3] },
+      años,
       tipos: { nombre: fila[4].trim(), slug: slugificar(fila[4].trim()) },
       referencia: fila[6] ? fila[6].trim() : '',
       fuente: fila[7] ? fila[7] : '',
