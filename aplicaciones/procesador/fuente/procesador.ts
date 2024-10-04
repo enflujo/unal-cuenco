@@ -23,7 +23,9 @@ function guardar(datos: any, errata: Errata[], nombre: string, nombreErrata = `e
     guardarJSON(datos, nombre);
     console.log(
       alerta,
-      logNaranjaPulso(`Procesados ${nombre} (con ${errata.length} errores, ver archivo: ${nombreErrata}.json)`)
+      logNaranjaPulso(
+        `Procesados ${nombre} (con ${errata.length} error${errata.length > 1 ? 'es' : ''}, ver archivo: ${nombreErrata}.json)`
+      )
     );
     guardarJSON(errata, nombreErrata);
   } else {
