@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import type { ElementoLista, Listas } from '../tipos';
-import { nombresListas } from '../utilidades/cerebro';
+import type { ElementoLista, LlavesColectivos, LlavesPA } from '@/tipos/compartidos';
+import { nombresListas } from '@/utilidades/cerebro';
 
-defineProps<{
-  id: keyof Listas;
+interface Esquema {
+  id: LlavesPA | LlavesColectivos;
   lista: ElementoLista[];
-}>();
+}
+
+defineProps<Esquema>();
 </script>
 
 <template>
-  <section id="{id}" class="lista">
+  <section :id="id" class="lista">
     <h2 class="titulo">{{ nombresListas[id] }}</h2>
+
     <ul class="contenedorElementos" :class="id">
       <li
         v-for="(elemento, i) in lista"
@@ -22,8 +25,9 @@ defineProps<{
         :data-proyectos="elemento.publicaciones"
       >
         <h3 class="nombre">{{ elemento.nombre }}</h3>
+
         <div class="barra">
-          <span class="linea" :style="'width: ' + elemento.conteo + '%'"></span>
+          <span class="linea" :style="`width:${elemento.conteo}%`"></span>
           <span class="conteo">{{ elemento.conteo }}</span>
         </div>
       </li>
@@ -31,4 +35,8 @@ defineProps<{
   </section>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.lista {
+  padding: 0 1em 1em 1em;
+}
+</style>

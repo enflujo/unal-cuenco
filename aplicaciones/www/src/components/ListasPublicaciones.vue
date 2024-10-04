@@ -2,20 +2,20 @@
 import { onMounted, ref } from 'vue';
 import type { Ref } from 'vue';
 import ListaNodos from './ListaNodos.vue';
-import { Listas } from '@/tipos';
+import { pedirDatos } from '@/utilidades/ayudas';
+import { ListasPublicaciones } from '@/tipos/compartidos';
 
-const listas: Ref<Listas | undefined> = ref();
+const listas: Ref<ListasPublicaciones | undefined> = ref();
 
 onMounted(async () => {
   try {
-    const datosListas = await fetch('datos/listas.json').then((res) => res.json());
+    const datosListas = await pedirDatos<ListasPublicaciones>('datos/listas.json');
+
     if (datosListas) listas.value = datosListas;
   } catch (error) {
     console.error('Problema descargando datos de listas de publicaciones', error);
   }
 });
-
-defineProps<{}>();
 </script>
 
 <template>
@@ -24,4 +24,9 @@ defineProps<{}>();
   </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+#contenedorListas {
+  display: flex;
+  flex-wrap: wrap;
+}
+</style>
