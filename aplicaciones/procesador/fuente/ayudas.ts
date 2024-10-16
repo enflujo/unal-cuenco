@@ -1,8 +1,6 @@
 import { writeFileSync } from 'fs';
 import colores from 'cli-color';
 import { emojify } from 'node-emoji';
-import slugificar from 'slug';
-import type { ElementoLista } from '@/tipos/compartidos';
 
 export const logError = colores.red.bold;
 export const logAviso = colores.bold.xterm(214);
@@ -30,28 +28,6 @@ export const guardarJSON = (json: any, nombre: string) => {
  */
 export const limpiarTextoSimple = (texto: string) => texto.trim().replace(/[\n\r\s\t]+/g, ' ');
 
-export function procesarLista(valor: string, lista: ElementoLista[]) {
-  if (!valor) return;
-  const slug = valor ? slugificar(`${valor}`) : '';
-  const existe = lista.find((obj) => obj.slug === slug);
-  if (!valor || valor === 'No aplica' || valor === 'undefined' || valor === 'Sin Información' || valor === '(s.f)')
-    return;
-  const nombre = `${valor}`.trim();
-
-  if (!existe) {
-    const objeto: ElementoLista = {
-      nombre: nombre,
-      conteo: 1,
-      slug: slug,
-      relaciones: [],
-      publicaciones: [],
-    };
-    lista.push(objeto);
-  } else {
-    existe.conteo++;
-  }
-}
-
 export function ordenarListaObjetos(lista: any[], llave: string, descendente = false) {
   lista.sort((a, b) => {
     if (a[llave] < b[llave]) return descendente ? -1 : 1;
@@ -61,10 +37,10 @@ export function ordenarListaObjetos(lista: any[], llave: string, descendente = f
 }
 
 export const normalizar = (texto: string): string => {
-  return texto;
-  /* .toLocaleLowerCase()
+  return texto
+    .toLocaleLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, ''); */
+    .replace(/[\u0300-\u036f]/g, '');
 };
 
 export const enMinusculas = (texto: string) => texto === texto.toLowerCase();
@@ -78,3 +54,6 @@ export function separarPartes(entrada: string, separador?: string) {
 export function mensajeExito(mensaje: string) {
   console.log(chulo, logAviso(mensaje));
 }
+
+export const esNumero = (valor: string | number): boolean => !isNaN(parseInt(`${valor}`));
+export const esFecha = (valor: string) => !isNaN(new Date(valor).getTime());

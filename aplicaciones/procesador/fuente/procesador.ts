@@ -2,6 +2,7 @@ import { alerta, chulo, guardarJSON, logAviso, logNaranjaPulso } from './ayudas'
 import { procesarIndicadores, procesarSubindicadores } from './indicadores';
 import procesadorColectivos from './procesadorColectivos';
 import procesadorPublicaciones from './procesadorPublicaciones';
+import type { Errata } from './tipos';
 
 async function inicio() {
   /** Extraer diccionario de indicadores */
@@ -10,33 +11,25 @@ async function inicio() {
   const subindicadores = await procesarSubindicadores(indicadores.datos);
   const publicaciones = await procesadorPublicaciones(indicadores.datos, subindicadores.datos);
 
-  if (indicadores.errata.length) {
-    guardarJSON(indicadores.datos, `indicadores-produccionAcademica`);
-    console.log(
-      alerta,
-      logNaranjaPulso(
-        `Procesados indicadores (con ${indicadores.errata.length} errores, ver archivo: errataIndicadores.json)`
-      )
-    );
-    guardarJSON(indicadores.errata, 'errataIndicadores');
-  } else {
-    guardarJSON(indicadores.datos, `indicadores-produccionAcademica`);
-    console.log(chulo, logAviso('Procesados indicadores'));
-  }
-
-  if (subindicadores.errata.length) {
-    guardarJSON(subindicadores.datos, `subIndicadores-produccionAcademica`);
-    console.log(
-      alerta,
-      logNaranjaPulso(
-        `Procesados subindicadores (con ${subindicadores.errata.length} errores, ver archivo: errataSubIndicadores.json)`
-      )
-    );
-    guardarJSON(subindicadores.errata, 'errataSubIndicadores');
-  } else {
-    guardarJSON(subindicadores.datos, `subIndicadores-produccionAcademica`);
-    console.log(chulo, logAviso('Procesados subindicadores'));
-  }
+  guardar(indicadores.datos, indicadores.errata, 'indicadores-produccionAcademica', 'errataIndicadores');
+  guardar(subindicadores.datos, subindicadores.errata, 'subIndicadores-produccionAcademica', 'errataSubIndicadores');
+  guardar(publicaciones.datos, publicaciones.errata, 'publicaciones', 'errataPublicaciones');
 }
 
 inicio().catch(console.error);
+
+function guardar(datos: any, errata: Errata[], nombre: string, nombreErrata = `errata${nombre}`) {
+  if (errata.length) {
+    guardarJSON(datos, nombre);
+    console.log(
+      alerta,
+      logNaranjaPulso(
+        `Procesados ${nombre} (con ${errata.length} error${errata.length > 1 ? 'es' : ''}, ver archivo: ${nombreErrata}.json)`
+      )
+    );
+    guardarJSON(errata, nombreErrata);
+  } else {
+    guardarJSON(datos, nombre);
+    console.log(chulo, logAviso(`Procesados ${nombre}`));
+  }
+}
