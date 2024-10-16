@@ -12,7 +12,7 @@ import type {
   Subindicador,
 } from '@/tipos/compartidos';
 
-const archivoColectivos = './datos/Base_colectivos_y_ambitos_contactos_V25.xlsx';
+const archivoColectivos = './datos/base_colectivos_y_ambitos_anonimizado20240902.xlsx';
 const hojaCol = 'Diccionario Indicadores';
 const hojaSubindicadoresCol = 'Contenidos P.A';
 
