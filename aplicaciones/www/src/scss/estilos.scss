@@ -139,3 +139,86 @@ nav a:first-of-type {
   .lista {
   }
 }
+
+// Ficha informativa
+.ficha {
+  h2 {
+    margin: 0;
+  }
+
+  .negrita {
+    font-weight: bold;
+  }
+
+  .boton {
+    cursor: pointer;
+
+    &:hover {
+      color: var(--azulOscuroCuenco);
+    }
+  }
+
+  #contenedorFicha {
+    border: 1px white solid;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #encabezado {
+    background-color: var(--blanco);
+    color: var(--magentaCuenco);
+    padding: 0.5em 1em;
+
+    #superior {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--magentaCuenco);
+    }
+
+    #inferior {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h3 {
+        font-size: 0.9em;
+        font-weight: 400;
+        margin: 1em 1.5em;
+      }
+
+      #año {
+        margin-right: 1em;
+      }
+    }
+  }
+
+  #contenido {
+    overflow-y: scroll;
+    color: white;
+    padding: 1em 2em;
+  }
+
+  .seccionFicha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--blanco);
+    margin-bottom: 0.5em;
+
+    li {
+      list-style: none;
+    }
+
+    .tituloSeccion {
+      margin-right: 1em;
+      width: 35%;
+      margin: 0.5em 0 0 0;
+    }
+    .contenidoSeccion {
+      flex-basis: 65%;
+      overflow-wrap: anywhere;
+      margin: 0.5em 0 0 0;
+    }
+  }
+}
