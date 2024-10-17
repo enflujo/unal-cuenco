@@ -2,6 +2,7 @@
 import ComponenteMapa from '@/components/ComponenteMapa.vue';
 import LineaTiempo from '../components/LineaTiempo.vue';
 import ListasPublicaciones from '../components/ListasPublicaciones.vue';
+import FichaProduccionAcademica from '@/components/FichaProduccionAcademica.vue';
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import ListasPublicaciones from '../components/ListasPublicaciones.vue';
     <ListasPublicaciones />
     <ComponenteMapa />
     <LineaTiempo />
+    <FichaProduccionAcademica />
   </div>
 </template>
 
