@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import type { ElementoLista, Listas } from '../tipos';
-import { nombresListas } from '../utilidades/cerebro';
+import type { ElementoLista, Listas } from '../../../../tipos/compartidos';
 
 defineProps<{
   id: keyof Listas;
@@ -63,16 +62,6 @@ onMounted(async () => {
             {{ a.nombre }}: {{ a.conteo }}
           </text>
         </g>
-
-        <!--  { listaAños.map((obj) => (
-        <g class="{`${tiempo.find((nombre)" ="">
-          +nombre === obj.año) ? 'punto' : 'desactivado'}`} style={`transform:translate(${posX(obj.año)}%, 45%)`}
-          data-año={obj.año} data-indice={obj.indice} >
-          <circle r="4" cx="10" cy="0" stroke="#62e595" stroke-width="1px" />
-          <text class="fecha" style="transform: translateY(25%)" x="0" y="0">{obj.año}</text>
-          <rect x="0" y="-5" width="20" height="28" fill="transparent" />
-        </g>
-        )) } -->
       </svg>
     </div>
   </div>
