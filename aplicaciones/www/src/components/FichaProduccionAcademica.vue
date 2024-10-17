@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { type Ref, ref } from 'vue';
+
 // ¿Cómo se hace un custom element?
 /*import { defineCustomElement } from 'vue';
 
@@ -16,6 +18,16 @@ const SeccionFicha = defineCustomElement({
 
 // Registrar el elemento personalizado
 customElements.define('seccion-ficha', SeccionFicha);*/
+
+defineProps<{
+  id: number;
+}>();
+
+const cerrarFichaPA: Ref<HTMLDivElement | undefined> = ref();
+
+function cerrarFicha() {
+  console.log('cerrar ficha');
+}
 </script>
 
 <template>
@@ -24,9 +36,9 @@ customElements.define('seccion-ficha', SeccionFicha);*/
       <div id="contenedorFicha">
         <section id="encabezado">
           <div id="superior">
-            <div class="negrita">#id</div>
+            <div class="negrita">#{{ id }}</div>
             <div class="negrita">Tesis de Maestría</div>
-            <div class="boton" id="cerrarFichaPA">X</div>
+            <div class="boton" id="cerrarFichaPA" ref="cerrarFichaPA" @click="cerrarFicha">X</div>
           </div>
           <div id="inferior">
             <div class="boton" id="botonAnterior"><</div>
