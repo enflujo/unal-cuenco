@@ -20,6 +20,7 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@enflujo/alquimia": "^2.0.0"
+    "@enflujo/alquimia": "^2.0.0",
+    "pinia": "^2.2.4"
   }
 }

@@ -1,3 +1,6 @@
+import type { Cerebro } from '@/tipos';
+import { defineStore } from 'pinia';
+
 export const nombresListas = {
   publicacion: 'Publicacion',
   autores: 'Autores',
@@ -11,3 +14,14 @@ export const nombresListas = {
   modalidades: 'Modalidades',
   estados: 'Estado',
 };
+
+export const usarCerebro = defineStore('cerebro', {
+  state: (): Cerebro => {
+    return {
+      publicacionElegida: null,
+      colectivoElegido: null,
+    };
+  },
+
+  actions: {},
+});
