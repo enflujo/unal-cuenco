@@ -35,10 +35,6 @@ onMounted(async () => {
     listas.value?.años?.forEach((año) => {
       listaAños.push({ año: +año.nombre, conteo: año.conteo });
     });
-
-    console.log(listaAños);
-
-    //console.log(listaAños);
   } catch (error) {
     console.error('Problema descargando datos de listas de publicaciones', error);
   }
