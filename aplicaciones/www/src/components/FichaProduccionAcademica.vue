@@ -1,38 +1,91 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// ¿Cómo se hace un custom element?
+/*import { defineCustomElement } from 'vue';
+
+const SeccionFicha = defineCustomElement({
+  // opciones normales de los componentes de Vue
+  props: {
+    IdPublicacion: Number,
+  },
+  emits: {},
+  template: `...`,
+
+  // solo para defineCustomElement: CSS to be injected into shadow root (?)
+  //styles: [` inlined css `]
+});
+
+// Registrar el elemento personalizado
+customElements.define('seccion-ficha', SeccionFicha);*/
+</script>
 
 <template>
   <div>
     <div id="fichaPA">
       <div id="contenedorFicha">
-        <div id="encabezado">
+        <section id="encabezado">
           <div id="superior">
-            <div>#id</div>
-            <div>tipo</div>
-            <div id="cerrarFichaPA">X</div>
+            <div class="negrita">#id</div>
+            <div class="negrita">Tesis de Maestría</div>
+            <div class="boton" id="cerrarFichaPA">X</div>
           </div>
           <div id="inferior">
-            <h2>Título</h2>
+            <div class="boton" id="botonAnterior"><</div>
+            <h3 id="tituloFicha">
+              Una historia sin palabras: leyendo el mundo de la discapacidad desde el área de Educación Física
+            </h3>
+            <p class="negrita" id="año">2004</p>
+            <div class="boton" id="botonSiguiente">></div>
           </div>
-        </div>
-        <div id="contenido">
-          <p>
-            Un instituto nacional de investigación, innovación y política educativa siendo un espacio colaborativo inter
-            y transdisciplinar, desde el modelo intersedes, se concibe como interlocutor en materia de educación y en
-            procesos internos de la universidad, y de ésta con los distintos actores de los territorios. Su existencia
-            se constituye en una estrategia para las culturas en comunicación, lo cual rememora una propuesta del
-            profesor Jesús Martín Barbero de un instituto de comunicación para la Universidad Nacional de Colombia, un
-            espacio para el encuentro entre las culturas que dialogan con un propósito común: culturas en comunicación
-            (CUENCO). Así, el Proyecto Instituto Nacional de Investigación, Innovación y Política Educativa, adopta
-            culturas en comunicación como su lema y la sigla Cuenco como una manera contundente de aludir a su horizonte
-            de sentido. Según el Dao, la utilidad de un recipiente reside en el vacío por su capacidad de albergar
-            contenido . De allí la riqueza de cuenco como el espacio posible para dialogar sobre educación en los
-            distintos territorios que conforman Colombia. Cuenco es una provocación a la academia a vaciarse de
-            preconcepciones y de la presunción de poseer la verdad y el conocimiento, para dar cabida al diálogo de
-            saberes fruto del encuentro con los territorios de la nación. Las culturas en comunicación representan la
-            diversidad de los territorios colombianos, la posesión de saberes ancestrales y una interacción con la
-            naturaleza derivada de su entrañable relación con ella, más allá de los intereses de usufructo.
+        </section>
+        <section id="contenido">
+          <p id="resumenFicha">
+            Este proyecto de investigación pretende enriquecer los procesos de inclusión educativa de la población con
+            discapacidad, mediante el diseño de una estrategia pedagógica en el área de educación física, que brinde los
+            apoyos y fortalezca la articulación con las habilidades sociales, al favorecer el entretejido de estas
+            competencias y aportar mayor solidez a los proyectos de vida de los estudiantes con discapacidad cognitiva.
+            Uno de los hallazgos más interesantes de esta investigación fue el fortalecimiento desde el área de
+            educación física, no solo de las habilidades sociales, si no, de las habilidades para la vida y la
+            comunicación funcional, las cuales se ven reflejadas a la par en los resultados de cada momento de la
+            estrategia pedagógica Es importante resaltar que en los estudiantes con discapacidad se identifica mayor
+            necesidad en el desarrollo del pensamiento, la interpretación de acciones, el manejo de elementos del
+            entorno y la comprensión del lenguaje en contexto. De aquí nace la necesidad de una flexibilización
+            curricular, una articulación pedagógica de las competencias sociales, que permita transformar la experiencia
+            académica de los estudiantes con discapacidad cognitiva de grado noveno, en el Colegio Bolivia. (Texto
+            tomado de la fuente)
           </p>
-        </div>
+          <div class="seccionFicha">
+            <h4 class="tituloSeccion">Autores</h4>
+            <ul class="contenidoSeccion">
+              <li>Abella Niño, Arturo</li>
+            </ul>
+          </div>
+          <div class="seccionFicha">
+            <h4 class="tituloSeccion">Indicador temático</h4>
+            <p class="contenidoSeccion">EDUCACIÓN</p>
+          </div>
+          <div class="seccionFicha">
+            <h4 class="tituloSeccion">Dependencia</h4>
+            <p class="contenidoSeccion">Maestría en educación</p>
+          </div>
+          <div class="seccionFicha">
+            <h4 class="tituloSeccion">Referencia APA</h4>
+            <p class="contenidoSeccion">
+              Abella Niño, A. (2023). Tesis de Maestría: Una historia sin palabras: leyendo el mundo de la discapacidad
+              desde el área de Educación Física. Recuperado el 20 de 05 de 2024, de Repositorio Institucional UN.
+              Biblioteca Digital: https://repositorio.unal.edu.co/handle/unal/84058
+            </p>
+          </div>
+          <div class="seccionFicha">
+            <h4 class="tituloSeccion">Enlace a la fuente</h4>
+            <a class="contenidoSeccion" href="https://repositorio.unal.edu.co/handle/unal/84058"
+              >https://repositorio.unal.edu.co/handle/unal/84058</a
+            >
+          </div>
+          <div class="seccionFicha">
+            <h4 class="tituloSeccion">Contacto</h4>
+            <p class="contenidoSeccion">aabellan@unal.edu.co</p>
+          </div>
+        </section>
       </div>
     </div>
     <ComponenteMapa />
@@ -52,14 +105,31 @@
   border-radius: 20px;
   padding: 1em;
 
+  h2 {
+    margin: 0;
+  }
+
+  .negrita {
+    font-weight: bold;
+  }
+
+  .boton {
+    cursor: pointer;
+
+    &:hover {
+      color: var(--azulOscuroCuenco);
+    }
+  }
+
   #contenedorFicha {
     border: 1px white solid;
     height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   #encabezado {
     background-color: var(--blanco);
-    height: 25%;
     color: var(--magentaCuenco);
     padding: 0.5em 1em;
 
@@ -70,18 +140,44 @@
     }
 
     #inferior {
-    }
-  }
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-  h2 {
-    margin: 0;
+      h3 {
+        font-size: 0.9em;
+        font-weight: 400;
+        margin: 1em 1.5em;
+      }
+
+      #año {
+        margin-right: 1em;
+      }
+    }
   }
 
   #contenido {
     overflow-y: scroll;
-    height: 70%;
     color: white;
     padding: 2em;
+  }
+
+  .seccionFicha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--blanco);
+
+    li {
+      list-style: none;
+    }
+
+    .tituloSeccion {
+    }
+    .contenidoSeccion {
+      flex-basis: 65%;
+      overflow-wrap: anywhere;
+    }
   }
 }
 </style>
