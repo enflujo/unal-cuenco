@@ -82,16 +82,16 @@ export type Publicacion = {
 // POR HACER: Completar
 export type Colectivo = {
   id: number;
-  nombre: DefinicionSimple;
+  nombre: string;
   tipos?: DefinicionSimple;
   descripcion?: string;
   años?: Año;
   estados?: string;
   fuente?: string;
-  enlaceFuente?: string;
+  enlaceFuente?: string[];
   responsables?: DefinicionSimple;
   contacto?: string;
-  sedes?: DefinicionSimple;
+  sedes?: DefinicionSimple[];
   dependencias?: DefinicionSimple;
   modalidades?: DefinicionSimple;
   indicadores?: Indicador;

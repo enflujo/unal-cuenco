@@ -5,12 +5,15 @@ import procesadorPublicaciones from './procesadorPublicaciones';
 import type { Errata } from './tipos';
 
 async function inicio() {
-  /** Extraer diccionario de indicadores */
+  // /** Extraer diccionario de indicadores */
   const indicadores = await procesarIndicadores();
-  /** Extraer subindicadores y crear relaciones con indicadores */
+  // /** Extraer subindicadores y crear relaciones con indicadores */
   const subindicadores = await procesarSubindicadores(indicadores.datos);
-  const publicaciones = await procesadorPublicaciones(indicadores.datos, subindicadores.datos);
 
+  const publicaciones = await procesadorPublicaciones(indicadores.datos, subindicadores.datos);
+  const colectivos = await procesadorColectivos(indicadores.datos);
+
+  guardar(colectivos.datos, colectivos.errata, 'colectivos', 'errataColectivos');
   guardar(indicadores.datos, indicadores.errata, 'indicadores-produccionAcademica', 'errataIndicadores');
   guardar(subindicadores.datos, subindicadores.errata, 'subIndicadores-produccionAcademica', 'errataSubIndicadores');
   guardar(publicaciones.datos, publicaciones.errata, 'publicaciones', 'errataPublicaciones');
