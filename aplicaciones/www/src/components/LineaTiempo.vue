@@ -38,10 +38,6 @@ onMounted(async () => {
     console.error('Problema descargando datos de listas de publicaciones', error);
   }
 });
-
-// "`${convertirEscala(a.año, 1987, 2024, 0, 100)}%`"
-// :y="`${convertirEscala(+a.conteo, 0, 50, 0, 100)}%`"
-//"`${convertirEscala(+a.conteo, 0, 50, 0, 70)}`"
 </script>
 
 <template>
@@ -58,7 +54,7 @@ onMounted(async () => {
             stroke="white"
             stroke-width="1px"
           />
-          <text class="fecha" :x="`${convertirEscala(+a.nombre, 1987, 2024, 0, 90)}%`" :y="160">
+          <text class="fecha" :x="`${convertirEscala(+a.nombre, 1987, 2024, 0, 90)}%`" :y="120">
             {{ a.nombre }}: {{ a.conteo }}
           </text>
         </g>
@@ -78,7 +74,7 @@ onMounted(async () => {
 
 #contenedorGrafica {
   position: relative;
-  height: 200px;
+  height: 150px;
   background-color: rgb(255, 255, 255);
   z-index: 3;
   width: 100vw;

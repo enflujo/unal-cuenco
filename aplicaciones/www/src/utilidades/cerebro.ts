@@ -20,8 +20,13 @@ export const usarCerebro = defineStore('cerebro', {
     return {
       publicacionElegida: null,
       colectivoElegido: null,
+      listaElegida: null,
     };
   },
 
-  actions: {},
+  actions: {
+    cambiarLista(llaveLista: string) {
+      this.listaElegida = llaveLista;
+    },
+  },
 });
