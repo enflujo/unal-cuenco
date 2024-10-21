@@ -9,7 +9,6 @@ export const nombresListas = {
   dependencias: 'Dependencias',
   indicadores: 'Indicadores',
   subindicadores: 'Subindicadores',
-  responsables: 'Responsables',
   sedes: 'Sedes',
   modalidades: 'Modalidades',
   estados: 'Estado',
