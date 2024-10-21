@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import type { ElementoLista, Listas } from '../../../../tipos/compartidos';
+import type { ElementoLista, Listas, ListasColectivos } from '../../../../tipos/compartidos';
 import { usarCerebro } from '@/utilidades/cerebro';
 import { storeToRefs } from 'pinia';
 
-defineProps<{
-  id: keyof Listas;
+/* defineProps<{
+  id: keyof Listas | ListasColectivos;
   lista: ElementoLista[];
-}>();
+}>(); */
 
 let listas: { [llave: string]: ElementoLista[] } = {};
 const cerebro = usarCerebro();
@@ -31,6 +31,7 @@ watch(listaElegida, (llaveLista) => {
 });
 
 onMounted(async () => {
+  // POR HACER: Arreglar para que funcione con listas colectivos también
   try {
     const datosListas = await fetch('datos/listas.json').then((res) => res.json());
     if (datosListas) {
