@@ -128,10 +128,10 @@ onMounted(() => {
 <style lang="scss">
 #contenedorMapa {
   position: absolute;
-  top: 7vw;
-  left: 40vw;
+  top: 15vw;
+  left: 30vw;
   width: 55vw;
-  height: 80vh;
-  border-radius: 50%;
+  height: 60vh;
+  //border-radius: 50%;
 }
 </style>

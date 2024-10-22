@@ -47,7 +47,15 @@ function elegirVista(vistaElegida: string) {
   text-align: center;
 }
 .botonVista {
+  color: var(--magentaCuenco);
   margin: 1em;
   cursor: pointer;
+  border: 1px solid var(--azulClaroCuenco);
+  border-radius: 5px;
+  padding: 0.3em;
+
+  &:hover {
+    color: var(--azulClaroCuenco);
+  }
 }
 </style>

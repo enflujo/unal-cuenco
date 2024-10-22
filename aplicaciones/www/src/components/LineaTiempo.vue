@@ -50,11 +50,11 @@ onMounted(async () => {
           <circle
             r="20"
             :cx="`${convertirEscala(+a.nombre, 1987, 2024, 0, 90) + 2}%`"
-            cy="100"
+            cy="50"
             stroke="white"
             stroke-width="1px"
           />
-          <text class="fecha" :x="`${convertirEscala(+a.nombre, 1987, 2024, 0, 90)}%`" :y="120">
+          <text class="fecha" :x="`${convertirEscala(+a.nombre, 1987, 2024, 0, 90)}%`" :y="70">
             {{ a.nombre }}: {{ a.conteo }}
           </text>
         </g>
@@ -74,7 +74,7 @@ onMounted(async () => {
 
 #contenedorGrafica {
   position: relative;
-  height: 150px;
+  height: 100px;
   background-color: rgb(255, 255, 255);
   z-index: 3;
   width: 100vw;
