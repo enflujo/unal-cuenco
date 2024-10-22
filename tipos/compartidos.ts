@@ -34,7 +34,7 @@ export interface Subindicador {
 export type DefinicionSimple = { nombre: string; slug: string };
 export type Año = { año: number; valor: string };
 
-export type ListasColectivos = {
+/* export type ListasColectivos = {
   años: ElementoLista[];
   estados: ElementoLista[];
   tipos: ElementoLista[];
@@ -44,7 +44,7 @@ export type ListasColectivos = {
   modalidades: ElementoLista[];
   indicadores: ElementoListaIndicadores[];
   subindicadores: ElementoLista[];
-};
+}; */
 
 export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
 
@@ -53,7 +53,6 @@ export type ListasPublicaciones = {
 };
 
 export type LlavesColectivos =
-  | 'responsables'
   | 'tipos'
   | 'años'
   | 'sedes'
@@ -61,6 +60,10 @@ export type LlavesColectivos =
   | 'modalidades'
   | 'indicadores'
   | 'subindicadores';
+
+export type ListasColectivos = {
+  [llave in LlavesColectivos]: ElementoLista[];
+};
 
 export type CamposPA = { llave: LlavesPA; indice: number }[];
 export type CamposColectivos = { llave: LlavesColectivos; indice: number }[];

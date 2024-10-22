@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import type { ElementoLista, Listas, ListasColectivos } from '../../../../tipos/compartidos';
+import type { ElementoLista, ListasPublicaciones, ListasColectivos } from '../../../../tipos/compartidos';
 import { usarCerebro } from '@/utilidades/cerebro';
 import { storeToRefs } from 'pinia';
 
-/* defineProps<{
-  id: keyof Listas | ListasColectivos;
-  lista: ElementoLista[];
-}>(); */
+// Pasarle como prop en qué vista estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
+const { vista } = defineProps<{
+  vista: String;
+}>();
 
 let listas: { [llave: string]: ElementoLista[] } = {};
 const cerebro = usarCerebro();
@@ -31,9 +31,10 @@ watch(listaElegida, (llaveLista) => {
 });
 
 onMounted(async () => {
-  // POR HACER: Arreglar para que funcione con listas colectivos también
   try {
-    const datosListas = await fetch('datos/listas.json').then((res) => res.json());
+    const datosListas: ListasPublicaciones | ListasColectivos = await fetch(`datos/${vista}.json`).then((res) =>
+      res.json()
+    );
     if (datosListas) {
       // Lista que se muestra al cargar el componente
       listaVisible.value = datosListas.años;
