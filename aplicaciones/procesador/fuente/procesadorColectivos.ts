@@ -40,7 +40,6 @@ type FilaColectivos = [
 
 const campos: CamposColectivos = [
   { llave: 'tipos', indice: 1 },
-  { llave: 'responsables', indice: 7 },
   { llave: 'sedes', indice: 9 },
   { llave: 'dependencias', indice: 10 },
   { llave: 'modalidades', indice: 11 },
@@ -58,7 +57,6 @@ const listas: ListasColectivos = {
   tipos: [],
   años: [],
   estados: [],
-  responsables: [],
   sedes: [],
   dependencias: [],
   modalidades: [],
@@ -101,6 +99,7 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaColectivos;
       const nombre = limpiarTextoSimple(fila[0]);
+      const año = +fila[4];
 
       if (nombre) {
         const colectivo: Colectivo = { id: numeroFila - 1, nombre };
@@ -116,6 +115,26 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
         /** Descripción */
         if (fila[2]) {
           colectivo.descripcion = limpiarTextoSimple(fila[2]);
+        }
+
+        /** Estado */
+        if (fila[3]) {
+          // const estadoActivo = fila[3] ? limpiarTextoSimple(fila[3]) : '';
+          if (+fila[3] === 2024) {
+            colectivo.estados = 'Activo';
+            procesarLista('estados', 'Activo');
+          } else {
+            errata.push({ fila: numeroFila, error: `Dato extraño en Estado Activo.` });
+          }
+        }
+
+        if (fila[4]) {
+          if (!isNaN(año)) {
+            colectivo.estados = 'Inactivo';
+            procesarLista('estados', 'Inactivo');
+          } else {
+            errata.push({ fila: numeroFila, error: `Dato extraño en Estado Inactivo.` });
+          }
         }
 
         /** Enlaces Fuentes */

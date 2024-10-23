@@ -55,6 +55,7 @@ export type ListasPublicaciones = {
 export type LlavesColectivos =
   | 'tipos'
   | 'años'
+  | 'estados'
   | 'sedes'
   | 'dependencias'
   | 'modalidades'
