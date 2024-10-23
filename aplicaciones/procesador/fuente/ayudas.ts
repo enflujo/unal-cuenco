@@ -57,3 +57,12 @@ export function mensajeExito(mensaje: string) {
 
 export const esNumero = (valor: string | number): boolean => !isNaN(parseInt(`${valor}`));
 export const esFecha = (valor: string) => !isNaN(new Date(valor).getTime());
+
+export const esUrl = (texto: string) => {
+  try {
+    const url = new URL(texto);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (err) {
+    return false;
+  }
+};

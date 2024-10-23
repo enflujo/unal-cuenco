@@ -1,7 +1,7 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 //import { emojify } from 'node-emoji';
-import { ordenarListaObjetos, guardarJSON, logAviso, chulo, procesarLista } from './ayudas';
+import { ordenarListaObjetos, guardarJSON, logAviso, chulo, limpiarTextoSimple, esUrl } from './ayudas';
 import type {
   CamposColectivos,
   Colectivo,
@@ -9,35 +9,37 @@ import type {
   ElementoListaIndicadores,
   Indicador,
   ListasColectivos,
+  LlavesColectivos,
   Subindicador,
 } from '@/tipos/compartidos';
+import type { Errata } from './tipos';
 
 const archivoColectivos = './datos/base_colectivos_y_ambitos_anonimizado20240902.xlsx';
 const hojaCol = 'Diccionario Indicadores';
 const hojaSubindicadoresCol = 'Contenidos P.A';
 
 type FilaColectivos = [
-  id: number,
   nombre: string,
   tipos: string,
   descripcion: string,
+  /** Todos deben ser 2024 si está activo actualmente */
   estado: string,
+  /** Estado inactivo, ¿? */
   años: string,
   fuente: string,
   enlaceFuente: string,
   responsables: string,
   contacto: string,
-  sedes: string,
-  dependencias: string,
-  modalidades: string,
+  contactoColectivo: string,
+  sede: string,
+  dependencia: string,
+  modalidad: string,
   indicador: string,
   subindicador: string,
 ];
 
 const campos: CamposColectivos = [
   { llave: 'tipos', indice: 1 },
-  { llave: 'años', indice: 3 ? 3 : 4 },
-  { llave: 'responsables', indice: 7 },
   { llave: 'sedes', indice: 9 },
   { llave: 'dependencias', indice: 10 },
   { llave: 'modalidades', indice: 11 },
@@ -55,7 +57,6 @@ const listas: ListasColectivos = {
   tipos: [],
   años: [],
   estados: [],
-  responsables: [],
   sedes: [],
   dependencias: [],
   modalidades: [],
@@ -63,7 +64,200 @@ const listas: ListasColectivos = {
   subindicadores: [],
 };
 
-export default async () => {
+function procesarLista(llaveLista: LlavesColectivos, valor: string) {
+  const nombre = limpiarTextoSimple(valor);
+  const slug = slugificar(nombre);
+  const existe = listas[llaveLista].find((obj) => obj.slug === slug);
+  if (!existe) {
+    listas[llaveLista].push({
+      nombre,
+      slug,
+      conteo: 1,
+      relaciones: [],
+    });
+  } else {
+    existe.conteo++;
+  }
+
+  return { nombre, slug };
+}
+
+export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; errata: Errata[] }> => {
+  const archivo = './datos/Base_colectivos_y_ambitos_contactos_V26.xlsx';
+  const flujo = await getXlsxStream({
+    filePath: archivo,
+    sheet: 'Colectivos y ámbitos (C.A)',
+    withHeader: true,
+    ignoreEmpty: true,
+  });
+  const errata: Errata[] = [];
+  let numeroFila = 2;
+
+  return new Promise((resolver) => {
+    const colectivos: Colectivo[] = [];
+
+    flujo.on('data', async ({ raw }) => {
+      const fila = raw.arr as FilaColectivos;
+      const nombre = limpiarTextoSimple(fila[0]);
+      const año = +fila[4];
+
+      if (nombre) {
+        const colectivo: Colectivo = { id: numeroFila - 1, nombre };
+
+        /** Tipos de Ámbito */
+        if (fila[1]) {
+          const { nombre, slug } = procesarLista('tipos', fila[1]);
+          colectivo.tipos = { nombre, slug };
+        } else {
+          errata.push({ fila: numeroFila, error: `No tiene TIPO DE ÁMBITO.` });
+        }
+
+        /** Descripción */
+        if (fila[2]) {
+          colectivo.descripcion = limpiarTextoSimple(fila[2]);
+        }
+
+        /** Estado */
+        if (fila[3]) {
+          // const estadoActivo = fila[3] ? limpiarTextoSimple(fila[3]) : '';
+          if (+fila[3] === 2024) {
+            colectivo.estados = 'Activo';
+            procesarLista('estados', 'Activo');
+          } else {
+            errata.push({ fila: numeroFila, error: `Dato extraño en Estado Activo.` });
+          }
+        }
+
+        if (fila[4]) {
+          if (!isNaN(año)) {
+            colectivo.estados = 'Inactivo';
+            procesarLista('estados', 'Inactivo');
+          } else {
+            errata.push({ fila: numeroFila, error: `Dato extraño en Estado Inactivo.` });
+          }
+        }
+
+        /** Enlaces Fuentes */
+        if (fila[6]) {
+          const enlace = limpiarTextoSimple(fila[6]);
+          const enlaces = enlace.split(' ');
+          const enlacesValidados: string[] = [];
+
+          enlaces.forEach((enlace) => {
+            if (esUrl(enlace)) {
+              enlacesValidados.push(enlace);
+            } else {
+              errata.push({ fila: numeroFila, error: `En ENLACE FUENTE hay algo que no es un enlace: ${enlace}` });
+            }
+          });
+
+          if (enlacesValidados.length) {
+            colectivo.enlaceFuente = enlacesValidados;
+          } else {
+            errata.push({ fila: numeroFila, error: `La URL en columna de ENLACE FUENTE no es una URL.` });
+          }
+        }
+
+        /** Fuentes */
+        if (fila[5]) {
+          let fuente = limpiarTextoSimple(fila[5]);
+
+          // // Borrar enlace fuente si es idéntico al que está registrado en la columna ENLACE FUENTE
+          // if (colectivo.enlaceFuente) {
+          //   colectivo.enlaceFuente.forEach((enlace) => {
+          //     if (fuente.includes(enlace)) {
+          //       console.log('----------');
+          //       console.log(fuente);
+          //       fuente = fuente.replace(enlace, '');
+          //       console.log(fuente);
+          //     }
+          //   });
+          // }
+
+          colectivo.fuente = fuente;
+        }
+
+        /**
+         * Contacto colectivo
+         * Esto va tocar procesarlo con REGEX en el sitio porque las formas de escribir los valores
+         * de este campo no siguen una misma estructura.
+         */
+        if (fila[9]) {
+          colectivo.contacto = limpiarTextoSimple(fila[9]);
+        }
+
+        /** Sedes */
+        if (fila[10]) {
+          const valorSedes = limpiarTextoSimple(fila[10]);
+          const sedes: DefinicionSimple[] = [];
+
+          // Las sedes no se separaron con ; sino con y. Ejemplo: "Bogotá y Medellin"
+          if (valorSedes.includes(' y ')) {
+            // En este caso separar primero las sedes y luego procesarlas.
+            valorSedes.split(' y ').forEach((sede) => {
+              const { nombre, slug } = procesarLista('sedes', sede);
+              sedes.push({ nombre, slug });
+            });
+          } else {
+            const { nombre, slug } = procesarLista('sedes', valorSedes);
+            sedes.push({ nombre, slug });
+          }
+
+          colectivo.sedes = sedes;
+        } else {
+          errata.push({ fila: numeroFila, error: `No tiene SEDE.` });
+        }
+
+        /** Dependencia */
+        if (fila[11]) {
+          const { nombre, slug } = procesarLista('dependencias', fila[11]);
+          colectivo.dependencias = { nombre, slug };
+        } else {
+          errata.push({ fila: numeroFila, error: `No tiene DEPENDENCIA.` });
+        }
+
+        /** Modalidad */
+        if (fila[12]) {
+          const { nombre, slug } = procesarLista('modalidades', fila[12]);
+          colectivo.modalidades = { nombre, slug };
+        } else {
+          errata.push({ fila: numeroFila, error: `No tiene MODALIDAD.` });
+        }
+
+        /** Indicadores */
+        // if (fila[13]) {
+        //   const nombre = limpiarTextoSimple(fila[13]);
+        //   const slug = slugificar(nombre);
+        //   const existe = indicadores.find((indicador) => indicador.slug === slug);
+
+        //   if (!existe) {
+        //     console.log(nombre);
+        //   }
+        // }
+
+        colectivos.push(colectivo);
+      }
+
+      numeroFila++;
+    });
+
+    flujo.on('close', () => {
+      // Aquí ya terminó de leer toda la tabla
+      // construirRelacionesDePublicaciones(publicaciones);
+      // console.log(colectivos);
+
+      for (const lista in listas) {
+        ordenarListaObjetos(listas[lista as keyof ListasColectivos], 'slug', true);
+      }
+
+      guardarJSON(listas, 'listasColectivos');
+      resolver({ datos: colectivos, errata });
+    });
+
+    flujo.on('error', (error) => {
+      throw new Error(JSON.stringify(error, null, 2));
+    });
+  });
   /*   subindicadoresProcesados = await procesarSubindicadores(
     archivoColectivos,
     hojaSubindicadoresCol,
@@ -71,7 +265,7 @@ export default async () => {
     indicadoresProcesados
   ); */
 
-  await procesarColectivo();
+  // await procesarColectivo();
 
   /*   subindicadoresProcesados.forEach((subI) => {
     const indicadorId = subI.indicadorMadre;
@@ -134,15 +328,15 @@ async function procesarColectivo(): Promise<void> {
           filasProcesadas++;
         }
         // Llenar listas
-        procesarLista(tipos, listas.tipos);
-        procesarLista(años, listas.años);
-        procesarLista(estados, listas.estados);
-        procesarLista(responsables, listas.responsables);
-        procesarLista(sedes, listas.sedes);
-        procesarLista(dependencias, listas.dependencias);
-        procesarLista(modalidades, listas.modalidades);
-        procesarLista(subindicador, listas.subindicadores);
-        procesarListaIndicadores(indicador);
+        // procesarLista(tipos, listas.tipos);
+        // procesarLista(años, listas.años);
+        // procesarLista(estados, listas.estados);
+        // procesarLista(responsables, listas.responsables);
+        // procesarLista(sedes, listas.sedes);
+        // procesarLista(dependencias, listas.dependencias);
+        // procesarLista(modalidades, listas.modalidades);
+        // procesarLista(subindicador, listas.subindicadores);
+        // procesarListaIndicadores(indicador);
 
         /*   for (let fila in autores) {
         procesarLista(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
@@ -168,7 +362,6 @@ async function procesarColectivo(): Promise<void> {
         construirRelacionesColectivos();
       }
 
-      guardarJSON(colectivos, 'colectivos');
       guardarJSON(listas, 'listasColectivos');
       resolver();
     });
@@ -206,18 +399,18 @@ function procesarFila(fila: string[], numeroFila: number) {
   // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
   const respuesta: Colectivo = {
     id: numeroFila,
-    nombre: { nombre: nombreColectivo, slug: slugificar(nombreColectivo) },
+    nombre: nombreColectivo,
     tipos: { nombre: fila[1].trim(), slug: slugificar(fila[1].trim()) },
     descripcion: fila[2] ? fila[2].trim() : 'No hay descripción',
     años: fila[3] ? { año: +fila[3], valor: fila[3] } : { año: +fila[4], valor: fila[4] },
     estados: fila[3] ? 'activo' : 'inactivo',
     fuente: fila[5],
-    enlaceFuente: fila[6],
+    enlaceFuente: [fila[6]],
     responsables: fila[7]
       ? { nombre: fila[7].trim(), slug: slugificar(fila[7].trim()) }
       : { nombre: 'sin información', slug: '' },
     contacto: fila[8],
-    sedes: { nombre: fila[9].trim(), slug: slugificar(fila[9].trim()) },
+    // sedes: { nombre: fila[9].trim(), slug: slugificar(fila[9].trim()) },
     dependencias: fila[10]
       ? { nombre: fila[10].trim(), slug: slugificar(fila[10].trim()) }
       : { nombre: 'sin información', slug: '' },
@@ -268,9 +461,6 @@ function procesarListaIndicadores(indicador: string) {
 }
 
 function construirRelacionesColectivos() {
-  for (const lista in listas) {
-    ordenarListaObjetos(listas[lista as keyof ListasColectivos], 'slug', true);
-  }
   colectivos.forEach((colectivo, i) => {
     const id = i;
 
@@ -326,8 +516,10 @@ function construirRelacionesColectivos() {
     });
 
     colectivos.sort((a, b) => {
-      if (a.nombre.slug < b.nombre.slug) return -1;
-      else if (a.nombre.slug > b.nombre.slug) return 1;
+      const _a = slugificar(a.nombre);
+      const _b = slugificar(b.nombre);
+      if (_a < _b) return -1;
+      else if (_a > _b) return 1;
       return 0;
     });
   });

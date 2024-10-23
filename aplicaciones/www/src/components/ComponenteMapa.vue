@@ -87,7 +87,7 @@ onMounted(() => {
   let mapa: Map;
 
   // POR HACER: Cambiar el estilo
-  const estilo = 'mapbox://styles/enflujo/clpcruhsj005z01qr10czhk1d';
+  const estilo = 'mapbox://styles/enflujo/cm1s6qduv00c701pgd1tm5sxh'; //'mapbox://styles/enflujo/cm1s7mjel00ce01pg63yy7uxj';
   mapbox.accessToken = 'pk.eyJ1IjoiZW5mbHVqbyIsImEiOiJjbDNrOXNndXQwMnZsM2lvNDd4N2x0M3dvIn0.eWs4BHs67PcETEUI00T66Q';
 
   mapa = new mapbox.Map({
@@ -128,9 +128,10 @@ onMounted(() => {
 <style lang="scss">
 #contenedorMapa {
   position: absolute;
-  top: 7vw;
-  left: 40vw;
+  top: 15vw;
+  left: 30vw;
   width: 55vw;
-  height: 80vh;
+  height: 60vh;
+  //border-radius: 50%;
 }
 </style>

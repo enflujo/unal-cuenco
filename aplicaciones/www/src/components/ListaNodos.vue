@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ElementoLista, LlavesColectivos, LlavesPA } from '@/tipos/compartidos';
-import { nombresListas } from '@/utilidades/cerebro';
+import { nombresListas, usarCerebro } from '@/utilidades/cerebro';
 
 interface Esquema {
   id: LlavesPA | LlavesColectivos;
@@ -8,11 +8,13 @@ interface Esquema {
 }
 
 defineProps<Esquema>();
+
+const cerebro = usarCerebro();
 </script>
 
 <template>
   <section :id="id" class="lista">
-    <h2 class="titulo">{{ nombresListas[id] }}</h2>
+    <h2 class="titulo" @click="cerebro.cambiarLista(id)">{{ nombresListas[id] }}</h2>
 
     <ul class="contenedorElementos" :class="id">
       <li

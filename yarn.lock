@@ -50,6 +50,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@enflujo/alquimia@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@enflujo/alquimia@npm:2.0.0"
+  checksum: 10c0/bd0ff76e1e7295644f1576279383511b4b8503a5c50d2e3fad3e550dac5b83e65f5357089c8e42964a7a1bed72a3f87577887b0e2ec414f7d69e02058422bd91
+  languageName: node
+  linkType: hard
+
 "@esbuild/aix-ppc64@npm:0.21.5":
   version: 0.21.5
   resolution: "@esbuild/aix-ppc64@npm:0.21.5"
@@ -3480,6 +3487,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "unal-cuenco@workspace:."
   dependencies:
+    "@enflujo/alquimia": "npm:^2.0.0"
+    pinia: "npm:^2.2.4"
     prettier: "npm:^3.3.3"
     typescript: "npm:^5.6.2"
   languageName: unknown

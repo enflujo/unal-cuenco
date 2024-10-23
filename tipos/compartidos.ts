@@ -34,7 +34,7 @@ export interface Subindicador {
 export type DefinicionSimple = { nombre: string; slug: string };
 export type Año = { año: number; valor: string };
 
-export type ListasColectivos = {
+/* export type ListasColectivos = {
   años: ElementoLista[];
   estados: ElementoLista[];
   tipos: ElementoLista[];
@@ -44,7 +44,7 @@ export type ListasColectivos = {
   modalidades: ElementoLista[];
   indicadores: ElementoListaIndicadores[];
   subindicadores: ElementoLista[];
-};
+}; */
 
 export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
 
@@ -53,14 +53,18 @@ export type ListasPublicaciones = {
 };
 
 export type LlavesColectivos =
-  | 'responsables'
   | 'tipos'
   | 'años'
+  | 'estados'
   | 'sedes'
   | 'dependencias'
   | 'modalidades'
   | 'indicadores'
   | 'subindicadores';
+
+export type ListasColectivos = {
+  [llave in LlavesColectivos]: ElementoLista[];
+};
 
 export type CamposPA = { llave: LlavesPA; indice: number }[];
 export type CamposColectivos = { llave: LlavesColectivos; indice: number }[];
@@ -82,16 +86,16 @@ export type Publicacion = {
 // POR HACER: Completar
 export type Colectivo = {
   id: number;
-  nombre: DefinicionSimple;
+  nombre: string;
   tipos?: DefinicionSimple;
   descripcion?: string;
   años?: Año;
   estados?: string;
   fuente?: string;
-  enlaceFuente?: string;
+  enlaceFuente?: string[];
   responsables?: DefinicionSimple;
   contacto?: string;
-  sedes?: DefinicionSimple;
+  sedes?: DefinicionSimple[];
   dependencias?: DefinicionSimple;
   modalidades?: DefinicionSimple;
   indicadores?: Indicador;
