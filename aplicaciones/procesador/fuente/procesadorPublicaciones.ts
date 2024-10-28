@@ -35,7 +35,7 @@ export default async (
   indicadores: Indicador[],
   subindicadores: Subindicador[]
 ): Promise<{ datos: Publicacion[]; errata: Errata[] }> => {
-  const archivo = './datos/base_produccion_ academica_anonimizado_V25_090924.xlsx';
+  const archivo = './datos/Base_Producción_ academica_contactos_V25.xlsx';
   const flujo = await getXlsxStream({
     filePath: archivo,
     sheet: 'Producción académica (P.A.)',

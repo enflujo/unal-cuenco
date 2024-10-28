@@ -14,7 +14,7 @@ import type {
 } from '@/tipos/compartidos';
 import type { Errata } from './tipos';
 
-const archivoColectivos = './datos/base_colectivos_y_ambitos_anonimizado20240902.xlsx';
+const archivoColectivos = './datos/Base_colectivos_y_ambitos_contactos_V26.xlsx';
 const hojaCol = 'Diccionario Indicadores';
 const hojaSubindicadoresCol = 'Contenidos P.A';
 
@@ -37,6 +37,8 @@ type FilaColectivos = [
   indicador: string,
   subindicador: string,
 ];
+
+const coordenadasSedes = [{ slug: '', lat: 0, lon: 0 }];
 
 const campos: CamposColectivos = [
   { llave: 'tipos', indice: 1 },
@@ -67,6 +69,25 @@ const listas: ListasColectivos = {
 function procesarLista(llaveLista: LlavesColectivos, valor: string) {
   const nombre = limpiarTextoSimple(valor);
   const slug = slugificar(nombre);
+  const existe = listas[llaveLista].find((obj) => obj.slug === slug);
+  if (!existe) {
+    listas[llaveLista].push({
+      nombre,
+      slug,
+      conteo: 1,
+      relaciones: [],
+    });
+  } else {
+    existe.conteo++;
+  }
+
+  return { nombre, slug };
+}
+
+function procesarSedes(llaveLista: LlavesColectivos, valor: string) {
+  const nombre = limpiarTextoSimple(valor);
+  const slug = slugificar(nombre);
+  const coordenadas = [];
   const existe = listas[llaveLista].find((obj) => obj.slug === slug);
   if (!existe) {
     listas[llaveLista].push({

@@ -7,7 +7,7 @@ import { limpiarTextoSimple } from './ayudas';
 type FilaIdicador = [id: string, nombre: string, descripcion: string, subindicadores?: Subindicador[]];
 type FilaSubindicador = [id: string, nombre: string, idIndicadorMadre: string];
 
-const archivo = './datos/base_produccion_ academica_anonimizado_V25_090924.xlsx';
+const archivo = './datos/Base_Producción_ academica_contactos_V25.xlsx';
 
 export async function procesarIndicadores(): Promise<{ datos: Indicador[]; errata: Errata[] }> {
   const flujo = await getXlsxStream({
