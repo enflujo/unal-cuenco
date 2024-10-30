@@ -28,10 +28,10 @@ const cerebro = usarCerebro();
       >
         <h3 class="nombre">{{ elemento.nombre }}</h3>
 
-        <div class="barra">
+        <!--      <div class="barra">
           <span class="linea" :style="`width:${elemento.conteo}%`"></span>
           <span class="conteo">{{ elemento.conteo }}</span>
-        </div>
+        </div> -->
       </li>
     </ul>
   </section>
@@ -40,5 +40,9 @@ const cerebro = usarCerebro();
 <style lang="scss" scoped>
 .lista {
   padding: 0 1em 1em 1em;
+
+  .titulo {
+    cursor: pointer;
+  }
 }
 </style>
