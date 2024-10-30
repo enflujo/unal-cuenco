@@ -1,22 +1,15 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-//import { emojify } from 'node-emoji';
-import { ordenarListaObjetos, guardarJSON, logAviso, chulo, limpiarTextoSimple, esUrl } from './ayudas';
+import { ordenarListaObjetos, guardarJSON, limpiarTextoSimple, esUrl, extraerUrls, esNumero } from './ayudas';
 import type {
   CamposColectivos,
   Colectivo,
   DefinicionSimple,
-  ElementoListaIndicadores,
   Indicador,
   ListasColectivos,
   LlavesColectivos,
-  Subindicador,
 } from '@/tipos/compartidos';
 import type { Errata } from './tipos';
-
-const archivoColectivos = './datos/Base_colectivos_y_ambitos_contactos_V26.xlsx';
-const hojaCol = 'Diccionario Indicadores';
-const hojaSubindicadoresCol = 'Contenidos P.A';
 
 type FilaColectivos = [
   nombre: string,
@@ -38,23 +31,7 @@ type FilaColectivos = [
   subindicador: string,
 ];
 
-const coordenadasSedes = [{ slug: '', lat: 0, lon: 0 }];
-
-const campos: CamposColectivos = [
-  { llave: 'tipos', indice: 1 },
-  { llave: 'sedes', indice: 9 },
-  { llave: 'dependencias', indice: 10 },
-  { llave: 'modalidades', indice: 11 },
-  { llave: 'indicadores', indice: 12 },
-  { llave: 'subindicadores', indice: 13 },
-];
-
 const colectivos: Colectivo[] = [];
-const indicadoresCol: Indicador[] = [];
-const subindicadoresCol: Subindicador[] = [];
-let indicadoresProcesados: Indicador[] = [];
-let subindicadoresProcesados: Subindicador[] = [];
-
 const listas: ListasColectivos = {
   tipos: [],
   años: [],
@@ -63,7 +40,6 @@ const listas: ListasColectivos = {
   dependencias: [],
   modalidades: [],
   indicadores: [],
-  subindicadores: [],
 };
 
 function procesarLista(llaveLista: LlavesColectivos, valor: string) {
@@ -76,25 +52,7 @@ function procesarLista(llaveLista: LlavesColectivos, valor: string) {
       slug,
       conteo: 1,
       relaciones: [],
-    });
-  } else {
-    existe.conteo++;
-  }
-
-  return { nombre, slug };
-}
-
-function procesarSedes(llaveLista: LlavesColectivos, valor: string) {
-  const nombre = limpiarTextoSimple(valor);
-  const slug = slugificar(nombre);
-  const coordenadas = [];
-  const existe = listas[llaveLista].find((obj) => obj.slug === slug);
-  if (!existe) {
-    listas[llaveLista].push({
-      nombre,
-      slug,
-      conteo: 1,
-      relaciones: [],
+      colectivos: [],
     });
   } else {
     existe.conteo++;
@@ -115,12 +73,9 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
   let numeroFila = 2;
 
   return new Promise((resolver) => {
-    const colectivos: Colectivo[] = [];
-
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaColectivos;
       const nombre = limpiarTextoSimple(fila[0]);
-      const año = +fila[4];
 
       if (nombre) {
         const colectivo: Colectivo = { id: numeroFila - 1, nombre };
@@ -138,30 +93,51 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
           colectivo.descripcion = limpiarTextoSimple(fila[2]);
         }
 
-        /** Estado */
+        /** Estado activo */
         if (fila[3]) {
-          // const estadoActivo = fila[3] ? limpiarTextoSimple(fila[3]) : '';
           if (+fila[3] === 2024) {
-            colectivo.estados = 'Activo';
-            procesarLista('estados', 'Activo');
+            const { nombre, slug } = procesarLista('estados', 'Activo');
+            colectivo.estados = { nombre, slug };
           } else {
-            errata.push({ fila: numeroFila, error: `Dato extraño en Estado Activo.` });
+            errata.push({ fila: numeroFila, error: `No se puede procesar el campo: Estado Activo.` });
           }
         }
 
+        /** Estado inactivo */
         if (fila[4]) {
-          if (!isNaN(año)) {
-            colectivo.estados = 'Inactivo';
-            procesarLista('estados', 'Inactivo');
+          const valor = limpiarTextoSimple(`${fila[4]}`);
+          const año = +valor;
+          const modosNombrar = ['Sin información', 'No activo', 'inactivo', 'Suspendido', 'Inactivo'];
+
+          if (modosNombrar.includes(valor)) {
+            const { nombre, slug } = procesarLista('estados', 'Inactivo');
+            colectivo.estados = { nombre, slug };
+          } else if (esNumero(año)) {
+            const { nombre, slug } = procesarLista('estados', 'Inactivo');
+            colectivo.estados = { nombre, slug };
+            colectivo.fechaFin = +año;
+          } else if (valor === 'Activo') {
+            const { nombre, slug } = procesarLista('estados', 'Activo');
+            colectivo.estados = { nombre, slug };
+          } else if (valor === 'Terminado 2014') {
+            const { nombre, slug } = procesarLista('estados', 'Inactivo');
+            colectivo.estados = { nombre, slug };
+            colectivo.fechaFin = 2014;
           } else {
-            errata.push({ fila: numeroFila, error: `Dato extraño en Estado Inactivo.` });
+            console.log('4', numeroFila, valor, año);
+            errata.push({ fila: numeroFila, error: `No se puede procesar el campo: Estado Inactivo.` });
           }
         }
 
         /** Enlaces Fuentes */
         if (fila[6]) {
-          const enlace = limpiarTextoSimple(fila[6]);
-          const enlaces = enlace.split(' ');
+          let enlace = limpiarTextoSimple(fila[6]);
+
+          if (enlace === 'www.telesion.unal.edu.co.') {
+            enlace = 'https://television.unal.edu.co/';
+          }
+
+          const enlaces = extraerUrls(enlace);
           const enlacesValidados: string[] = [];
 
           enlaces.forEach((enlace) => {
@@ -182,19 +158,6 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
         /** Fuentes */
         if (fila[5]) {
           let fuente = limpiarTextoSimple(fila[5]);
-
-          // // Borrar enlace fuente si es idéntico al que está registrado en la columna ENLACE FUENTE
-          // if (colectivo.enlaceFuente) {
-          //   colectivo.enlaceFuente.forEach((enlace) => {
-          //     if (fuente.includes(enlace)) {
-          //       console.log('----------');
-          //       console.log(fuente);
-          //       fuente = fuente.replace(enlace, '');
-          //       console.log(fuente);
-          //     }
-          //   });
-          // }
-
           colectivo.fuente = fuente;
         }
 
@@ -246,15 +209,17 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
         }
 
         /** Indicadores */
-        // if (fila[13]) {
-        //   const nombre = limpiarTextoSimple(fila[13]);
-        //   const slug = slugificar(nombre);
-        //   const existe = indicadores.find((indicador) => indicador.slug === slug);
+        if (fila[13]) {
+          const { nombre, slug } = procesarLista('indicadores', fila[13]);
+          const existe = indicadores.find((indicador) => indicador.slug === slug);
 
-        //   if (!existe) {
-        //     console.log(nombre);
-        //   }
-        // }
+          // Acá estoy agregando el indicador a la lista de indicadores si no existe, pero iría sin definición.
+          if (!existe) {
+            const anterior = indicadores[indicadores.length - 1];
+            const id = anterior.id + 1;
+            indicadores.push({ id, nombre, slug, definicion: '' });
+          }
+        }
 
         colectivos.push(colectivo);
       }
@@ -264,7 +229,7 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
 
     flujo.on('close', () => {
       // Aquí ya terminó de leer toda la tabla
-      // construirRelacionesDePublicaciones(publicaciones);
+      construirRelacionesColectivos();
       // console.log(colectivos);
 
       for (const lista in listas) {
@@ -279,219 +244,31 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
       throw new Error(JSON.stringify(error, null, 2));
     });
   });
-  /*   subindicadoresProcesados = await procesarSubindicadores(
-    archivoColectivos,
-    hojaSubindicadoresCol,
-    subindicadoresCol,
-    indicadoresProcesados
-  ); */
-
-  // await procesarColectivo();
-
-  /*   subindicadoresProcesados.forEach((subI) => {
-    const indicadorId = subI.indicadorMadre;
-    const indicadorI = indicadoresProcesados.findIndex((obj) => obj.id === indicadorId);
-
-    if (indicadorI >= 0) {
-      if (!indicadoresProcesados[indicadorI].subindicadores) {
-        indicadoresProcesados[indicadorI].subindicadores = [];
-      }
-
-      indicadoresProcesados[indicadorI].subindicadores?.push(subI.id);
-    } else {
-      console.log(`No existe el indicador con ID ${subI.indicadorMadre}!`);
-    }
-  }); */
-
-  guardarJSON(indicadoresProcesados, `indicadores-colectivos`);
-
-  console.log(chulo, logAviso('Procesados indicadores'));
-  // guardarJSON(subindicadoresProcesados, `subIndicadores-colectivos`);
-  console.log(chulo, logAviso('Procesados subindicadores'));
 };
 
-async function procesarColectivo(): Promise<void> {
-  const archivo = archivoColectivos;
-  const flujo = await getXlsxStream({
-    filePath: archivo,
-    sheet: 'Colectivos y ámbitos CUANTIFICA',
-    withHeader: true,
-    ignoreEmpty: true,
-  });
-
-  let numeroFila = 2;
-  let datosEmpiezanEnFila = 0;
-  let filasProcesadas = 0;
-  let conteoFilas = -datosEmpiezanEnFila;
-  let totalFilas = Infinity;
-  let filasPreprocesadas = false;
-
-  return new Promise((resolver) => {
-    flujo.on('data', async ({ raw }) => {
-      try {
-        const fila = raw.arr as FilaColectivos;
-
-        const tipos = fila[1] ? fila[1].trim() : 'no hay tipo';
-        const años = fila[3] ? fila[3] : fila[4];
-        const estados = fila[3] ? 'activo' : 'inactivo';
-        const responsables = fila[7] ? fila[7].trim() : 'no hay responsables';
-        const sedes = fila[9] ? fila[9].trim() : 'no hay sede';
-        const dependencias = fila[10] ? fila[10].trim() : 'no hay dependencia';
-        const modalidades = fila[11] ? fila[11].trim() : 'no hay modalidades';
-
-        const indicador = fila[12] ? fila[12].trim() : 'no hay indicador asociado';
-        const subindicador = fila[13] ? fila[13].trim() : 'no hay subindicador asociado';
-
-        conteoFilas++;
-
-        if (numeroFila > datosEmpiezanEnFila) {
-          procesarFila(raw.arr, numeroFila);
-          filasProcesadas++;
-        }
-        // Llenar listas
-        // procesarLista(tipos, listas.tipos);
-        // procesarLista(años, listas.años);
-        // procesarLista(estados, listas.estados);
-        // procesarLista(responsables, listas.responsables);
-        // procesarLista(sedes, listas.sedes);
-        // procesarLista(dependencias, listas.dependencias);
-        // procesarLista(modalidades, listas.modalidades);
-        // procesarLista(subindicador, listas.subindicadores);
-        // procesarListaIndicadores(indicador);
-
-        /*   for (let fila in autores) {
-        procesarLista(autores[fila]!, listas.autores); //¿Qué forma mejor hay de hacer esto sin forzar con '!'?
-      } */
-
-        for (const lista in listas) {
-          ordenarListaObjetos(listas[lista as keyof ListasColectivos], 'slug', true);
-        }
-
-        //imprimirErratas(autores, años, tipos, titulo, dependencia, numeroFila);
-        numeroFila++;
-      } catch (error) {
-        console.error(error);
-      }
-    });
-
-    flujo.on('close', () => {
-      // Aquí ya terminó de leer toda la tabla
-      totalFilas = conteoFilas;
-
-      if (!filasPreprocesadas && totalFilas === filasProcesadas) {
-        filasPreprocesadas = true;
-        construirRelacionesColectivos();
-      }
-
-      guardarJSON(listas, 'listasColectivos');
-      resolver();
-    });
-
-    flujo.on('error', (error) => {
-      throw new Error(JSON.stringify(error, null, 2));
-    });
-  });
-}
-
-function procesarFila(fila: string[], numeroFila: number) {
-  const nombreColectivo = fila[0].trim();
-  const subindicador = fila[13]?.trim();
-
-  if (!subindicador) {
-    console.log(`En Colectivos y Ámbitos no hay subindicador en ${numeroFila}`);
-    return;
-  }
-
-  /*   const subindicadorProcesado = subindicadoresProcesados.find((obj) => {
-    return obj.slug === slugificar(subindicador);
-  });
-
-  if (!subindicadorProcesado) {
-    console.log(
-      `En Colectivos y Ámbitos no existe el subindicador ${subindicador} en la lista de subindicadores procesados`
-    );
-  } */
-
-  const indicador = indicadoresProcesados.find((obj) => {
-    return slugificar(fila[12].trim()) === obj.slug;
-  });
-
-  // En la tabla todas las publicaciones parecen tener subindicador pero muchos son el mismo indicador repetido.
-  // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
-  const respuesta: Colectivo = {
-    id: numeroFila,
-    nombre: nombreColectivo,
-    tipos: { nombre: fila[1].trim(), slug: slugificar(fila[1].trim()) },
-    descripcion: fila[2] ? fila[2].trim() : 'No hay descripción',
-    años: fila[3] ? { año: +fila[3], valor: fila[3] } : { año: +fila[4], valor: fila[4] },
-    estados: fila[3] ? 'activo' : 'inactivo',
-    fuente: fila[5],
-    enlaceFuente: [fila[6]],
-    responsables: fila[7]
-      ? { nombre: fila[7].trim(), slug: slugificar(fila[7].trim()) }
-      : { nombre: 'sin información', slug: '' },
-    contacto: fila[8],
-    // sedes: { nombre: fila[9].trim(), slug: slugificar(fila[9].trim()) },
-    dependencias: fila[10]
-      ? { nombre: fila[10].trim(), slug: slugificar(fila[10].trim()) }
-      : { nombre: 'sin información', slug: '' },
-    indicadores: indicador,
-    /* subindicadores: subindicadorProcesado
-      ? {
-          id: subindicadorProcesado.id,
-          nombre: subindicadorProcesado.nombre,
-          slug: subindicadorProcesado.slug,
-          indicadorMadre: subindicadorProcesado.indicadorMadre,
-        }
-      : undefined, */
-  };
-
-  // ¿Esto qué hace?
-  /*  campos.forEach((campo) => {
-      const validacion = validarValorMultiple(fila[campo.indice], listas[campo.llave], campo.llave);
-      if (validacion) respuesta[campo.llave] = validacion;
-  }); */
-
-  colectivos.push(respuesta);
-}
-
-function procesarListaIndicadores(indicador: string) {
-  const slug = indicador ? slugificar(indicador) : '';
-  const existe = listas.indicadores.find((obj) => obj.slug === slug);
-
-  if (!indicadoresProcesados.length) {
-    console.log('No hay indicadores procesados');
-  }
-  const existeEnIndicadoresProcesados = indicadoresProcesados.find((obj) => obj.slug === slug);
-
-  if (existeEnIndicadoresProcesados) {
-    const nombre = existeEnIndicadoresProcesados.nombre;
-    if (!existe) {
-      const objeto: ElementoListaIndicadores = {
-        nombre: nombre,
-        conteo: 1,
-        slug: slug,
-        relaciones: [],
-        publicaciones: [],
-      };
-      listas.indicadores.push(objeto);
-    } else {
-      existe.conteo++;
-    }
-  }
-}
-
 function construirRelacionesColectivos() {
-  colectivos.forEach((colectivo, i) => {
-    const id = i;
+  // Estos campos son los que se usan para crear relaciones
+  const campos: LlavesColectivos[] = [
+    'tipos',
+    'años',
+    'estados',
+    'sedes',
+    'dependencias',
+    'modalidades',
+    'indicadores',
+  ];
+
+  colectivos.forEach((colectivo) => {
+    const { id } = colectivo;
 
     campos.forEach((campoRelacion) => {
-      const datosRelacion = colectivo[campoRelacion.llave];
+      const datosRelacion = colectivo[campoRelacion];
+
       campos.forEach((campo) => {
         // Agregar datos de cada campo en todos los otros, excepto en sí mismo.
-        if (campoRelacion.llave !== campo.llave && datosRelacion) {
-          const llaveALlenar = campo.llave;
-          const llaveDondeLlenar = campoRelacion.llave;
+        if (campoRelacion !== campo && datosRelacion) {
+          const llaveALlenar = campo;
+          const llaveDondeLlenar = campoRelacion;
           const datosPublicacion = colectivo[llaveALlenar];
 
           // Si la publicación tiene datos en este campo
@@ -506,6 +283,7 @@ function construirRelacionesColectivos() {
               const elementosDondeConectar = Array.isArray(datosRelacion)
                 ? (datosRelacion as DefinicionSimple[]).map(({ slug }) => slug)
                 : [(datosRelacion as DefinicionSimple).slug];
+
               elementosDondeConectar.forEach((elementoConector) => {
                 const elementoALlenar = listas[llaveDondeLlenar].find((obj) => obj.slug === elementoConector);
 
@@ -513,8 +291,8 @@ function construirRelacionesColectivos() {
                   if (elementoALlenar.relaciones) {
                     const existe = elementoALlenar.relaciones.find((obj) => obj.slug === slug);
 
-                    if (!elementoALlenar.publicaciones?.includes(id)) {
-                      elementoALlenar.publicaciones?.push(id);
+                    if (!elementoALlenar.colectivos?.includes(id)) {
+                      elementoALlenar.colectivos?.push(id);
                     }
 
                     if (!existe) {

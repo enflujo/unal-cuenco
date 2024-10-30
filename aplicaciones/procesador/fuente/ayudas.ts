@@ -66,3 +66,9 @@ export const esUrl = (texto: string) => {
     return false;
   }
 };
+
+export const extraerUrls = (texto: string) => {
+  const expresion = /(?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*/g;
+  const urls = texto.match(expresion);
+  return urls ? urls : [];
+};

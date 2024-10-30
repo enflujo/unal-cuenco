@@ -7,12 +7,13 @@ import { limpiarTextoSimple } from './ayudas';
 type FilaIdicador = [id: string, nombre: string, descripcion: string, subindicadores?: Subindicador[]];
 type FilaSubindicador = [id: string, nombre: string, idIndicadorMadre: string];
 
-const archivo = './datos/Base_Producción_ academica_contactos_V25.xlsx';
-
-export async function procesarIndicadores(): Promise<{ datos: Indicador[]; errata: Errata[] }> {
+export async function procesarIndicadores(
+  ruta: string,
+  tabla: string
+): Promise<{ datos: Indicador[]; errata: Errata[] }> {
   const flujo = await getXlsxStream({
-    filePath: archivo,
-    sheet: 'Diccionario de Indicadores',
+    filePath: ruta,
+    sheet: tabla,
     withHeader: true,
     ignoreEmpty: true,
   });
@@ -60,13 +61,16 @@ export async function procesarIndicadores(): Promise<{ datos: Indicador[]; errat
     });
   });
 }
+let indicadorAnterior = '';
 
-export async function procesarSubindicadores(
+export async function procesarSubIndicadores(
+  ruta: string,
+  tabla: string,
   indicadores: Indicador[]
 ): Promise<{ datos: Subindicador[]; errata: Errata[] }> {
   const flujo = await getXlsxStream({
-    filePath: archivo,
-    sheet: 'Contenidos P.A',
+    filePath: ruta,
+    sheet: tabla,
     withHeader: true,
     ignoreEmpty: true,
   });
@@ -80,11 +84,16 @@ export async function procesarSubindicadores(
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaSubindicador;
 
+      // Los sub-indicadores existen en la segunda columna, la primera hacer referencia a indicadores que están en otra tabla
       if (fila[1]) {
         const nombre = fila[1].trim();
         const slug = slugificar(nombre);
 
+        // Guardar el nombre del indicador cuando aparece primero ya que hay celdas mezcladas.
+        if (fila[0]) indicadorAnterior = fila[0];
+
         if (!fila[0] || !fila[0].length) {
+          console.log(numeroFila, indicadorAnterior, '|', fila[1]);
           errata.push({ fila: numeroFila, error: 'No hay indicador' });
           return;
         }

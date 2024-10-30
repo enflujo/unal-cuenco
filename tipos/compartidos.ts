@@ -10,6 +10,7 @@ export interface ElementoLista {
     slug: string;
   }[];
   publicaciones?: number[];
+  colectivos?: number[];
 }
 
 export interface ElementoListaIndicadores extends ElementoLista {
@@ -46,22 +47,12 @@ export type Año = { año: number; valor: string };
   subindicadores: ElementoLista[];
 }; */
 
-export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores' | 'subindicadores';
+export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
 
 export type ListasPublicaciones = {
   [llave in LlavesPA]: ElementoLista[];
 };
-
-export type LlavesColectivos =
-  | 'tipos'
-  | 'años'
-  | 'estados'
-  | 'sedes'
-  | 'dependencias'
-  | 'modalidades'
-  | 'indicadores'
-  | 'subindicadores';
-
+export type LlavesColectivos = 'tipos' | 'años' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 export type ListasColectivos = {
   [llave in LlavesColectivos]: ElementoLista[];
 };
@@ -79,7 +70,7 @@ export type Publicacion = {
   referencia?: string;
   fuente?: string;
   dependencias?: DefinicionSimple;
-  indicadores?: Indicador;
+  indicadores?: DefinicionSimple;
   subindicadores?: Subindicador;
 };
 
@@ -90,14 +81,14 @@ export type Colectivo = {
   tipos?: DefinicionSimple;
   descripcion?: string;
   años?: Año;
-  estados?: string;
+  estados?: DefinicionSimple;
+  fechaFin?: number;
   fuente?: string;
   enlaceFuente?: string[];
-  responsables?: DefinicionSimple;
   contacto?: string;
   sedes?: DefinicionSimple[];
   dependencias?: DefinicionSimple;
   modalidades?: DefinicionSimple;
-  indicadores?: Indicador;
+  indicadores?: DefinicionSimple;
   subindicadores?: Subindicador;
 };

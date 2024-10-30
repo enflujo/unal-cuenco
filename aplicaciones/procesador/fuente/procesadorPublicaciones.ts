@@ -5,21 +5,18 @@ import type {
   CamposPA,
   DefinicionSimple,
   ElementoLista,
-  ElementoListaIndicadores,
   Indicador,
   ListasPublicaciones,
   Publicacion,
-  Subindicador,
 } from '@/tipos/compartidos';
 import type { Errata, FilaProduccionAcademica } from './tipos';
 
 const campos: CamposPA = [
-  { llave: 'autores', indice: 1 },
-  { llave: 'años', indice: 3 },
-  { llave: 'tipos', indice: 4 },
-  { llave: 'dependencias', indice: 8 },
-  { llave: 'indicadores', indice: 9 },
-  { llave: 'subindicadores', indice: 10 },
+  { llave: 'autores', indice: 0 },
+  { llave: 'años', indice: 2 },
+  { llave: 'tipos', indice: 3 },
+  { llave: 'dependencias', indice: 7 },
+  { llave: 'indicadores', indice: 8 },
 ];
 
 const listas: ListasPublicaciones = {
@@ -28,17 +25,16 @@ const listas: ListasPublicaciones = {
   tipos: [],
   dependencias: [],
   indicadores: [],
-  subindicadores: [],
 };
 
 export default async (
-  indicadores: Indicador[],
-  subindicadores: Subindicador[]
+  ruta: string,
+  tabla: string,
+  indicadores: Indicador[]
 ): Promise<{ datos: Publicacion[]; errata: Errata[] }> => {
-  const archivo = './datos/Base_Producción_ academica_contactos_V25.xlsx';
   const flujo = await getXlsxStream({
-    filePath: archivo,
-    sheet: 'Producción académica (P.A.)',
+    filePath: ruta,
+    sheet: tabla,
     withHeader: true,
     ignoreEmpty: true,
   });
@@ -55,14 +51,12 @@ export default async (
       if (publicacion) {
         publicaciones.push(publicacion);
         // Llenar listas
-        procesarLista(fila[8], listas.dependencias);
-        procesarLista(fila[4], listas.tipos);
-        procesarLista(fila[3], listas.años);
-        procesarLista(fila[10], listas.subindicadores);
-        procesarListaIndicadores(fila[9]);
+        procesarLista(fila[7], listas.dependencias);
+        procesarLista(fila[3], listas.tipos);
+        procesarLista(fila[2], listas.años);
 
-        if (fila[1]) {
-          const autores = fila[1].includes(';') ? separarPartes(fila[1], ';') : [fila[1].trim()];
+        if (fila[0]) {
+          const autores = fila[0].includes(';') ? separarPartes(fila[0], ';') : [fila[0].trim()];
 
           autores.forEach((autor) => {
             if (autor) {
@@ -70,7 +64,7 @@ export default async (
             } else {
               errata.push({
                 fila: numeroFila,
-                error: `No hay autor en la parte: ${autor} dentro del campo autores ${fila[1]}`,
+                error: `No hay autor en la parte: ${autor} dentro del campo autores ${fila[0]}`,
               });
             }
           });
@@ -88,7 +82,7 @@ export default async (
       // Aquí ya terminó de leer toda la tabla
       construirRelacionesDePublicaciones(publicaciones);
 
-      guardarJSON(listas, 'listas');
+      guardarJSON(listas, 'listasPublicaciones');
       resolver({ datos: publicaciones, errata });
     });
 
@@ -98,12 +92,7 @@ export default async (
   });
 
   function procesarFila(fila: FilaProduccionAcademica, numeroFila: number): Publicacion | undefined {
-    if (!fila[0] || !esNumero(fila[0])) {
-      errata.push({ fila: numeroFila, error: `La fila no tiene ID o no es un número` });
-      return;
-    }
-
-    if (!fila[5]) {
+    if (!fila[4]) {
       errata.push({
         fila: numeroFila,
         error: `La fila no tiene titulo de publicación, el valor de la celda es ${fila[5]}`,
@@ -112,44 +101,44 @@ export default async (
       return;
     }
 
-    const tituloPublicacion = limpiarTextoSimple(fila[5]);
+    const tituloPublicacion = limpiarTextoSimple(fila[4]);
 
-    const subindicador = fila[10] ? fila[10].trim() : '';
+    // const subindicador = fila[10] ? fila[10].trim() : '';
 
-    if (!subindicador) {
-      console.log(`No hay subindicador en ${numeroFila}`);
-    }
+    // if (!subindicador) {
+    //   console.log(`No hay subindicador en ${numeroFila}`);
+    // }
 
-    const subindicadorProcesado = subindicadores.find((obj) => {
-      return obj.slug === slugificar(subindicador);
-    });
+    // const subindicadorProcesado = subindicadores.find((obj) => {
+    //   return obj.slug === slugificar(subindicador);
+    // });
 
-    if (!subindicadorProcesado) {
-      console.log(`No existe el subindicador ${subindicador} en la lista de subindicadores procesados`);
-    }
+    // if (!subindicadorProcesado) {
+    //   console.log(`No existe el subindicador ${subindicador} en la lista de subindicadores procesados`);
+    // }
 
     const autores: DefinicionSimple[] = [];
 
-    if (fila[1]) {
-      const partes = fila[1].includes(';') ? separarPartes(fila[1], ';') : [fila[1].trim()];
+    if (fila[0]) {
+      const partes = fila[0].includes(';') ? separarPartes(fila[0], ';') : [fila[0].trim()];
       // Convertir autores en tipo DefinicionSimple
       partes.forEach((nombreAutor) => {
         autores.push({ nombre: nombreAutor, slug: slugificar(nombreAutor) });
       });
     }
 
-    const indicador = indicadores.find((obj) => slugificar(fila[9].trim()) === obj.slug);
+    const indicador = indicadores.find((obj) => slugificar(fila[8].trim()) === obj.slug);
 
     let años: number | undefined;
 
-    if (fila[3] && esNumero(fila[3])) {
-      años = +fila[3];
+    if (fila[2] && esNumero(fila[2])) {
+      años = +fila[2];
     } else {
       // Sólo registrar errata si la celda de fecha no tiene nada o es distinto a las convenciones que se usan para indicar que no hay fecha.
-      if (fila[3] !== '(s.f)') {
+      if (fila[2] !== '(s.f)') {
         errata.push({
           fila: numeroFila,
-          error: `No hay fecha para la publicación, el valor en la celda es: ${fila[3]}`,
+          error: `No hay fecha para la publicación, el valor en la celda es: ${fila[2]}`,
         });
       }
     }
@@ -157,24 +146,24 @@ export default async (
     // En la tabla todas las publicaciones parecen tener subindicador pero muchos son el mismo indicador repetido.
     // Aquí estoy borrando el campo subindicador si es el mismo indicador y no un subindicador
     const respuesta: Publicacion = {
-      id: +fila[0],
+      id: numeroFila - 2,
       titulo: { nombre: tituloPublicacion, slug: slugificar(tituloPublicacion) },
-      resumen: fila[2] ? fila[2].trim() : '',
+      resumen: fila[1] ? fila[1].trim() : '',
       autores,
       años,
-      tipos: { nombre: fila[4].trim(), slug: slugificar(fila[4].trim()) },
-      referencia: fila[6] ? fila[6].trim() : '',
-      fuente: fila[7] ? fila[7] : '',
-      dependencias: { nombre: fila[8] ? fila[8].trim() : '', slug: fila[8] ? slugificar(fila[8].trim()) : '' },
+      tipos: { nombre: fila[3].trim(), slug: slugificar(fila[3].trim()) },
+      referencia: fila[5] ? fila[5].trim() : '',
+      fuente: fila[6] ? fila[6] : '',
+      dependencias: { nombre: fila[7] ? fila[7].trim() : '', slug: fila[7] ? slugificar(fila[7].trim()) : '' },
       indicadores: indicador,
-      subindicadores: subindicadorProcesado
-        ? {
-            id: subindicadorProcesado.id,
-            nombre: subindicadorProcesado.nombre,
-            slug: subindicadorProcesado.slug,
-            indicadorMadre: subindicadorProcesado.indicadorMadre,
-          }
-        : undefined,
+      // subindicadores: subindicadorProcesado
+      //   ? {
+      //       id: subindicadorProcesado.id,
+      //       nombre: subindicadorProcesado.nombre,
+      //       slug: subindicadorProcesado.slug,
+      //       indicadorMadre: subindicadorProcesado.indicadorMadre,
+      //     }
+      //   : undefined,
     };
 
     // ¿Esto qué hace?
@@ -183,32 +172,6 @@ export default async (
         if (validacion) respuesta[campo.llave] = validacion;
     }); */
     return respuesta;
-  }
-
-  function procesarListaIndicadores(indicador: string) {
-    if (!indicadores.length) {
-      console.log('No hay indicadores procesados');
-    }
-
-    const slug = indicador ? slugificar(indicador) : '';
-    const existe = listas.indicadores.find((obj) => obj.slug === slug);
-    const existeEnIndicadoresProcesados = indicadores.find((obj) => obj.slug === slug);
-
-    if (existeEnIndicadoresProcesados) {
-      const { nombre } = existeEnIndicadoresProcesados;
-      if (!existe) {
-        const objeto: ElementoListaIndicadores = {
-          nombre: nombre,
-          conteo: 1,
-          slug: slug,
-          relaciones: [],
-          publicaciones: [],
-        };
-        listas.indicadores.push(objeto);
-      } else {
-        existe.conteo++;
-      }
-    }
   }
 };
 

@@ -4,7 +4,6 @@ export interface Errata {
 }
 
 export type FilaProduccionAcademica = [
-  id: number,
   /** Nombre de los autores separados por ; y apellido nombre separado por , */
   autores: string | undefined,
   resumen: string,

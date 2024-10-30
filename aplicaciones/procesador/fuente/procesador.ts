@@ -1,21 +1,69 @@
 import { alerta, chulo, guardarJSON, logAviso, logNaranjaPulso } from './ayudas';
-import { procesarIndicadores, procesarSubindicadores } from './indicadores';
+import { procesarIndicadores, procesarSubIndicadores } from './indicadores';
 import procesadorColectivos from './procesadorColectivos';
 import procesadorPublicaciones from './procesadorPublicaciones';
 import type { Errata } from './tipos';
 
 async function inicio() {
-  // /** Extraer diccionario de indicadores */
-  const indicadores = await procesarIndicadores();
-  // /** Extraer subindicadores y crear relaciones con indicadores */
-  const subindicadores = await procesarSubindicadores(indicadores.datos);
+  /**
+   * PUBLICACIONES
+   */
+  const rutaPublicaciones = './datos/Base_Producción_ academica_contactos_V25.xlsx';
+  // Extraer diccionario de indicadores
+  const indicadoresPublicaciones = await procesarIndicadores(rutaPublicaciones, 'Diccionario de Indicadores');
+  // Extraer sub-indicadores y crear relaciones con indicadores
+  // const subIndicadoresPublicaciones = await procesarSubIndicadores(
+  //   rutaPublicaciones,
+  //   'Contenidos P.A',
+  //   indicadoresPublicaciones.datos
+  // );
 
-  const publicaciones = await procesadorPublicaciones(indicadores.datos, subindicadores.datos);
-  const colectivos = await procesadorColectivos(indicadores.datos);
+  const publicaciones = await procesadorPublicaciones(
+    rutaPublicaciones,
+    'Producción académica (P.A.)',
+    indicadoresPublicaciones.datos
+    // subIndicadoresPublicaciones.datos
+  );
 
+  /**
+   * COLECTIVOS
+   */
+  const rutaColectivos = './datos/Base_colectivos_y_ambitos_contactos_V26.xlsx';
+  const indicadoresColectivos = await procesarIndicadores(rutaColectivos, 'Diccionario Indicadores');
+  // const subIndicadoresColectivos = await procesarSubIndicadores(
+  //   rutaColectivos,
+  //   'Contenido C.A',
+  //   indicadoresColectivos.datos
+  // );
+  const colectivos = await procesadorColectivos(indicadoresColectivos.datos);
+
+  guardar(
+    indicadoresColectivos.datos,
+    indicadoresColectivos.errata,
+    'indicadores-colectivos',
+    'errataIndicadoresColectivos'
+  );
+  // guardar(
+  //   subIndicadoresColectivos.datos,
+  //   subIndicadoresColectivos.errata,
+  //   'sub-indicadores-colectivos',
+  //   'errataSubIndicadoresColectivos'
+  // );
   guardar(colectivos.datos, colectivos.errata, 'colectivos', 'errataColectivos');
-  guardar(indicadores.datos, indicadores.errata, 'indicadores-produccionAcademica', 'errataIndicadores');
-  guardar(subindicadores.datos, subindicadores.errata, 'subIndicadores-produccionAcademica', 'errataSubIndicadores');
+
+  guardar(
+    indicadoresPublicaciones.datos,
+    indicadoresPublicaciones.errata,
+    'indicadores-publicaciones',
+    'errataIndicadoresPublicaciones'
+  );
+
+  // guardar(
+  //   subIndicadoresPublicaciones.datos,
+  //   subIndicadoresPublicaciones.errata,
+  //   'sub-indicadores-publicaciones',
+  //   'errataSubIndicadoresPublicaciones'
+  // );
   guardar(publicaciones.datos, publicaciones.errata, 'publicaciones', 'errataPublicaciones');
 }
 
