@@ -3,17 +3,12 @@ import { onMounted, ref, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import type { ElementoLista, Listas } from '../../../../tipos/compartidos';
 
-defineProps<{
-  id: keyof Listas;
-  lista: ElementoLista[];
-}>();
-
 const listas: Ref<Listas | undefined> = ref();
 
 onMounted(async () => {
   const listaAños: { año: number; conteo: number }[] = [];
   try {
-    const datosListas = await fetch('datos/listas.json').then((res) => res.json());
+    const datosListas = await fetch('datos/listasPublicaciones.json').then((res) => res.json());
     if (datosListas) listas.value = datosListas;
 
     function rango(min: number, max: number) {
@@ -80,9 +75,6 @@ onMounted(async () => {
   width: 100vw;
   overflow-y: clip;
   overflow-x: auto;
-}
-
-#marcas {
 }
 
 svg {

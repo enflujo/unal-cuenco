@@ -64,18 +64,17 @@ export type Publicacion = {
   titulo: DefinicionSimple;
   resumen?: string;
   autores?: DefinicionSimple[];
-  años?: number;
+  años?: DefinicionSimple;
   tipos?: DefinicionSimple;
   referencia?: string;
   fuente?: string;
-  dependencias?: DefinicionSimple;
-  indicadores?: DefinicionSimple;
+  dependencias?: DefinicionSimple[];
+  indicadores?: number;
 };
 
-// POR HACER: Completar
 export type Colectivo = {
   id: number;
-  nombre: string;
+  nombre: DefinicionSimple;
   tipos?: DefinicionSimple;
   descripcion?: string;
   estados?: DefinicionSimple;

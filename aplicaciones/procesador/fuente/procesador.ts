@@ -35,7 +35,11 @@ async function inicio() {
   //   'Contenido C.A',
   //   indicadoresColectivos.datos
   // );
-  const colectivos = await procesadorColectivos(indicadoresColectivos.datos);
+  const colectivos = await procesadorColectivos(
+    rutaColectivos,
+    'Colectivos y ámbitos (C.A)',
+    indicadoresColectivos.datos
+  );
 
   guardar(
     indicadoresColectivos.datos,

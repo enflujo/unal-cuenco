@@ -1,8 +1,15 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import { ordenarListaObjetos, guardarJSON, limpiarTextoSimple, esUrl, extraerUrls, esNumero } from './ayudas';
+import {
+  ordenarListaObjetos,
+  guardarJSON,
+  limpiarTextoSimple,
+  esUrl,
+  extraerUrls,
+  esNumero,
+  aplanarDefinicionesASlugs,
+} from './ayudas';
 import type {
-  Año,
   Colectivo,
   DefinicionSimple,
   ElementoLista,
@@ -10,27 +17,7 @@ import type {
   ListasColectivos,
   LlavesColectivos,
 } from '@/tipos/compartidos';
-import type { Errata } from './tipos';
-
-type FilaColectivos = [
-  nombre: string,
-  tipos: string,
-  descripcion: string,
-  /** Todos deben ser 2024 si está activo actualmente */
-  estado: string,
-  /** Estado inactivo, ¿? */
-  años: string,
-  fuente: string,
-  enlaceFuente: string,
-  responsables: string,
-  contacto: string,
-  contactoColectivo: string,
-  sede: string,
-  dependencia: string,
-  modalidad: string,
-  indicador: string,
-  subindicador: string,
-];
+import type { Errata, FilaColectivos } from './tipos';
 
 const colectivos: Colectivo[] = [];
 const listas: ListasColectivos = {
@@ -61,11 +48,14 @@ function procesarLista(llaveLista: LlavesColectivos, valor: string) {
   return { nombre, slug };
 }
 
-export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; errata: Errata[] }> => {
-  const archivo = './datos/Base_colectivos_y_ambitos_contactos_V26.xlsx';
+export default async (
+  ruta: string,
+  tabla: string,
+  indicadores: Indicador[]
+): Promise<{ datos: Colectivo[]; errata: Errata[] }> => {
   const flujo = await getXlsxStream({
-    filePath: archivo,
-    sheet: 'Colectivos y ámbitos (C.A)',
+    filePath: ruta,
+    sheet: tabla,
     withHeader: true,
     ignoreEmpty: true,
   });
@@ -78,7 +68,7 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
       const nombre = limpiarTextoSimple(fila[0]);
 
       if (nombre) {
-        const colectivo: Colectivo = { id: numeroFila - 1, nombre };
+        const colectivo: Colectivo = { id: numeroFila - 1, nombre: { nombre, slug: slugificar(nombre) } };
 
         /** Tipos de Ámbito */
         if (fila[1]) {
@@ -232,7 +222,6 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
     flujo.on('close', () => {
       // Aquí ya terminó de leer toda la tabla
       construirRelacionesColectivos();
-      // console.log(colectivos);
 
       for (const lista in listas) {
         ordenarListaObjetos(listas[lista as keyof ListasColectivos], 'slug', true);
@@ -257,30 +246,79 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
         const datosRelacion = colectivo[campoRelacion];
 
         if (datosRelacion) {
-          agregarRelacion(campos, campoRelacion, datosRelacion, colectivo);
+          const { id } = colectivo;
+
+          campos.forEach((campo) => {
+            // Agregar datos de cada campo en todos los otros, excepto en sí mismo.
+            if (campoRelacion !== campo) {
+              // Si no hay datos para llenar entonces podemos salir y continuar.
+              if (!colectivo[campo]) return;
+
+              // Los indicadores los procesamos distinto para mantener el json final más ligero usando solo ids
+              if (typeof datosRelacion === 'number') {
+                if (campoRelacion === 'indicadores') {
+                  const indicador = indicadores.find((obj) => obj.id === datosRelacion);
+
+                  if (indicador) {
+                    const indice = listas.indicadores.findIndex((obj) => obj.slug === indicador.slug);
+
+                    if (indice >= 0) {
+                      const elementosDondeConectar = aplanarDefinicionesASlugs(colectivo[campo]);
+                      llenarRelacion(elementosDondeConectar, listas[campo], indice, campo, id);
+                    } else {
+                      console.log('Esto no puede pasar');
+                    }
+                  } else {
+                    console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
+                  }
+                } else {
+                  console.log('Falta definir que hacer con este dato que es número pero no tiene condición definida.');
+                }
+              } else {
+                // Sacar los slugs del campo
+                const slugsCampoProyecto = aplanarDefinicionesASlugs(datosRelacion);
+
+                slugsCampoProyecto.forEach((slug) => {
+                  const indice = listas[campoRelacion].findIndex((obj) => obj.slug === slug);
+
+                  if (indice >= 0) {
+                    if (!colectivo[campo]) return;
+
+                    let datos = colectivo[campo];
+
+                    if (typeof colectivo[campo] === 'number') {
+                      if (campo === 'indicadores') {
+                        const indicador = indicadores.find((obj) => obj.id === colectivo[campo]);
+                        if (indicador) {
+                          datos = { nombre: indicador.nombre, slug: indicador.slug };
+                        } else {
+                          console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
+                        }
+                      } else {
+                        console.log(
+                          'Falta definir que hacer con este dato que es número pero no tiene condición definida.'
+                        );
+                      }
+                    }
+
+                    const elementosDondeConectar = aplanarDefinicionesASlugs(datos);
+                    llenarRelacion(elementosDondeConectar, listas[campoRelacion], indice, campoRelacion, id);
+                  } else {
+                    console.log('Esto no puede pasar');
+                  }
+                });
+              }
+            }
+          });
         }
       });
 
       colectivos.sort((a, b) => {
-        const _a = slugificar(a.nombre);
-        const _b = slugificar(b.nombre);
-        if (_a < _b) return -1;
-        else if (_a > _b) return 1;
+        if (a.nombre.slug < b.nombre.slug) return -1;
+        else if (a.nombre.slug > b.nombre.slug) return 1;
         return 0;
       });
     });
-  }
-
-  function aplanarDefinicionesASlugs(datos: DefinicionSimple | DefinicionSimple[] | number | undefined) {
-    if (datos && typeof datos !== 'number') {
-      return Array.isArray(datos)
-        ? (datos as DefinicionSimple[]).map(({ slug }) => slug)
-        : [(datos as DefinicionSimple).slug];
-    }
-
-    throw new Error(
-      `Los datos no son de tipo DefinicionSimple o DefinicionSimple[], el dato es: ${JSON.stringify(datos)}`
-    );
   }
 
   function llenarRelacion(
@@ -307,72 +345,6 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
       }
 
       // console.log('poner indicador', datosRelacion, 'como relacion en lista', elementoALlenar);
-    });
-  }
-
-  function agregarRelacion(
-    campos: LlavesColectivos[],
-    campoRelacion: LlavesColectivos,
-    datosRelacion: number | DefinicionSimple | DefinicionSimple[],
-    colectivo: Colectivo
-  ) {
-    const { id } = colectivo;
-
-    campos.forEach((campo) => {
-      // Agregar datos de cada campo en todos los otros, excepto en sí mismo.
-      if (campoRelacion !== campo) {
-        // Si no hay datos para llenar entonces podemos salir y continuar.
-        if (!colectivo[campo]) return;
-
-        // Los indicadores los procesamos distinto para mantener el json final más ligero usando solo ids
-        if (typeof datosRelacion === 'number' && campoRelacion === 'indicadores') {
-          const indicador = indicadores.find((obj) => obj.id === datosRelacion);
-
-          if (indicador) {
-            const indice = listas.indicadores.findIndex((obj) => obj.slug === indicador.slug);
-
-            if (indice >= 0) {
-              const elementosDondeConectar = aplanarDefinicionesASlugs(colectivo[campo]);
-              llenarRelacion(elementosDondeConectar, listas[campo], indice, campo, id);
-            } else {
-              console.log('Esto no puede pasar');
-            }
-          } else {
-            console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
-          }
-          // console.log(datosRelacion, campo, campoRelacion);
-          // const i = listas[llaveALlenar].findIndex((obj) => obj.slug === slug);
-        } else {
-          // Sacar los slugs del campo
-          const slugsCampoProyecto = aplanarDefinicionesASlugs(datosRelacion);
-          // console.log(campo, campoRelacion, slugsCampoProyecto);
-          slugsCampoProyecto.forEach((slug) => {
-            const indice = listas[campoRelacion].findIndex((obj) => obj.slug === slug);
-
-            if (indice >= 0) {
-              if (!colectivo[campo]) return;
-
-              let datos = colectivo[campo];
-
-              if (typeof colectivo[campo] === 'number') {
-                if (campo === 'indicadores') {
-                  const indicador = indicadores.find((obj) => obj.id === colectivo[campo]);
-                  if (indicador) {
-                    datos = { nombre: indicador.nombre, slug: indicador.slug };
-                  } else {
-                    console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
-                  }
-                } else {
-                  console.log('Falta definir que hacer con este dato que es número pero no tiene condición definida.');
-                }
-              }
-
-              const elementosDondeConectar = aplanarDefinicionesASlugs(datos);
-              llenarRelacion(elementosDondeConectar, listas[campoRelacion], indice, campoRelacion, id);
-            }
-          });
-        }
-      }
     });
   }
 };

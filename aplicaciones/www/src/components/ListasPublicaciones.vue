@@ -9,7 +9,7 @@ const listas: Ref<ListasPublicaciones | undefined> = ref();
 
 onMounted(async () => {
   try {
-    const datosListas = await pedirDatos<ListasPublicaciones>('datos/listas.json');
+    const datosListas = await pedirDatos<ListasPublicaciones>('datos/listasPublicaciones.json');
 
     if (datosListas) listas.value = datosListas;
   } catch (error) {

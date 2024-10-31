@@ -1,6 +1,7 @@
 import { writeFileSync } from 'fs';
 import colores from 'cli-color';
 import { emojify } from 'node-emoji';
+import type { DefinicionSimple } from '@/tipos/compartidos';
 
 export const logError = colores.red.bold;
 export const logAviso = colores.bold.xterm(214);
@@ -26,7 +27,9 @@ export const guardarJSON = (json: any, nombre: string) => {
  * @param texto Texto que se quiere limpiar
  * @returns texto procesado
  */
-export const limpiarTextoSimple = (texto: string) => texto.trim().replace(/[\n\r\s\t]+/g, ' ');
+export const limpiarTextoSimple = (texto: string) => {
+  return texto.trim().replace(/[\n\r\s\t]+/g, ' ');
+};
 
 export function ordenarListaObjetos(lista: any[], llave: string, descendente = false) {
   lista.sort((a, b) => {
@@ -72,3 +75,15 @@ export const extraerUrls = (texto: string) => {
   const urls = texto.match(expresion);
   return urls ? urls : [];
 };
+
+export function aplanarDefinicionesASlugs(datos: DefinicionSimple | DefinicionSimple[] | number | undefined) {
+  if (datos && typeof datos !== 'number') {
+    return Array.isArray(datos)
+      ? (datos as DefinicionSimple[]).map(({ slug }) => slug)
+      : [(datos as DefinicionSimple).slug];
+  }
+
+  throw new Error(
+    `Los datos no son de tipo DefinicionSimple o DefinicionSimple[], el dato es: ${JSON.stringify(datos)}`
+  );
+}
