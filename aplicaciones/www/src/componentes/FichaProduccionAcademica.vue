@@ -102,7 +102,6 @@ function cerrarFicha() {
       </section>
     </div>
   </div>
-  <ComponenteMapa />
 </template>
 
 <style lang="scss">

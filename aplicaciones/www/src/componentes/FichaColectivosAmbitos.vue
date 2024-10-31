@@ -31,8 +31,6 @@ onMounted(async () => {
 
   infoColectivo.value = datosColectivos.value?.find((colectivo) => colectivo.id === idsElegidos[0]);
   indicador.value = datosIndicadores.value?.find((indicador) => indicador.id === infoColectivo.value?.indicadores);
-
-  console.log(infoColectivo.value);
 });
 
 const cerrarFichaColAmb: Ref<HTMLDivElement | undefined> = ref();
@@ -95,7 +93,6 @@ function cerrarFicha() {
       </section>
     </div>
   </div>
-  <ComponenteMapa />
 </template>
 
 <style lang="scss">
