@@ -17,10 +17,10 @@
   },
   "devDependencies": {
     "prettier": "^3.3.3",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   },
   "dependencies": {
     "@enflujo/alquimia": "^2.0.0",
-    "pinia": "^2.2.4"
+    "pinia": "^2.2.5"
   }
 }
