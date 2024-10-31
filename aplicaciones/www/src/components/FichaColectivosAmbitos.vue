@@ -1,31 +1,15 @@
 <script setup lang="ts">
+import { Colectivo, Indicador } from '@/tipos/compartidos';
 import { type Ref, ref, onMounted } from 'vue';
-
-// ¿Cómo se hace un custom element?
-/*import { defineCustomElement } from 'vue';
-import { Colectivo } from '../../../../tipos/compartidos';
-
-const SeccionFicha = defineCustomElement({
-  // opciones normales de los componentes de Vue
-  props: {
-    IdPublicacion: Number,
-  },
-  emits: {},
-  template: `...`,
-
-  // solo para defineCustomElement: CSS to be injected into shadow root (?)
-  //styles: [` inlined css `]
-});
-
-// Registrar el elemento personalizado
-customElements.define('seccion-ficha', SeccionFicha);*/
 
 defineProps<{
   id: number;
 }>();
 
 const datosColectivos: Ref<Colectivo[] | undefined> = ref([]);
+const datosIndicadores: Ref<Indicador[] | undefined> = ref([]);
 const infoColectivo: Ref<Colectivo | undefined> = ref();
+const indicador: Ref<Indicador | undefined> = ref();
 
 onMounted(async () => {
   try {
@@ -36,11 +20,20 @@ onMounted(async () => {
     console.error('Problema descargando datos de listas de colectivos', error);
   }
 
+  try {
+    const indicadores = await fetch('datos/indicadores-colectivos.json').then((res) => res.json());
+    //    console.log(indicadores);
+    if (indicadores) datosIndicadores.value = indicadores;
+  } catch (error) {
+    console.error('Problema descargando datos de listas de colectivos', error);
+  }
+
   const idsElegidos: number[] = [5];
 
-  infoColectivo.value = datosColectivos.value.find((colectivo) => colectivo.id === idsElegidos[0]);
+  infoColectivo.value = datosColectivos.value?.find((colectivo) => colectivo.id === idsElegidos[0]);
+  indicador.value = datosIndicadores.value?.find((indicador) => indicador.id === infoColectivo.value?.indicadores);
 
-  console.log(infoColectivo);
+  console.log(infoColectivo.value);
 });
 
 const cerrarFichaColAmb: Ref<HTMLDivElement | undefined> = ref();
@@ -56,13 +49,13 @@ function cerrarFicha() {
       <section id="encabezado">
         <div id="superior">
           <div class="negrita">#{{ infoColectivo.id }}</div>
-          <div class="negrita">{{ infoColectivo.tipos.nombre }}</div>
+          <div class="negrita">{{ infoColectivo.tipos?.nombre }}</div>
           <div class="boton" id="cerrarFichaColAmb" ref="cerrarFichaColAmb" @click="cerrarFicha">X</div>
         </div>
         <div id="inferior">
           <div class="boton" id="botonAnterior"><</div>
           <h3 id="tituloFicha">{{ infoColectivo.nombre }}</h3>
-          <p class="negrita" id="estado">{{ infoColectivo.estados.nombre }}</p>
+          <p class="negrita" id="estado">{{ infoColectivo.estados?.nombre }}</p>
           <div class="boton" id="botonSiguiente">></div>
         </div>
       </section>
@@ -70,17 +63,17 @@ function cerrarFicha() {
         <p id="descripcionFicha">
           {{ infoColectivo.descripcion }}
         </p>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.dependencias">
           <h4 class="tituloSeccion">Dependencia</h4>
           <p class="contenidoSeccion">{{ infoColectivo.dependencias.nombre }}</p>
         </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.sedes">
           <h4 class="tituloSeccion">Sede</h4>
           <p class="contenidoSeccion" v-for="sede in infoColectivo.sedes">{{ sede.nombre }}</p>
         </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="indicador">
           <h4 class="tituloSeccion">Indicador temático</h4>
-          <p class="contenidoSeccion">{{ infoColectivo.indicador }}</p>
+          <p class="contenidoSeccion">{{ indicador.nombre }}</p>
         </div>
         <div class="seccionFicha" v-if="infoColectivo.modalidades">
           <h4 class="tituloSeccion">Modalidad</h4>
@@ -92,7 +85,7 @@ function cerrarFicha() {
             {{ infoColectivo.fuente }}
           </p>
         </div>
-        <div class="seccionFicha" v-if="infoColectivo.enlaceFuente.length">
+        <div class="seccionFicha" v-if="infoColectivo.enlaceFuente?.length">
           <h4 class="tituloSeccion">Enlace a la fuente</h4>
           <a class="contenidoSeccion" :href="infoColectivo.enlaceFuente[0]">{{ infoColectivo.enlaceFuente[0] }}</a>
         </div>
