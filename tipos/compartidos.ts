@@ -3,11 +3,10 @@ export interface ElementoLista {
   descripcion?: string;
   slug: string;
   conteo: number;
-  relaciones?: {
-    tipo: keyof ListasPublicaciones | keyof ListasColectivos | string;
+  relaciones: {
+    tipo: keyof ListasPublicaciones | keyof ListasColectivos;
     conteo: number;
     indice: number;
-    slug: string;
   }[];
   publicaciones?: number[];
   colectivos?: number[];
@@ -52,7 +51,7 @@ export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicad
 export type ListasPublicaciones = {
   [llave in LlavesPA]: ElementoLista[];
 };
-export type LlavesColectivos = 'tipos' | 'años' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
+export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 export type ListasColectivos = {
   [llave in LlavesColectivos]: ElementoLista[];
 };
@@ -71,7 +70,6 @@ export type Publicacion = {
   fuente?: string;
   dependencias?: DefinicionSimple;
   indicadores?: DefinicionSimple;
-  subindicadores?: Subindicador;
 };
 
 // POR HACER: Completar
@@ -80,7 +78,6 @@ export type Colectivo = {
   nombre: string;
   tipos?: DefinicionSimple;
   descripcion?: string;
-  años?: Año;
   estados?: DefinicionSimple;
   fechaFin?: number;
   fuente?: string;
@@ -89,6 +86,5 @@ export type Colectivo = {
   sedes?: DefinicionSimple[];
   dependencias?: DefinicionSimple;
   modalidades?: DefinicionSimple;
-  indicadores?: DefinicionSimple;
-  subindicadores?: Subindicador;
+  indicadores?: number;
 };

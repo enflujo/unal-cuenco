@@ -208,23 +208,20 @@ function construirRelacionesDePublicaciones(publicaciones: Publicacion[]) {
                 const elementoALlenar = listas[llaveDondeLlenar].find((obj) => obj.slug === elementoConector);
 
                 if (elementoALlenar) {
-                  if (elementoALlenar.relaciones) {
-                    const existe = elementoALlenar.relaciones.find((obj) => obj.slug === slug);
+                  const existe = elementoALlenar.relaciones.find((obj) => obj.indice === i);
 
-                    if (!elementoALlenar.publicaciones?.includes(id)) {
-                      elementoALlenar.publicaciones?.push(id);
-                    }
+                  if (!elementoALlenar.publicaciones?.includes(id)) {
+                    elementoALlenar.publicaciones?.push(id);
+                  }
 
-                    if (!existe) {
-                      elementoALlenar.relaciones.push({
-                        conteo: 1,
-                        indice: i,
-                        tipo: llaveALlenar,
-                        slug,
-                      });
-                    } else {
-                      existe.conteo++;
-                    }
+                  if (!existe) {
+                    elementoALlenar.relaciones.push({
+                      conteo: 1,
+                      indice: i,
+                      tipo: llaveALlenar,
+                    });
+                  } else {
+                    existe.conteo++;
                   }
                 }
               });

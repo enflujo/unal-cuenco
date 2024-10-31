@@ -2,9 +2,10 @@ import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 import { ordenarListaObjetos, guardarJSON, limpiarTextoSimple, esUrl, extraerUrls, esNumero } from './ayudas';
 import type {
-  CamposColectivos,
+  Año,
   Colectivo,
   DefinicionSimple,
+  ElementoLista,
   Indicador,
   ListasColectivos,
   LlavesColectivos,
@@ -34,7 +35,6 @@ type FilaColectivos = [
 const colectivos: Colectivo[] = [];
 const listas: ListasColectivos = {
   tipos: [],
-  años: [],
   estados: [],
   sedes: [],
   dependencias: [],
@@ -212,13 +212,15 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
         if (fila[13]) {
           const { nombre, slug } = procesarLista('indicadores', fila[13]);
           const existe = indicadores.find((indicador) => indicador.slug === slug);
-
+          let id = existe?.id;
           // Acá estoy agregando el indicador a la lista de indicadores si no existe, pero iría sin definición.
           if (!existe) {
             const anterior = indicadores[indicadores.length - 1];
-            const id = anterior.id + 1;
+            id = anterior.id + 1;
             indicadores.push({ id, nombre, slug, definicion: '' });
           }
+
+          colectivo.indicadores = id;
         }
 
         colectivos.push(colectivo);
@@ -244,82 +246,133 @@ export default async (indicadores: Indicador[]): Promise<{ datos: Colectivo[]; e
       throw new Error(JSON.stringify(error, null, 2));
     });
   });
-};
 
-function construirRelacionesColectivos() {
-  // Estos campos son los que se usan para crear relaciones
-  const campos: LlavesColectivos[] = [
-    'tipos',
-    'años',
-    'estados',
-    'sedes',
-    'dependencias',
-    'modalidades',
-    'indicadores',
-  ];
+  function construirRelacionesColectivos() {
+    // Estos campos son los que se usan para crear relaciones
+    const campos: LlavesColectivos[] = ['tipos', 'estados', 'sedes', 'dependencias', 'modalidades', 'indicadores'];
 
-  colectivos.forEach((colectivo) => {
-    const { id } = colectivo;
+    colectivos.forEach((colectivo) => {
+      // Pasar por cada campo sobre los que queremos construir relaciones
+      campos.forEach((campoRelacion) => {
+        const datosRelacion = colectivo[campoRelacion];
 
-    campos.forEach((campoRelacion) => {
-      const datosRelacion = colectivo[campoRelacion];
-
-      campos.forEach((campo) => {
-        // Agregar datos de cada campo en todos los otros, excepto en sí mismo.
-        if (campoRelacion !== campo && datosRelacion) {
-          const llaveALlenar = campo;
-          const llaveDondeLlenar = campoRelacion;
-          const datosPublicacion = colectivo[llaveALlenar];
-
-          // Si la publicación tiene datos en este campo
-          if (datosPublicacion) {
-            // Sacar los slugs del campo
-            const slugsCampoProyecto = Array.isArray(datosPublicacion)
-              ? (datosPublicacion as DefinicionSimple[]).map(({ slug }) => slug)
-              : [(datosPublicacion as DefinicionSimple).slug];
-
-            slugsCampoProyecto.forEach((slug) => {
-              const i = listas[llaveALlenar].findIndex((obj) => obj.slug === slug);
-              const elementosDondeConectar = Array.isArray(datosRelacion)
-                ? (datosRelacion as DefinicionSimple[]).map(({ slug }) => slug)
-                : [(datosRelacion as DefinicionSimple).slug];
-
-              elementosDondeConectar.forEach((elementoConector) => {
-                const elementoALlenar = listas[llaveDondeLlenar].find((obj) => obj.slug === elementoConector);
-
-                if (elementoALlenar) {
-                  if (elementoALlenar.relaciones) {
-                    const existe = elementoALlenar.relaciones.find((obj) => obj.slug === slug);
-
-                    if (!elementoALlenar.colectivos?.includes(id)) {
-                      elementoALlenar.colectivos?.push(id);
-                    }
-
-                    if (!existe) {
-                      elementoALlenar.relaciones.push({
-                        conteo: 1,
-                        indice: i,
-                        tipo: llaveALlenar,
-                        slug,
-                      });
-                    } else {
-                      existe.conteo++;
-                    }
-                  }
-                }
-              });
-            });
-          }
+        if (datosRelacion) {
+          agregarRelacion(campos, campoRelacion, datosRelacion, colectivo);
         }
       });
-    });
 
-    colectivos.sort((a, b) => {
-      const _a = slugificar(a.nombre);
-      const _b = slugificar(b.nombre);
-      if (_a < _b) return -1;
-      else if (_a > _b) return 1;
-      return 0;
+      colectivos.sort((a, b) => {
+        const _a = slugificar(a.nombre);
+        const _b = slugificar(b.nombre);
+        if (_a < _b) return -1;
+        else if (_a > _b) return 1;
+        return 0;
+      });
     });
-  });
-}
+  }
+
+  function aplanarDefinicionesASlugs(datos: DefinicionSimple | DefinicionSimple[] | number | undefined) {
+    if (datos && typeof datos !== 'number') {
+      return Array.isArray(datos)
+        ? (datos as DefinicionSimple[]).map(({ slug }) => slug)
+        : [(datos as DefinicionSimple).slug];
+    }
+
+    throw new Error(
+      `Los datos no son de tipo DefinicionSimple o DefinicionSimple[], el dato es: ${JSON.stringify(datos)}`
+    );
+  }
+
+  function llenarRelacion(
+    elementosDondeConectar: string[],
+    elementoLista: ElementoLista[],
+    indice: number,
+    campoRelacion: LlavesColectivos,
+    id: number
+  ) {
+    elementosDondeConectar.forEach((elementoConector) => {
+      const elementoALlenar = elementoLista.find((obj) => obj.slug === elementoConector);
+      if (elementoALlenar) {
+        const existe = elementoALlenar.relaciones.find((obj) => obj.indice === indice);
+
+        if (!existe) {
+          elementoALlenar.relaciones.push({ conteo: 1, indice, tipo: campoRelacion });
+        } else {
+          existe.conteo++;
+        }
+
+        if (!elementoALlenar.colectivos?.includes(id)) {
+          elementoALlenar.colectivos?.push(id);
+        }
+      }
+
+      // console.log('poner indicador', datosRelacion, 'como relacion en lista', elementoALlenar);
+    });
+  }
+
+  function agregarRelacion(
+    campos: LlavesColectivos[],
+    campoRelacion: LlavesColectivos,
+    datosRelacion: number | DefinicionSimple | DefinicionSimple[],
+    colectivo: Colectivo
+  ) {
+    const { id } = colectivo;
+
+    campos.forEach((campo) => {
+      // Agregar datos de cada campo en todos los otros, excepto en sí mismo.
+      if (campoRelacion !== campo) {
+        // Si no hay datos para llenar entonces podemos salir y continuar.
+        if (!colectivo[campo]) return;
+
+        // Los indicadores los procesamos distinto para mantener el json final más ligero usando solo ids
+        if (typeof datosRelacion === 'number' && campoRelacion === 'indicadores') {
+          const indicador = indicadores.find((obj) => obj.id === datosRelacion);
+
+          if (indicador) {
+            const indice = listas.indicadores.findIndex((obj) => obj.slug === indicador.slug);
+
+            if (indice >= 0) {
+              const elementosDondeConectar = aplanarDefinicionesASlugs(colectivo[campo]);
+              llenarRelacion(elementosDondeConectar, listas[campo], indice, campo, id);
+            } else {
+              console.log('Esto no puede pasar');
+            }
+          } else {
+            console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
+          }
+          // console.log(datosRelacion, campo, campoRelacion);
+          // const i = listas[llaveALlenar].findIndex((obj) => obj.slug === slug);
+        } else {
+          // Sacar los slugs del campo
+          const slugsCampoProyecto = aplanarDefinicionesASlugs(datosRelacion);
+          // console.log(campo, campoRelacion, slugsCampoProyecto);
+          slugsCampoProyecto.forEach((slug) => {
+            const indice = listas[campoRelacion].findIndex((obj) => obj.slug === slug);
+
+            if (indice >= 0) {
+              if (!colectivo[campo]) return;
+
+              let datos = colectivo[campo];
+
+              if (typeof colectivo[campo] === 'number') {
+                if (campo === 'indicadores') {
+                  const indicador = indicadores.find((obj) => obj.id === colectivo[campo]);
+                  if (indicador) {
+                    datos = { nombre: indicador.nombre, slug: indicador.slug };
+                  } else {
+                    console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
+                  }
+                } else {
+                  console.log('Falta definir que hacer con este dato que es número pero no tiene condición definida.');
+                }
+              }
+
+              const elementosDondeConectar = aplanarDefinicionesASlugs(datos);
+              llenarRelacion(elementosDondeConectar, listas[campoRelacion], indice, campoRelacion, id);
+            }
+          });
+        }
+      }
+    });
+  }
+};

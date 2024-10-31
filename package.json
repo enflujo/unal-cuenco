@@ -1,6 +1,6 @@
 {
   "name": "unal-cuenco",
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "yarn@4.5.1",
   "version": "0.0.2",
   "private": true,
   "workspaces": [
