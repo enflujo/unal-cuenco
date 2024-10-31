@@ -14,7 +14,7 @@ let listas: { [llave: string]: ElementoLista[] } = {};
 const cerebro = usarCerebro();
 const { listaElegida } = storeToRefs(cerebro);
 
-let listaActual = 'años';
+let listaActual = 'tipos';
 const listaVisible: Ref<ElementoLista[]> = ref([]);
 let valorMaximo: number = 22; //Math.max(...listaVisible.value.map((o) => o.conteo));
 
@@ -37,7 +37,7 @@ onMounted(async () => {
     );
     if (datosListas) {
       // Lista que se muestra al cargar el componente
-      listaVisible.value = datosListas.años;
+      listaVisible.value = datosListas.tipos;
       // ordenar de mayor a menor cantidad
       listaVisible.value.sort((a, b) => b.conteo - a.conteo);
       listas = datosListas;
