@@ -70,7 +70,7 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
-@import '@/scss/constantes';
+@use '@/scss/constantes';
 
 #contenedorVistaGraficas {
   max-height: 48vh;

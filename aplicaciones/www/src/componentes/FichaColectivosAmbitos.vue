@@ -2,14 +2,13 @@
 import { Colectivo, Indicador } from '@/tipos/compartidos';
 import { type Ref, ref, onMounted } from 'vue';
 
-defineProps<{
-  id: number;
-}>();
+defineProps<{ id: string }>();
 
 const datosColectivos: Ref<Colectivo[] | undefined> = ref([]);
 const datosIndicadores: Ref<Indicador[] | undefined> = ref([]);
 const infoColectivo: Ref<Colectivo | undefined> = ref();
 const indicador: Ref<Indicador | undefined> = ref();
+const contenedorFicha: Ref<HTMLDivElement | null> = ref(null);
 
 onMounted(async () => {
   try {
@@ -45,7 +44,7 @@ function cerrarFicha() {
 
 <template>
   <div id="fichaColectivosAmbitos" class="ficha">
-    <div id="contenedorFicha" v-if="infoColectivo" :ref="infoColectivo">
+    <div id="contenedorFicha" v-if="infoColectivo" ref="contenedorFicha">
       <section id="encabezado">
         <div id="superior">
           <div class="negrita">#{{ infoColectivo.id }}</div>
@@ -54,7 +53,7 @@ function cerrarFicha() {
         </div>
         <div id="inferior">
           <div class="boton" id="botonAnterior"><</div>
-          <h3 id="tituloFicha">{{ infoColectivo.nombre }}</h3>
+          <h3 id="tituloFicha">{{ infoColectivo.nombre.nombre }}</h3>
           <p class="negrita" id="estado">{{ infoColectivo.estados?.nombre }}</p>
           <div class="boton" id="botonSiguiente">></div>
         </div>

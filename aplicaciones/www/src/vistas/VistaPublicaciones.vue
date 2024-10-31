@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import ComponenteMapa from '@/components/ComponenteMapa.vue';
-import LineaTiempo from '../components/LineaTiempo.vue';
-import ListasPublicaciones from '../components/ListasPublicaciones.vue';
-import FichaProduccionAcademica from '@/components/FichaProduccionAcademica.vue';
-import VistaGraficas from '@/components/VistaGraficas.vue';
+import ComponenteMapa from '@/componentes/ComponenteMapa.vue';
+import LineaTiempo from '@/componentes/LineaTiempo.vue';
+import ListasPublicaciones from '@/componentes/ListasPublicaciones.vue';
+import VistaGraficas from '@/componentes/VistaGraficas.vue';
 import { ref, type Ref } from 'vue';
 
 const vista: Ref<string> = ref('');

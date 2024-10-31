@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ComponenteMapa from '@/components/ComponenteMapa.vue';
-import FichaColectivosAmbitos from '@/components/FichaColectivosAmbitos.vue';
-import ListasColectivos from '@/components/ListasColectivos.vue';
-import VistaGraficas from '@/components/VistaGraficas.vue';
+import ComponenteMapa from '@/componentes/ComponenteMapa.vue';
+import FichaColectivosAmbitos from '@/componentes/FichaColectivosAmbitos.vue';
+import ListasColectivos from '@/componentes/ListasColectivos.vue';
+import VistaGraficas from '@/componentes/VistaGraficas.vue';
 import { ref, type Ref } from 'vue';
 
 const vista: Ref<string> = ref('');

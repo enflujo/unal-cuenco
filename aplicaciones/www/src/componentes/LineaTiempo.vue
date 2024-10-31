@@ -59,7 +59,7 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
-@import '@/scss/constantes';
+@use '@/scss/constantes';
 #contenedorLineaTiempo {
   position: absolute;
   bottom: 0;

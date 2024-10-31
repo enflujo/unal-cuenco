@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ComponenteMapa from '../components/ComponenteMapa.vue';
+import ComponenteMapa from '@/componentes/ComponenteMapa.vue';
 </script>
 
 <template>
