@@ -24,7 +24,7 @@ function elegirVista(vistaElegida: string) {
     <ListasColectivos />
 
     <div v-if="vista === 'grafica'">
-      <VistaGraficas vista="listasColectivos" />
+      <VistaGraficas pagina="colectivos" />
     </div>
 
     <div v-else="vista === 'mapa'">

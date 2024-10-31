@@ -1,26 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import type { Ref } from 'vue';
+import { onMounted } from 'vue';
 import ListaNodos from './ListaNodos.vue';
-import { pedirDatos } from '@/utilidades/ayudas';
-import { ListasPublicaciones } from '@/tipos/compartidos';
+import { usarCerebro } from '@/utilidades/cerebro';
+import { storeToRefs } from 'pinia';
 
-const listas: Ref<ListasPublicaciones | undefined> = ref();
+const cerebro = usarCerebro();
+const { listasPublicaciones } = storeToRefs(cerebro);
 
 onMounted(async () => {
-  try {
-    const datosListas = await pedirDatos<ListasPublicaciones>('datos/listasPublicaciones.json');
-
-    if (datosListas) listas.value = datosListas;
-  } catch (error) {
-    console.error('Problema descargando datos de listas de publicaciones', error);
-  }
+  await cerebro.cargarDatosListaPublicaciones();
 });
 </script>
 
 <template>
-  <div id="contenedorListas" class="todoVisible" v-if="listas">
-    <ListaNodos v-for="(lista, llave) in listas" :id="llave" :lista="lista" />
+  <div id="contenedorListas" class="todoVisible" v-if="listasPublicaciones">
+    <ListaNodos v-for="(lista, llave) in listasPublicaciones" :id="llave" :lista="lista" />
   </div>
 </template>
 

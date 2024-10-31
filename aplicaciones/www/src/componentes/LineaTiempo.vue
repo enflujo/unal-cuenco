@@ -1,55 +1,50 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from 'vue';
+import { computed, onMounted, type Ref, ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import type { ElementoLista, Listas } from '../../../../tipos/compartidos';
+import { usarCerebro } from '@/utilidades/cerebro';
+import { storeToRefs } from 'pinia';
 
-const listas: Ref<Listas | undefined> = ref();
+const cerebro = usarCerebro();
+const { listasPublicaciones } = storeToRefs(cerebro);
+const extremosFechas: Ref<{ min: number; max: number } | null> = ref(null);
+const fechas = computed(() => {
+  if (!extremosFechas.value) {
+    if (!listasPublicaciones.value) return { min: 0, max: 0 };
+    const { años } = listasPublicaciones.value;
+    let añoMin = Infinity;
+    let añoMax = 0;
+
+    años.forEach((año) => {
+      const valorAño = +año.nombre;
+      if (añoMin > valorAño) añoMin = valorAño;
+      if (añoMax < valorAño) añoMax = valorAño;
+    });
+    const valores = { min: añoMin, max: añoMax };
+    extremosFechas.value = valores;
+    return valores;
+  }
+
+  return extremosFechas.value;
+});
 
 onMounted(async () => {
-  const listaAños: { año: number; conteo: number }[] = [];
-  try {
-    const datosListas = await fetch('datos/listasPublicaciones.json').then((res) => res.json());
-    if (datosListas) listas.value = datosListas;
-
-    function rango(min: number, max: number) {
-      const lon = max - min + 1;
-      const arr: { año: number; cantidad: number }[] = [];
-
-      for (let i = 0; i < lon; i++) {
-        const año = min + i;
-        const cantidad = datosListas.años.findIndex((año) => {
-          const valor = año === `${año}`;
-        });
-        arr.push({ año, cantidad });
-      }
-
-      return arr;
-    }
-
-    listas.value?.años?.forEach((año) => {
-      listaAños.push({ año: +año.nombre, conteo: año.conteo });
-    });
-  } catch (error) {
-    console.error('Problema descargando datos de listas de publicaciones', error);
-  }
+  await cerebro.cargarDatosListaPublicaciones();
 });
 </script>
 
 <template>
   <div id="contenedorLineaTiempo">
     <div id="contenedorGrafica">
-      <svg height="100%" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-
       <svg id="marcas" width="100%" height="100%">
-        <g v-for="(a, i) in listas?.años">
+        <g v-for="a in listasPublicaciones?.años">
           <circle
             r="20"
-            :cx="`${convertirEscala(+a.nombre, 1987, 2024, 0, 90) + 2}%`"
+            :cx="`${convertirEscala(+a.nombre, fechas.min, fechas.max, 0, 90) + 2}%`"
             cy="50"
             stroke="white"
             stroke-width="1px"
           />
-          <text class="fecha" :x="`${convertirEscala(+a.nombre, 1987, 2024, 0, 90)}%`" :y="70">
+          <text class="fecha" :x="`${convertirEscala(+a.nombre, fechas.min, fechas.max, 0, 90)}%`" :y="70">
             {{ a.nombre }}: {{ a.conteo }}
           </text>
         </g>

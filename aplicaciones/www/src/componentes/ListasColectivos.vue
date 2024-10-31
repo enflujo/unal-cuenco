@@ -1,27 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import type { Ref } from 'vue';
+import { onMounted } from 'vue';
 import ListaNodos from './ListaNodos.vue';
-import { Listas } from '@/tipos';
+import { usarCerebro } from '@/utilidades/cerebro';
+import { storeToRefs } from 'pinia';
 
-defineProps<{}>();
-
-const listas: Ref<Listas | undefined> = ref();
+const cerebro = usarCerebro();
+const { listasColectivos } = storeToRefs(cerebro);
 
 onMounted(async () => {
-  try {
-    const datosListas = await fetch('datos/listasColectivos.json').then((res) => res.json());
-    //console.log(datosListas);
-    if (datosListas) listas.value = datosListas;
-  } catch (error) {
-    console.error('Problema descargando datos de listas de colectivos', error);
-  }
+  await cerebro.cargarDatosListaColectivos();
 });
 </script>
 
 <template>
-  <div id="contenedorListas" class="todoVisible" v-if="listas">
-    <ListaNodos v-for="(lista, llave) in listas" :id="llave" :lista="lista" />
+  <div id="contenedorListas" class="todoVisible" v-if="listasColectivos">
+    <ListaNodos v-for="(lista, llave) in listasColectivos" :id="llave" :lista="lista" />
   </div>
 </template>
 

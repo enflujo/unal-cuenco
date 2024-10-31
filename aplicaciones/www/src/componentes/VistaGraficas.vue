@@ -1,50 +1,47 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, type Ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import type { ElementoLista, ListasPublicaciones, ListasColectivos } from '../../../../tipos/compartidos';
+import type { ElementoLista, LlavesColectivos, LlavesPA } from '@/tipos/compartidos';
 import { usarCerebro } from '@/utilidades/cerebro';
 import { storeToRefs } from 'pinia';
+import { TiposDePagina } from '@/tipos';
 
-// Pasarle como prop en qué vista estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
-const { vista } = defineProps<{
-  vista: String;
-}>();
-
-let listas: { [llave: string]: ElementoLista[] } = {};
+// Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
+const { pagina } = defineProps<{ pagina: TiposDePagina }>();
 const cerebro = usarCerebro();
 const { listaElegida } = storeToRefs(cerebro);
-
-let listaActual = 'tipos';
 const listaVisible: Ref<ElementoLista[]> = ref([]);
-let valorMaximo: number = 22; //Math.max(...listaVisible.value.map((o) => o.conteo));
+const valorMaximo = ref(0);
+let listas: { [llave: string]: ElementoLista[] } = {};
+let listaActual: LlavesColectivos | LlavesPA | '' = '';
 
 watch(listaElegida, (llaveLista) => {
   if (!llaveLista || llaveLista === listaActual) return;
   listaActual = llaveLista;
 
   // Cambiar lista elegida al hacer click en una lista del menú
-  listaVisible.value = listas[llaveLista];
-
-  // ordenar de mayor a menor cantidad
-  listaVisible.value.sort((a, b) => b.conteo - a.conteo);
-  valorMaximo = Math.max(...listaVisible.value.map((o) => o.conteo));
+  listaVisible.value = listas[llaveLista].sort((a, b) => b.conteo - a.conteo);
+  valorMaximo.value = Math.max(...listaVisible.value.map((o) => o.conteo));
 });
 
 onMounted(async () => {
-  try {
-    const datosListas: ListasPublicaciones | ListasColectivos = await fetch(`datos/${vista}.json`).then((res) =>
-      res.json()
-    );
-    if (datosListas) {
-      // Lista que se muestra al cargar el componente
-      listaVisible.value = datosListas.tipos;
-      // ordenar de mayor a menor cantidad
-      listaVisible.value.sort((a, b) => b.conteo - a.conteo);
-      listas = datosListas;
-    }
-  } catch (error) {
-    console.error('Problema descargando datos de listas de publicaciones', error);
+  if (pagina === 'colectivos') {
+    await cerebro.cargarDatosListaColectivos();
+    if (!cerebro.listasColectivos) return;
+    listas = cerebro.listasColectivos;
+    listaElegida.value = Object.keys(cerebro.listasColectivos)[0] as LlavesColectivos;
+  } else if (pagina === 'publicaciones') {
+    await cerebro.cargarDatosListaPublicaciones();
+    if (!cerebro.listasPublicaciones) return;
+    listas = cerebro.listasPublicaciones;
+    listaElegida.value = Object.keys(cerebro.listasPublicaciones)[0] as LlavesPA;
   }
+});
+
+onUnmounted(() => {
+  // Reiniciar variables al desmontar
+  listaElegida.value = null;
+  listaActual = '';
 });
 </script>
 
