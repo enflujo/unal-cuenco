@@ -1,39 +1,26 @@
 <script setup lang="ts">
 import { Colectivo, Indicador } from '@/tipos/compartidos';
-import { type Ref, ref, onMounted } from 'vue';
+import { usarCerebro } from '@/utilidades/cerebro';
+import { storeToRefs } from 'pinia';
+import { type Ref, ref, onMounted, watch } from 'vue';
 
 defineProps<{ id: string }>();
 
-const datosColectivos: Ref<Colectivo[] | undefined> = ref([]);
-const datosIndicadores: Ref<Indicador[] | undefined> = ref([]);
+const cerebro = usarCerebro();
+const { colectivos, indicadoresColectivos } = storeToRefs(cerebro);
 const infoColectivo: Ref<Colectivo | undefined> = ref();
 const indicador: Ref<Indicador | undefined> = ref();
 const contenedorFicha: Ref<HTMLDivElement | null> = ref(null);
+const cerrarFichaColAmb: Ref<HTMLDivElement | undefined> = ref();
 
 onMounted(async () => {
-  try {
-    const datos = await fetch('datos/colectivos.json').then((res) => res.json());
-    //  console.log(datos);
-    if (datos) datosColectivos.value = datos;
-  } catch (error) {
-    console.error('Problema descargando datos de listas de colectivos', error);
-  }
-
-  try {
-    const indicadores = await fetch('datos/indicadores-colectivos.json').then((res) => res.json());
-    //    console.log(indicadores);
-    if (indicadores) datosIndicadores.value = indicadores;
-  } catch (error) {
-    console.error('Problema descargando datos de listas de colectivos', error);
-  }
+  await cerebro.cargarDatosColectivos();
 
   const idsElegidos: number[] = [5];
 
-  infoColectivo.value = datosColectivos.value?.find((colectivo) => colectivo.id === idsElegidos[0]);
-  indicador.value = datosIndicadores.value?.find((indicador) => indicador.id === infoColectivo.value?.indicadores);
+  infoColectivo.value = colectivos.value?.find((colectivo) => colectivo.id === idsElegidos[0]);
+  indicador.value = indicadoresColectivos.value?.find((indicador) => indicador.id === infoColectivo.value?.indicadores);
 });
-
-const cerrarFichaColAmb: Ref<HTMLDivElement | undefined> = ref();
 
 function cerrarFicha() {
   console.log('cerrar ficha');

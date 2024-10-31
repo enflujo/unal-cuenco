@@ -21,7 +21,6 @@ export interface Indicador {
   nombre: string;
   slug: string;
   definicion?: string;
-  subindicadores?: number[];
 }
 
 export interface Subindicador {

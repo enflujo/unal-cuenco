@@ -1,7 +1,14 @@
 import type { Cerebro } from '@/tipos';
 import { defineStore } from 'pinia';
 import { pedirDatos } from './ayudas';
-import { Colectivo, ListasColectivos, ListasPublicaciones, LlavesColectivos, LlavesPA } from '@/tipos/compartidos';
+import type {
+  Colectivo,
+  Indicador,
+  ListasColectivos,
+  ListasPublicaciones,
+  LlavesColectivos,
+  LlavesPA,
+} from '@/tipos/compartidos';
 
 export const nombresListas = {
   publicacion: 'Publicacion',
@@ -27,7 +34,11 @@ export const usarCerebro = defineStore('cerebro', {
       listasColectivos: null,
       cargandoListasColectivos: false,
       colectivos: null,
+      indicadoresColectivos: null,
       cargandoColectivos: false,
+      publicaciones: null,
+      indicadoresPublicaciones: null,
+      cargandoPublicaciones: false,
     };
   },
 
@@ -41,8 +52,7 @@ export const usarCerebro = defineStore('cerebro', {
       this.cargandoListasPublicaciones = true;
 
       try {
-        const respuesta = await pedirDatos<ListasPublicaciones>('datos/listasPublicaciones.json');
-        this.listasPublicaciones = respuesta;
+        this.listasPublicaciones = await pedirDatos<ListasPublicaciones>('datos/listasPublicaciones.json');
         this.cargandoListasPublicaciones = false;
       } catch (error) {
         console.error('Problema cargando datos de listasPublicaciones', JSON.stringify(error));
@@ -54,8 +64,7 @@ export const usarCerebro = defineStore('cerebro', {
       this.cargandoListasColectivos = true;
 
       try {
-        const respuesta = await pedirDatos<ListasColectivos>('datos/listasColectivos.json');
-        this.listasColectivos = respuesta;
+        this.listasColectivos = await pedirDatos<ListasColectivos>('datos/listasColectivos.json');
         this.cargandoListasColectivos = false;
       } catch (error) {
         console.error('Problema cargando datos de listasColectivos', JSON.stringify(error));
@@ -67,11 +76,24 @@ export const usarCerebro = defineStore('cerebro', {
       this.cargandoColectivos = true;
 
       try {
-        const respuesta = await pedirDatos<Colectivo[]>('datos/colectivos.json');
-        this.colectivos = respuesta;
+        this.colectivos = await pedirDatos<Colectivo[]>('datos/colectivos.json');
+        this.indicadoresColectivos = await pedirDatos<Indicador[]>('datos/indicadores-colectivos.json');
         this.cargandoColectivos = false;
       } catch (error) {
         console.error('Problema cargando datos de colectivos', JSON.stringify(error));
+      }
+    },
+
+    async cargarDatosPublicaciones() {
+      if (this.publicaciones || this.cargandoPublicaciones) return;
+      this.cargandoPublicaciones = true;
+
+      try {
+        this.publicaciones = await pedirDatos<Colectivo[]>('datos/publicaciones.json');
+        this.indicadoresPublicaciones = await pedirDatos<Indicador[]>('datos/indicadores-publicaciones.json');
+        this.cargandoPublicaciones = false;
+      } catch (error) {
+        console.error('Problema cargando datos de publicaciones', JSON.stringify(error));
       }
     },
   },
