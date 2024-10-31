@@ -11,6 +11,7 @@ const listas: Ref<Listas | undefined> = ref();
 onMounted(async () => {
   try {
     const datosListas = await fetch('datos/listasColectivos.json').then((res) => res.json());
+    //console.log(datosListas);
     if (datosListas) listas.value = datosListas;
   } catch (error) {
     console.error('Problema descargando datos de listas de colectivos', error);

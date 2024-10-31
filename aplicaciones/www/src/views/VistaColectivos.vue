@@ -31,7 +31,7 @@ function elegirVista(vistaElegida: string) {
       <ComponenteMapa />
     </div>
 
-    <!-- <FichaColectivosAmbitos id="2" /> -->
+    <FichaColectivosAmbitos id="2" />
   </div>
 </template>
 

@@ -1,27 +1,40 @@
 <script setup lang="ts">
-import { type Ref, ref } from 'vue';
-
-// ¿Cómo se hace un custom element?
-/*import { defineCustomElement } from 'vue';
-
-const SeccionFicha = defineCustomElement({
-  // opciones normales de los componentes de Vue
-  props: {
-    IdPublicacion: Number,
-  },
-  emits: {},
-  template: `...`,
-
-  // solo para defineCustomElement: CSS to be injected into shadow root (?)
-  //styles: [` inlined css `]
-});
-
-// Registrar el elemento personalizado
-customElements.define('seccion-ficha', SeccionFicha);*/
+import { Colectivo, Indicador } from '@/tipos/compartidos';
+import { type Ref, ref, onMounted } from 'vue';
 
 defineProps<{
   id: number;
 }>();
+
+const datosColectivos: Ref<Colectivo[] | undefined> = ref([]);
+const datosIndicadores: Ref<Indicador[] | undefined> = ref([]);
+const infoColectivo: Ref<Colectivo | undefined> = ref();
+const indicador: Ref<Indicador | undefined> = ref();
+
+onMounted(async () => {
+  try {
+    const datos = await fetch('datos/colectivos.json').then((res) => res.json());
+    //  console.log(datos);
+    if (datos) datosColectivos.value = datos;
+  } catch (error) {
+    console.error('Problema descargando datos de listas de colectivos', error);
+  }
+
+  try {
+    const indicadores = await fetch('datos/indicadores-colectivos.json').then((res) => res.json());
+    //    console.log(indicadores);
+    if (indicadores) datosIndicadores.value = indicadores;
+  } catch (error) {
+    console.error('Problema descargando datos de listas de colectivos', error);
+  }
+
+  const idsElegidos: number[] = [5];
+
+  infoColectivo.value = datosColectivos.value?.find((colectivo) => colectivo.id === idsElegidos[0]);
+  indicador.value = datosIndicadores.value?.find((indicador) => indicador.id === infoColectivo.value?.indicadores);
+
+  console.log(infoColectivo.value);
+});
 
 const cerrarFichaColAmb: Ref<HTMLDivElement | undefined> = ref();
 
@@ -32,77 +45,53 @@ function cerrarFicha() {
 
 <template>
   <div id="fichaColectivosAmbitos" class="ficha">
-    <div id="contenedorFicha">
+    <div id="contenedorFicha" v-if="infoColectivo" :ref="infoColectivo">
       <section id="encabezado">
         <div id="superior">
-          <div class="negrita">#{{ id }}</div>
-          <div class="negrita">Cátedra</div>
+          <div class="negrita">#{{ infoColectivo.id }}</div>
+          <div class="negrita">{{ infoColectivo.tipos?.nombre }}</div>
           <div class="boton" id="cerrarFichaColAmb" ref="cerrarFichaColAmb" @click="cerrarFicha">X</div>
         </div>
         <div id="inferior">
           <div class="boton" id="botonAnterior"><</div>
-          <h3 id="tituloFicha">Cátedra Hábitos y Técnicas de Estudio</h3>
-          <p class="negrita" id="año">2024</p>
+          <h3 id="tituloFicha">{{ infoColectivo.nombre }}</h3>
+          <p class="negrita" id="estado">{{ infoColectivo.estados?.nombre }}</p>
           <div class="boton" id="botonSiguiente">></div>
         </div>
       </section>
       <section id="contenido">
         <p id="descripcionFicha">
-          Esta cátedra busca potencializar el aprendizaje autorregulado en los estudiantes de la UNAL sede Manizales,
-          para que implementen estrategias que les permita optimizar sus procesos de aprendizaje. Esto implica que ellos
-          aprendan a conocer sus procesos conductuales, cognitivos y afectivos involucrados en la construcción de su
-          propio conocimiento, y conozcan y apliquen estrategias para regular dichos procesos según los factores
-          contextuales. Objetivo general Fortalecer las habilidades de los alumnos de la Universidad Nacional de
-          Colombia sede Manizales para aprender a aprender. Objetivos específicos • Presentar los fundamentos teóricos
-          de los procesos conductuales, cognitivos y afectivos involucrados en el aprendizaje autorregulado. • Reconocer
-          las estrategias de regulación conductual, cognitiva y afectiva para lograr un aprendizaje eficaz. Acompañar,
-          evaluar, retroalimentar y pro alimentar la implementación de estrategias de regulación conductual, cognitiva y
-          afectiva para el aprendizaje.
+          {{ infoColectivo.descripcion }}
         </p>
-        <div class="seccionFicha">
-          <h4 class="tituloSeccion">Responsable</h4>
-          <p class="contenidoSeccion">Dirección Académica</p>
-        </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.dependencias">
           <h4 class="tituloSeccion">Dependencia</h4>
-          <p class="contenidoSeccion">Dirección Académica</p>
+          <p class="contenidoSeccion">{{ infoColectivo.dependencias.nombre }}</p>
         </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.sedes">
           <h4 class="tituloSeccion">Sede</h4>
-          <p class="contenidoSeccion">Manizales</p>
+          <p class="contenidoSeccion" v-for="sede in infoColectivo.sedes">{{ sede.nombre }}</p>
         </div>
-        <div class="seccionFicha">
-          <h4 class="tituloSeccion">Estado</h4>
-          <p class="contenidoSeccion">Activo</p>
-        </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="indicador">
           <h4 class="tituloSeccion">Indicador temático</h4>
-          <p class="contenidoSeccion">Apoyo académico</p>
+          <p class="contenidoSeccion">{{ indicador.nombre }}</p>
         </div>
-        <div class="seccionFicha">
-          <h4 class="tituloSeccion">Sub-indicador temático</h4>
-          <p class="contenidoSeccion">Estrategias de estudio</p>
-        </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.modalidades">
           <h4 class="tituloSeccion">Modalidad</h4>
-          <p class="contenidoSeccion">Presencial</p>
+          <p class="contenidoSeccion">{{ infoColectivo.modalidades.nombre }}</p>
         </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.fuente">
           <h4 class="tituloSeccion">Fuente</h4>
           <p class="contenidoSeccion">
-            Cátedra Hábitos y Técnicas de Estudio. (s.f.). Recuperado el 02 de octubre de 2023 de Dama, Sede Manizales.
-            Universidad Nacional de Colombia.
+            {{ infoColectivo.fuente }}
           </p>
         </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.enlaceFuente?.length">
           <h4 class="tituloSeccion">Enlace a la fuente</h4>
-          <a class="contenidoSeccion" href="http://dama.manizales.unal.edu.co/index.php/catedras/"
-            >http://dama.manizales.unal.edu.co/index.php/catedras/</a
-          >
+          <a class="contenidoSeccion" :href="infoColectivo.enlaceFuente[0]">{{ infoColectivo.enlaceFuente[0] }}</a>
         </div>
-        <div class="seccionFicha">
+        <div class="seccionFicha" v-if="infoColectivo.contacto">
           <h4 class="tituloSeccion">Contacto</h4>
-          <p class="contenidoSeccion">diracade_man@unal.edu.co</p>
+          <p class="contenidoSeccion">{{ infoColectivo.contacto }}</p>
         </div>
       </section>
     </div>
