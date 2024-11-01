@@ -3,6 +3,7 @@ import { Colectivo, Indicador } from '@/tipos/compartidos';
 import { usarCerebro } from '@/utilidades/cerebro';
 import { storeToRefs } from 'pinia';
 import { type Ref, ref, onMounted, watch } from 'vue';
+import { ListasColectivos } from '../../../../tipos/compartidos';
 
 defineProps<{ id: string }>();
 
@@ -10,26 +11,52 @@ const cerebro = usarCerebro();
 const { colectivos, indicadoresColectivos } = storeToRefs(cerebro);
 const infoColectivo: Ref<Colectivo | undefined> = ref();
 const indicador: Ref<Indicador | undefined> = ref();
-const contenedorFicha: Ref<HTMLDivElement | null> = ref(null);
-const cerrarFichaColAmb: Ref<HTMLDivElement | undefined> = ref();
+const fichaAbierta: Ref<boolean> = ref(true);
+const posActual: Ref<number> = ref(0);
+const listaColectivosElegidos: Ref<number[]> = ref([]);
+const idActual: Ref<number | undefined> = ref(undefined);
+
+const { colectivoElegido } = storeToRefs(cerebro);
+
+const botonAnterior: Ref<HTMLDivElement | undefined> = ref();
+const botonSiguiente: Ref<HTMLDivElement | undefined> = ref();
+
+watch(colectivoElegido, (id) => {
+  if (!id || id === idActual.value) return;
+  idActual.value = id;
+
+  infoColectivo.value = colectivos.value?.find((colectivo) =>
+    colectivo.id === colectivoElegido.value ? colectivoElegido.value : listaColectivosElegidos.value[posActual.value]
+  );
+  indicador.value = indicadoresColectivos.value?.find((indicador) => indicador.id === infoColectivo.value?.indicadores);
+});
 
 onMounted(async () => {
   await cerebro.cargarDatosColectivos();
 
-  const idsElegidos: number[] = [5];
+  listaColectivosElegidos.value = [2, 4, 5];
+  idActual.value = listaColectivosElegidos.value[posActual.value];
 
-  infoColectivo.value = colectivos.value?.find((colectivo) => colectivo.id === idsElegidos[0]);
+  infoColectivo.value = colectivos.value?.find((colectivo) =>
+    colectivo.id === colectivoElegido.value ? colectivoElegido.value : listaColectivosElegidos.value[posActual.value]
+  );
   indicador.value = indicadoresColectivos.value?.find((indicador) => indicador.id === infoColectivo.value?.indicadores);
 });
 
 function cerrarFicha() {
-  console.log('cerrar ficha');
+  fichaAbierta.value = false;
+}
+
+function fichaSiguiente() {
+  posActual.value += 1;
+  cerebro.colectivoElegido = listaColectivosElegidos.value[+posActual.value];
+  console.log(posActual.value, cerebro.colectivoElegido);
 }
 </script>
 
 <template>
-  <div id="fichaColectivosAmbitos" class="ficha">
-    <div id="contenedorFicha" v-if="infoColectivo" ref="contenedorFicha">
+  <div id="fichaColectivosAmbitos" class="ficha" :class="fichaAbierta ? 'visible' : ''">
+    <div id="contenedorFicha" v-if="infoColectivo" :ref="infoColectivo">
       <section id="encabezado">
         <div id="superior">
           <div class="negrita">#{{ infoColectivo.id }}</div>
@@ -37,10 +64,10 @@ function cerrarFicha() {
           <div class="boton" id="cerrarFichaColAmb" ref="cerrarFichaColAmb" @click="cerrarFicha">X</div>
         </div>
         <div id="inferior">
-          <div class="boton" id="botonAnterior"><</div>
+          <div class="boton" ref="botonAnterior"><</div>
           <h3 id="tituloFicha">{{ infoColectivo.nombre.nombre }}</h3>
           <p class="negrita" id="estado">{{ infoColectivo.estados?.nombre }}</p>
-          <div class="boton" id="botonSiguiente">></div>
+          <div class="boton" ref="botonSiguiente" @click="fichaSiguiente">></div>
         </div>
       </section>
       <section id="contenido">
@@ -83,16 +110,20 @@ function cerrarFicha() {
 </template>
 
 <style lang="scss">
-#fichaColectivosAmbitos {
+.ficha {
+  display: none;
   z-index: 99;
   width: 25vw;
   height: 70vh;
   background-color: var(--azulOscuroCuenco);
-  display: block;
   position: absolute;
   right: 5vw;
   top: 100px;
   border-radius: 20px;
   padding: 1em;
+
+  &.visible {
+    display: block;
+  }
 }
 </style>
