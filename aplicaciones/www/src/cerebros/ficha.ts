@@ -6,6 +6,8 @@ import type {
   Colectivo,
   ElementoLista,
   Indicador,
+  ListasColectivos,
+  ListasPublicaciones,
   LlavesColectivos,
   LlavesPublicaciones,
   Publicacion,
@@ -130,9 +132,12 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         datosFicha.resumen = crearUrlsEnTexto(datos.resumen);
 
         if (datos.dependencias) {
+          let lista: ListasColectivos | ListasPublicaciones | null = null;
+          if (paginaActual === 'colectivos') lista = listasColectivos;
+          else if (paginaActual === 'publicaciones') lista = listasPublicaciones;
           datosFicha.dependencias = [];
           datos.dependencias.forEach((obj) => {
-            const existe = listasColectivos?.dependencias.find((dep) => dep.slug === obj.slug);
+            const existe = lista?.dependencias.find((dep) => dep.slug === obj.slug);
             if (existe) {
               datosFicha.dependencias?.push({ nombre: obj.nombre, conteo: 1, id: existe.id });
             }
@@ -170,10 +175,59 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
       function llenarDatosFichaColectivo(datos: Colectivo) {
         llenarCamposCompartidos(datos);
+
+        if (datos.contacto) {
+          datosFicha.contacto = crearUrlsEnTexto(datos.contacto);
+        }
+
+        if (datos.enlaceFuente) {
+          datosFicha.enlaceFuente = `<ul>${datos.enlaceFuente.map((enlace) => `<li>${crearUrlsEnTexto(enlace)}</li>`).join('')}</ul>`;
+        }
+
+        if (datos.fechaFin) {
+          datosFicha.fechaFin = `${datos.fechaFin}`;
+        }
+
+        if (datos.estados) {
+          const estado = listasColectivos?.estados.find((obj) => obj.slug === datos.estados?.slug);
+          if (estado) datosFicha.estados = [{ nombre: datos.estados.nombre, id: estado.id, conteo: 1 }];
+        }
+
+        if (datos.sedes) {
+          datosFicha.sedes = [];
+
+          datos.sedes.forEach((obj) => {
+            const sede = listasColectivos?.sedes.find((s) => s.slug === obj.slug);
+            if (sede) datosFicha.sedes?.push({ nombre: obj.nombre, conteo: 1, id: sede.id });
+          });
+        }
+
+        if (datos.modalidades) {
+          const modalidad = listasColectivos?.modalidades.find((obj) => obj.slug === datos.modalidades?.slug);
+          if (modalidad) datosFicha.modalidades = [{ nombre: datos.modalidades.nombre, id: modalidad.id, conteo: 1 }];
+        }
       }
 
       function llenarDatosFichaPublicacion(datos: Publicacion) {
         llenarCamposCompartidos(datos);
+
+        if (datos.autores) {
+          datosFicha.autores = [];
+
+          datos.autores.forEach((obj) => {
+            const autor = listasPublicaciones?.autores.find((a) => a.slug === obj.slug);
+            if (autor) datosFicha.autores?.push({ nombre: obj.nombre, conteo: 1, id: autor.id });
+          });
+        }
+
+        if (datos.años) {
+          const año = listasPublicaciones?.años.find((a) => a.slug === datos.años?.slug);
+          if (año) datosFicha.años = [{ nombre: datos.años.nombre, conteo: 1, id: año.id }];
+        }
+
+        if (datos.referencia) {
+          datosFicha.referencia = crearUrlsEnTexto(datos.referencia);
+        }
       }
 
       function llenarDatosFicha(datos: ElementoLista) {

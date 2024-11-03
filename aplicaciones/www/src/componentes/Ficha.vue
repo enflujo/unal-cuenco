@@ -12,14 +12,17 @@ const secciones: TiposNodo[] = [
   'publicaciones',
   'colectivos',
   'fuente',
+  'enlaceFuente',
+  'autores',
+  'estados',
+  'contacto',
   'dependencias',
   'indicadores',
   'modalidades',
   'sedes',
   'tipos',
-  'autores',
   'años',
-  'estados',
+  'referencia',
 ];
 
 onMounted(() => {
@@ -77,7 +80,7 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
         <div id="descripcionFicha" v-html="datosFicha.resumen"></div>
 
         <div v-for="tipo in secciones" :key="`seccion-${tipo}`">
-          <section class="seccionFicha" v-if="datosFicha[tipo]?.length">
+          <section class="seccionFicha" v-if="datosFicha[tipo]">
             <h4 class="tituloSeccion">{{ nombresListas[tipo] }}</h4>
 
             <ul class="contenidoSeccion">
@@ -88,7 +91,7 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
                 class="enlace"
                 @click="abrirElemento($event, obj.id, tipo)"
               >
-                {{ obj.nombre }}
+                {{ obj.nombre }} {{ tipo === 'estados' && datosFicha.fechaFin ? ` (${datosFicha.fechaFin})` : '' }}
               </li>
 
               <li v-else v-html="datosFicha[tipo]"></li>
