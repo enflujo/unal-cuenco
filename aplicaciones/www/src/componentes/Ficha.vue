@@ -3,9 +3,11 @@ import { usarCerebroFicha } from '@/cerebros/ficha';
 import { TiposNodo } from '@/tipos';
 import { nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
+import { onMounted, onUnmounted, type Ref, ref } from 'vue';
 
 const cerebroFicha = usarCerebroFicha();
-const { datosFicha } = storeToRefs(cerebroFicha);
+const { datosFicha, fichaVisible } = storeToRefs(cerebroFicha);
+const contenedorFicha: Ref<HTMLDivElement | null> = ref(null);
 const secciones: TiposNodo[] = [
   'publicaciones',
   'colectivos',
@@ -19,11 +21,29 @@ const secciones: TiposNodo[] = [
   'años',
   'estados',
 ];
+
+onMounted(() => {
+  document.body.addEventListener('click', clicFuera);
+});
+
+onUnmounted(() => {
+  document.body.removeEventListener('click', clicFuera);
+});
+
+function clicFuera(evento: MouseEvent) {
+  if (!contenedorFicha.value) return;
+  const elemento = evento.target as HTMLElement;
+  if (!(contenedorFicha.value === elemento || contenedorFicha.value.contains(elemento))) {
+    if (fichaVisible) {
+      cerebroFicha.cerrarFicha();
+    }
+  }
+}
 </script>
 
 <template>
-  <div id="contenedorFicha" v-if="datosFicha">
-    <div class="ficha">
+  <div id="contenedorFicha" ref="contenedorFicha" v-if="fichaVisible">
+    <div class="ficha" v-if="datosFicha">
       <header id="encabezado">
         <div id="superior">
           <!-- <div class="negrita">#{{ datosNodo.id }}</div> -->

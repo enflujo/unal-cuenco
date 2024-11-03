@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
+import type { TiposNodo } from '@/tipos';
 import type { ElementoLista, LlavesColectivos, LlavesPublicaciones } from '@/tipos/compartidos';
 import { nombresListas } from '@/utilidades/constantes';
 
@@ -12,6 +13,11 @@ interface Esquema {
 defineProps<Esquema>();
 const cerebroDatos = usarCerebroDatos();
 const cerebroFicha = usarCerebroFicha();
+
+function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
+  evento.stopPropagation();
+  cerebroFicha.seleccionarNodo(i, id);
+}
 </script>
 
 <template>
@@ -23,7 +29,7 @@ const cerebroFicha = usarCerebroFicha();
         v-for="(elemento, i) in lista"
         :key="elemento.slug"
         :id="elemento.slug"
-        @click="cerebroFicha.seleccionarNodo(i, id)"
+        @click="abrirElemento($event, i, id)"
         class="nodo"
         :class="cerebroFicha.llaveLista === id && i === cerebroFicha.indiceActual ? 'actual' : ''"
         :data-tipo="id"

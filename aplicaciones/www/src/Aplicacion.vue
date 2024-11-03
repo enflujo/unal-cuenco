@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
-import { storeToRefs } from 'pinia';
 import Ficha from './componentes/Ficha.vue';
-import { usarCerebroFicha } from './cerebros/ficha';
-
-const cerebroFicha = usarCerebroFicha();
-const { fichaVisible } = storeToRefs(cerebroFicha);
 </script>
 
 <template>
@@ -18,7 +13,7 @@ const { fichaVisible } = storeToRefs(cerebroFicha);
     </nav>
   </header>
 
-  <Ficha v-if="fichaVisible" />
+  <Ficha />
 
   <RouterView />
 </template>

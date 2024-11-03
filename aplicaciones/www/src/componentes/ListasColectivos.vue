@@ -13,9 +13,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div id="contenedorListas" v-if="listasColectivos">
+  <nav id="contenedorListas" v-if="listasColectivos">
     <ListaNodos v-for="(lista, llave) in listasColectivos" :id="llave" :lista="lista" />
-  </div>
+  </nav>
 </template>
 
 <style lang="scss" scoped></style>
