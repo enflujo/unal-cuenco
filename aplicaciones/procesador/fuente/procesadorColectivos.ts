@@ -68,7 +68,7 @@ export default async (
       const nombre = limpiarTextoSimple(fila[0]);
 
       if (nombre) {
-        const colectivo: Colectivo = { id: numeroFila - 1, nombre: { nombre, slug: slugificar(nombre) } };
+        const colectivo: Colectivo = { id: numeroFila - 1, titulo: { nombre, slug: slugificar(nombre) } };
 
         /** Tipos de Ámbito */
         if (fila[1]) {
@@ -80,7 +80,7 @@ export default async (
 
         /** Descripción */
         if (fila[2]) {
-          colectivo.descripcion = limpiarTextoSimple(fila[2]);
+          colectivo.resumen = limpiarTextoSimple(fila[2]);
         }
 
         /** Estado activo */
@@ -210,7 +210,7 @@ export default async (
             indicadores.push({ id, nombre, slug, definicion: '' });
           }
 
-          colectivo.indicadores = id;
+          colectivo.indicadores = { nombre, slug }; // id
         }
 
         colectivos.push(colectivo);
@@ -254,68 +254,71 @@ export default async (
               // Si no hay datos para llenar entonces podemos salir y continuar.
               if (!colectivo[campo]) return;
 
-              // Los indicadores los procesamos distinto para mantener el json final más ligero usando solo ids
-              if (typeof datosRelacion === 'number') {
-                if (campoRelacion === 'indicadores') {
-                  const indicador = indicadores.find((obj) => obj.id === datosRelacion);
+              // // Los indicadores los procesamos distinto para mantener el json final más ligero usando solo ids
+              // if (typeof datosRelacion === 'number') {
+              //   if (campoRelacion === 'indicadores') {
+              //     const indicador = indicadores.find((obj) => obj.id === datosRelacion);
 
-                  if (indicador) {
-                    const indice = listas.indicadores.findIndex((obj) => obj.slug === indicador.slug);
+              //     if (indicador) {
+              //       const indice = listas.indicadores.findIndex((obj) => obj.slug === indicador.slug);
 
-                    if (indice >= 0) {
-                      const elementosDondeConectar = aplanarDefinicionesASlugs(colectivo[campo]);
-                      llenarRelacion(elementosDondeConectar, listas[campo], indice, campo, id);
-                    } else {
-                      console.log('Esto no puede pasar');
-                    }
-                  } else {
-                    console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
-                  }
+              //       if (indice >= 0) {
+              //         const elementosDondeConectar = aplanarDefinicionesASlugs(colectivo[campo]);
+              //         llenarRelacion(elementosDondeConectar, listas[campo], indice, campo, id);
+              //       } else {
+              //         console.log('Esto no puede pasar');
+              //       }
+              //     } else {
+              //       console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
+              //     }
+              //   } else {
+              //     console.log('Falta definir que hacer con este dato que es número pero no tiene condición definida.');
+              //   }
+              // } else {
+              // Sacar los slugs del campo
+              const slugsCampoProyecto = aplanarDefinicionesASlugs(datosRelacion);
+
+              slugsCampoProyecto.forEach((slug) => {
+                const indice = listas[campoRelacion].findIndex((obj) => obj.slug === slug);
+
+                if (indice >= 0) {
+                  if (!colectivo[campo]) return;
+
+                  let datos = colectivo[campo];
+
+                  // if (typeof colectivo[campo] === 'number') {
+                  //   if (campo === 'indicadores') {
+                  //     const indicador = indicadores.find((obj) => obj.id === colectivo[campo]);
+                  //     if (indicador) {
+                  //       datos = { nombre: indicador.nombre, slug: indicador.slug };
+                  //     } else {
+                  //       console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
+                  //     }
+                  //   } else {
+                  //     console.log(
+                  //       'Falta definir que hacer con este dato que es número pero no tiene condición definida.'
+                  //     );
+                  //   }
+                  // }
+
+                  const elementosDondeConectar = aplanarDefinicionesASlugs(datos);
+                  // if (campoRelacion === 'indicadores') {
+                  //   console.log(elementosDondeConectar, listas[campoRelacion], indice, campoRelacion, id);
+                  // }
+                  llenarRelacion(elementosDondeConectar, listas[campo], indice, campoRelacion, id);
                 } else {
-                  console.log('Falta definir que hacer con este dato que es número pero no tiene condición definida.');
+                  console.log('Esto no puede pasar');
                 }
-              } else {
-                // Sacar los slugs del campo
-                const slugsCampoProyecto = aplanarDefinicionesASlugs(datosRelacion);
-
-                slugsCampoProyecto.forEach((slug) => {
-                  const indice = listas[campoRelacion].findIndex((obj) => obj.slug === slug);
-
-                  if (indice >= 0) {
-                    if (!colectivo[campo]) return;
-
-                    let datos = colectivo[campo];
-
-                    if (typeof colectivo[campo] === 'number') {
-                      if (campo === 'indicadores') {
-                        const indicador = indicadores.find((obj) => obj.id === colectivo[campo]);
-                        if (indicador) {
-                          datos = { nombre: indicador.nombre, slug: indicador.slug };
-                        } else {
-                          console.log('Paso algo raro, no se encontró un indicador que ya se había registrado antes.');
-                        }
-                      } else {
-                        console.log(
-                          'Falta definir que hacer con este dato que es número pero no tiene condición definida.'
-                        );
-                      }
-                    }
-
-                    const elementosDondeConectar = aplanarDefinicionesASlugs(datos);
-                    llenarRelacion(elementosDondeConectar, listas[campoRelacion], indice, campoRelacion, id);
-                  } else {
-                    console.log('Esto no puede pasar');
-                  }
-                });
-              }
+              });
             }
+            // }
           });
         }
       });
 
       colectivos.sort((a, b) => {
-        if (a.nombre.slug < b.nombre.slug) return -1;
-        else if (a.nombre.slug > b.nombre.slug) return 1;
+        if (a.titulo.slug < b.titulo.slug) return -1;
+        else if (a.titulo.slug > b.titulo.slug) return 1;
         return 0;
       });
     });
@@ -330,6 +333,7 @@ export default async (
   ) {
     elementosDondeConectar.forEach((elementoConector) => {
       const elementoALlenar = elementoLista.find((obj) => obj.slug === elementoConector);
+
       if (elementoALlenar) {
         const existe = elementoALlenar.relaciones.find((obj) => obj.indice === indice);
 
@@ -344,7 +348,7 @@ export default async (
         }
       }
 
-      // console.log('poner indicador', datosRelacion, 'como relacion en lista', elementoALlenar);
+      // console.log('poner', campoRelacion, 'como relacion en lista', elementoConector);
     });
   }
 };

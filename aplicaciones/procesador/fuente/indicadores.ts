@@ -4,7 +4,7 @@ import type { Indicador, Subindicador } from '@/tipos/compartidos';
 import type { Errata } from './tipos';
 import { limpiarTextoSimple } from './ayudas';
 
-type FilaIdicador = [id: string, nombre: string, descripcion: string, subindicadores?: Subindicador[]];
+type FilaIndicador = [id: string, nombre: string, descripcion: string, subindicadores?: Subindicador[]];
 type FilaSubindicador = [id: string, nombre: string, idIndicadorMadre: string];
 
 export async function procesarIndicadores(
@@ -25,7 +25,7 @@ export async function procesarIndicadores(
     const errata: Errata[] = [];
 
     flujo.on('data', async ({ raw }) => {
-      const [nombre, definicion] = raw.arr as FilaIdicador;
+      const [nombre, definicion] = raw.arr as FilaIndicador;
 
       if (nombre) {
         const nombreProcesado = limpiarTextoSimple(nombre);
@@ -132,20 +132,20 @@ export async function procesarSubIndicadores(
     });
 
     flujo.on('close', () => {
-      lista.forEach((subI) => {
-        const indicadorId = subI.indicadorMadre;
-        const indicadorI = indicadores.findIndex((obj) => obj.id === indicadorId);
+      // lista.forEach((subI) => {
+      // const indicadorId = subI.indicadorMadre;
+      // const indicadorI = indicadores.findIndex((obj) => obj.id === indicadorId);
 
-        if (indicadorI >= 0) {
-          if (!indicadores[indicadorI].subindicadores) {
-            indicadores[indicadorI].subindicadores = [];
-          }
+      // if (indicadorI >= 0) {
+      //   if (!indicadores[indicadorI].subindicadores) {
+      //     indicadores[indicadorI].subindicadores = [];
+      //   }
 
-          indicadores[indicadorI].subindicadores?.push(subI.id);
-        } else {
-          errata.push({ fila: 0, error: `No existe el indicador con ID ${subI.indicadorMadre}!` });
-        }
-      });
+      //   indicadores[indicadorI].subindicadores?.push(subI.id);
+      // } else {
+      //   errata.push({ fila: 0, error: `No existe el indicador con ID ${subI.indicadorMadre}!` });
+      // }
+      // });
 
       resolver({ datos: lista, errata });
     });

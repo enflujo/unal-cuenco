@@ -12,10 +12,6 @@ export interface ElementoLista {
   colectivos?: number[];
 }
 
-export interface ElementoListaIndicadores extends ElementoLista {
-  //subindicadores: ElementoLista[];
-}
-
 export interface Indicador {
   id: number;
   nombre: string;
@@ -31,58 +27,42 @@ export interface Subindicador {
 }
 
 export type DefinicionSimple = { nombre: string; slug: string };
-export type Año = { año: number; valor: string };
 
-/* export type ListasColectivos = {
-  años: ElementoLista[];
-  estados: ElementoLista[];
-  tipos: ElementoLista[];
-  responsables: ElementoLista[];
-  sedes: ElementoLista[];
-  dependencias: ElementoLista[];
-  modalidades: ElementoLista[];
-  indicadores: ElementoListaIndicadores[];
-  subindicadores: ElementoLista[];
-}; */
-
-export type LlavesPA = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
+export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
+export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 
 export type ListasPublicaciones = {
-  [llave in LlavesPA]: ElementoLista[];
+  [llave in LlavesPublicaciones]: ElementoLista[];
 };
-export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 export type ListasColectivos = {
   [llave in LlavesColectivos]: ElementoLista[];
 };
 
-export type CamposPA = { llave: LlavesPA; indice: number }[];
+export type CamposPA = { llave: LlavesPublicaciones; indice: number }[];
 export type CamposColectivos = { llave: LlavesColectivos; indice: number }[];
 
-export type Publicacion = {
+export interface DatosGeneralesNodo {
   id: number;
   titulo: DefinicionSimple;
   resumen?: string;
+  tipos?: DefinicionSimple;
+  fuente?: string;
+  indicadores?: DefinicionSimple;
+}
+
+export interface Publicacion extends DatosGeneralesNodo {
   autores?: DefinicionSimple[];
   años?: DefinicionSimple;
-  tipos?: DefinicionSimple;
   referencia?: string;
-  fuente?: string;
   dependencias?: DefinicionSimple[];
-  indicadores?: number;
-};
+}
 
-export type Colectivo = {
-  id: number;
-  nombre: DefinicionSimple;
-  tipos?: DefinicionSimple;
-  descripcion?: string;
+export interface Colectivo extends DatosGeneralesNodo {
   estados?: DefinicionSimple;
   fechaFin?: number;
-  fuente?: string;
   enlaceFuente?: string[];
   contacto?: string;
   sedes?: DefinicionSimple[];
   dependencias?: DefinicionSimple;
   modalidades?: DefinicionSimple;
-  indicadores?: number;
-};
+}

@@ -1,5 +1,5 @@
 import { alerta, chulo, guardarJSON, logAviso, logNaranjaPulso } from './ayudas';
-import { procesarIndicadores, procesarSubIndicadores } from './indicadores';
+import { procesarIndicadores } from './indicadores';
 import procesadorColectivos from './procesadorColectivos';
 import procesadorPublicaciones from './procesadorPublicaciones';
 import type { Errata } from './tipos';

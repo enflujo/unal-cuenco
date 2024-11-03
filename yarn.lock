@@ -679,12 +679,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.8.5":
-  version: 22.8.5
-  resolution: "@types/node@npm:22.8.5"
+"@types/node@npm:^22.8.6":
+  version: 22.8.6
+  resolution: "@types/node@npm:22.8.6"
   dependencies:
     undici-types: "npm:~6.19.8"
-  checksum: 10c0/5e43553026c83f18bfa381d35c8fd608e69d12d0f0fe4601e8bb98b651a3b240be9d66c1f2f4decdbebb41d55b18e89238b02f3992d820d89801b9b3625ba8ab
+  checksum: 10c0/d3a11f2549234a91a4c5d0ff35ab4bdcb7ba34db4d3f1d189be39b8bd41c19aac98d117150a95a9c5a9d45b1014135477ea240b2b8317c86ae3d3cf1c3b3f8f4
   languageName: node
   linkType: hard
 
@@ -3064,13 +3064,13 @@ __metadata:
   resolution: "procesador@workspace:aplicaciones/procesador"
   dependencies:
     "@types/cli-color": "npm:^2.0.6"
-    "@types/node": "npm:^22.8.5"
+    "@types/node": "npm:^22.8.6"
     "@types/slug": "npm:^5.0.9"
     cli-color: "npm:^2.0.4"
     node-emoji: "npm:^2.1.3"
     nodemon: "npm:^3.1.7"
     rimraf: "npm:^6.0.1"
-    slug: "npm:^10.0.0"
+    slug: "npm:^9.1.0"
     ts-node: "npm:^10.9.2"
     xlstream: "npm:^2.5.5"
   languageName: unknown
@@ -3238,17 +3238,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.80.5":
-  version: 1.80.5
-  resolution: "sass@npm:1.80.5"
+"sass@npm:^1.80.6":
+  version: 1.80.6
+  resolution: "sass@npm:1.80.6"
   dependencies:
     "@parcel/watcher": "npm:^2.4.1"
     chokidar: "npm:^4.0.0"
     immutable: "npm:^4.0.0"
     source-map-js: "npm:>=0.6.2 <2.0.0"
+  dependenciesMeta:
+    "@parcel/watcher":
+      optional: true
   bin:
     sass: sass.js
-  checksum: 10c0/d592e57c037315f4c5976af3d37ce4c7758b1b4e89d064455d6992829ea59888c71b9dbc86f7fc8dca87ac98ebc9cece10e5c8fc5509bf192db81712a34fd579
+  checksum: 10c0/04ce40d4dcf06cf2a94a66c1cc4fd4a9eb4033fd039291acd0be9d1d4123860da568c5cbef9de8493ffbedd8acae1cd0b8346f5da21c6f7cf0ffd3477730beca
   languageName: node
   linkType: hard
 
@@ -3333,12 +3336,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slug@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "slug@npm:10.0.0"
+"slug@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "slug@npm:9.1.0"
   bin:
     slug: cli.js
-  checksum: 10c0/330f7657dd44e526412417cb3225faf88fe5190ebbf1d9345b572d8e84358efa7b25412447aa445f84102e763d9ce1bbe79331aa0e2162ddf0324ae02cb6d3e4
+  checksum: 10c0/edc3e957de63e2d78d3809e0bf217da34ccb6ca313a83e2c1598ede2bd001644978d15eb69650a7b238c84adacbbab7318c4601c082aa433a3a2fd5e39523c2d
   languageName: node
   linkType: hard
 
@@ -3876,7 +3879,7 @@ __metadata:
   resolution: "www@workspace:aplicaciones/www"
   dependencies:
     "@tsconfig/node20": "npm:^20.1.4"
-    "@types/node": "npm:^22.8.5"
+    "@types/node": "npm:^22.8.6"
     "@vitejs/plugin-vue": "npm:^5.1.4"
     "@vue/tsconfig": "npm:^0.5.1"
     autoprefixer: "npm:^10.4.20"
@@ -3885,7 +3888,7 @@ __metadata:
     npm-run-all2: "npm:^7.0.1"
     pinia: "npm:^2.2.5"
     postcss: "npm:^8.4.47"
-    sass: "npm:^1.80.5"
+    sass: "npm:^1.80.6"
     vite: "npm:^5.4.10"
     vue: "npm:^3.5.12"
     vue-router: "npm:^4.4.5"

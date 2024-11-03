@@ -17,14 +17,14 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
-    "@types/node": "^22.8.5",
+    "@types/node": "^22.8.6",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/tsconfig": "^0.5.1",
     "autoprefixer": "^10.4.20",
     "cssnano": "^7.0.6",
     "npm-run-all2": "^7.0.1",
     "postcss": "^8.4.47",
-    "sass": "^1.80.5",
+    "sass": "^1.80.6",
     "vite": "^5.4.10",
     "vue-tsc": "^2.1.10"
   }
