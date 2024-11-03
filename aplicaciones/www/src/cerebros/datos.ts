@@ -8,6 +8,7 @@ import type {
   ListasPublicaciones,
   LlavesColectivos,
   LlavesPublicaciones,
+  Publicacion,
 } from '@/tipos/compartidos';
 
 export const usarCerebroDatos = defineStore('cerebroDatos', {
@@ -80,7 +81,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       this.cargandoPublicaciones = true;
 
       try {
-        this.publicaciones = await pedirDatos<Colectivo[]>('datos/publicaciones.json');
+        this.publicaciones = await pedirDatos<Publicacion[]>('datos/publicaciones.json');
         this.indicadoresPublicaciones = await pedirDatos<Indicador[]>('datos/indicadores-publicaciones.json');
         this.cargandoPublicaciones = false;
       } catch (error) {
