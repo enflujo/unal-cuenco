@@ -16,6 +16,6 @@ export const nombresListas: { [llave in TiposNodo]: string } = {
   referencia: 'Referencia',
   fuente: 'Fuente',
   fechaFin: 'Activo hasta',
-  enlaceFuente: 'Enlace',
+  enlaceFuente: 'Enlace Fuente',
   contacto: 'Contacto',
 };
