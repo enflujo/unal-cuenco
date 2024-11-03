@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import Ficha from './componentes/Ficha.vue';
+import { usarCerebroFicha } from './cerebros/ficha';
+
+const cerebroFicha = usarCerebroFicha();
+const { fichaVisible } = storeToRefs(cerebroFicha);
 </script>
 
 <template>
@@ -12,9 +18,40 @@ import { RouterLink, RouterView } from 'vue-router';
     </nav>
   </header>
 
+  <Ficha v-if="fichaVisible" />
+
   <RouterView />
 </template>
 
 <style lang="scss">
-@use '@/scss/_constantes.scss';
+@use '@/scss/estilos.scss';
+
+header {
+  line-height: 1.5;
+}
+
+#menu {
+  width: 100vw;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 1em 20em;
+  position: relative;
+  z-index: 9;
+
+  .elementoMenu {
+    padding: 0.5em 0.7em;
+    color: var(--magentaCuenco);
+    display: inline-block;
+    padding: 0 1rem;
+
+    &:hover {
+      color: var(--azulClaroCuenco);
+    }
+  }
+
+  .router-link-exact-active {
+    border-bottom: 1px solid;
+    pointer-events: none;
+  }
+}
 </style>

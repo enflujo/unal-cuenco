@@ -1,87 +1,30 @@
 @use './normalizar';
-@use './constantes';
+@use './constantes' as *;
 
 @font-face {
   font-family: Ancizar;
   src: url('/fuentes/AncizarSans/AncizarSans-Regular_02042016.otf');
 }
 
-/* use */
 body {
   font-family: Ancizar, Arial, Helvetica, sans-serif;
 }
 
-a {
+a,
+a:link {
   text-decoration: none;
   color: var(--verdeCuenco);
   transition: 0.4s;
   padding: 3px;
 }
 
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-nav a.router-link-exact-active {
-  color: var(--magentaCuenco);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  text-align: center;
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-#menu {
-  width: 100vw;
-  display: flex;
-  justify-content: space-evenly;
-  padding: 1em 20em;
-  position: relative;
-  z-index: 9;
-
-  .elementoMenu {
-    padding: 0.5em 0.7em;
-    color: var(--magentaCuenco);
-    margin: 0 0.4em 0 0;
-    width: fit-content;
-
-    &:hover {
-      color: var(--azulClaroCuenco);
-    }
-  }
-}
-
-// Página principal
-#presentacion {
-  height: 85vh;
-  overflow: auto;
-  margin-left: 4em;
-  padding-right: 1em;
-  width: 25vw;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-
-/* Ocultar scroll en Chrome, Safari and Opera */
-#presentacion::-webkit-scrollbar {
-  display: none;
+.resaltar {
+  font-weight: bold;
 }
 
 // Nodos listas
 .contenedorElementos {
   height: fit-content;
-  // opacity: 0;
-  // overflow: hidden;
   transition: opacity 0.35s ease-in-out;
 
   &.abierto {
@@ -93,17 +36,8 @@ nav a:first-of-type {
     cursor: pointer;
 
     &:hover {
-      background-color: white;
+      background-color: var(--verdeCuenco);
     }
-  }
-
-  .titulo {
-    cursor: pointer;
-  }
-
-  .nombre {
-    margin: 0;
-    font-size: 0.85em;
   }
 
   .barra {
@@ -131,94 +65,6 @@ nav a:first-of-type {
 
   ul {
     padding: 0;
-  }
-
-  li {
     list-style: none;
-  }
-  .lista {
-  }
-}
-
-// Ficha informativa
-.ficha {
-  h2 {
-    margin: 0;
-  }
-
-  .negrita {
-    font-weight: bold;
-  }
-
-  .boton {
-    cursor: pointer;
-
-    &:hover {
-      color: var(--azulOscuroCuenco);
-    }
-  }
-
-  #contenedorFicha {
-    border: 1px white solid;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  #encabezado {
-    background-color: var(--blanco);
-    color: var(--magentaCuenco);
-    padding: 0.5em 1em;
-
-    #superior {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--magentaCuenco);
-    }
-
-    #inferior {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      h3 {
-        font-size: 0.9em;
-        font-weight: 400;
-        margin: 1em 1.5em;
-      }
-
-      #año {
-        margin-right: 1em;
-      }
-    }
-  }
-
-  #contenido {
-    overflow-y: scroll;
-    color: white;
-    padding: 1em 2em;
-  }
-
-  .seccionFicha {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--blanco);
-    margin-bottom: 0.5em;
-
-    li {
-      list-style: none;
-    }
-
-    .tituloSeccion {
-      margin-right: 1em;
-      width: 35%;
-      margin: 0.5em 0 0 0;
-    }
-    .contenidoSeccion {
-      flex-basis: 65%;
-      overflow-wrap: anywhere;
-      margin: 0.5em 0 0 0;
-    }
   }
 }
