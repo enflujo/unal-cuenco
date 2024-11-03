@@ -1,13 +1,28 @@
 <script setup lang="ts">
-import ComponenteMapa from '@/componentes/ComponenteMapa.vue';
+import Mapa from '@/componentes/Mapa.vue';
 import LineaTiempo from '@/componentes/LineaTiempo.vue';
 import ListasPublicaciones from '@/componentes/ListasPublicaciones.vue';
 import VistaGraficas from '@/componentes/VistaGraficas.vue';
-import { ref, type Ref } from 'vue';
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { usarCerebroGeneral } from '@/cerebros/general';
+import { usarCerebroDatos } from '@/cerebros/datos';
+import { usarCerebroFicha } from '@/cerebros/ficha';
 
 const vista: Ref<string> = ref('');
 const botonGraficas: Ref<HTMLDivElement | undefined> = ref();
 const botonMapa: Ref<HTMLDivElement | undefined> = ref();
+const cerebroDatos = usarCerebroDatos();
+const cerebroGeneral = usarCerebroGeneral();
+const cerebroFicha = usarCerebroFicha();
+
+onMounted(async () => {
+  cerebroGeneral.paginaActual = 'publicaciones';
+  await cerebroDatos.cargarDatosPublicaciones();
+});
+
+onUnmounted(() => {
+  cerebroFicha.fichaVisible = false;
+});
 
 function elegirVista(vistaElegida: string) {
   vista.value = vistaElegida;
@@ -28,15 +43,14 @@ function elegirVista(vistaElegida: string) {
     </div>
 
     <div v-else="vista === 'mapa'">
-      <ComponenteMapa />
+      <Mapa />
     </div>
 
     <LineaTiempo />
-    <!--  <FichaProduccionAcademica /> -->
   </div>
 </template>
 
-<style>
+<style lang="scss" scoped>
 .botonesVista {
   position: relative;
   left: 20vw;

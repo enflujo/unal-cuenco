@@ -1,37 +1,37 @@
 <script setup lang="ts">
-import type { ElementoLista, LlavesColectivos, LlavesPA } from '@/tipos/compartidos';
-import { nombresListas, usarCerebro } from '@/utilidades/cerebro';
+import { usarCerebroDatos } from '@/cerebros/datos';
+import { usarCerebroFicha } from '@/cerebros/ficha';
+import type { ElementoLista, LlavesColectivos, LlavesPublicaciones } from '@/tipos/compartidos';
+import { nombresListas } from '@/utilidades/constantes';
 
 interface Esquema {
-  id: LlavesPA | LlavesColectivos;
+  id: LlavesPublicaciones | LlavesColectivos;
   lista: ElementoLista[];
 }
 
 defineProps<Esquema>();
-
-const cerebro = usarCerebro();
+const cerebroDatos = usarCerebroDatos();
+const cerebroFicha = usarCerebroFicha();
 </script>
 
 <template>
   <section :id="id" class="lista">
-    <h2 class="titulo" @click="cerebro.cambiarLista(id)">{{ nombresListas[id] }}</h2>
+    <h2 class="titulo" @click="cerebroDatos.cambiarLista(id)">{{ nombresListas[id] }}</h2>
 
     <ul class="contenedorElementos" :class="id">
       <li
         v-for="(elemento, i) in lista"
         :key="elemento.slug"
         :id="elemento.slug"
+        @click="cerebroFicha.seleccionarNodo(i, id)"
         class="nodo"
+        :class="cerebroFicha.llaveLista === id && i === cerebroFicha.indiceActual ? 'actual' : ''"
         :data-tipo="id"
         :data-indice="i"
-        :data-proyectos="elemento.publicaciones"
+        :data-publicaciones="elemento.publicaciones"
+        :data-colectivos="elemento.colectivos"
       >
-        <h3 class="nombre">{{ elemento.nombre }}</h3>
-
-        <!--      <div class="barra">
-          <span class="linea" :style="`width:${elemento.conteo}%`"></span>
-          <span class="conteo">{{ elemento.conteo }}</span>
-        </div> -->
+        {{ elemento.nombre }}
       </li>
     </ul>
   </section>
@@ -43,6 +43,17 @@ const cerebro = usarCerebro();
 
   .titulo {
     cursor: pointer;
+  }
+
+  .nodo {
+    margin: 0;
+    font-size: 0.85em;
+    line-height: 1.2;
+
+    &.actual {
+      background-color: var(--magentaCuenco);
+      color: var(--blanco);
+    }
   }
 }
 </style>

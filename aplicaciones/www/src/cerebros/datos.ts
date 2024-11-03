@@ -1,49 +1,40 @@
-import type { Cerebro } from '@/tipos';
 import { defineStore } from 'pinia';
-import { pedirDatos } from './ayudas';
+import { pedirDatos } from '@/utilidades/ayudas';
+import type { CerebroDatos } from '@/tipos';
 import type {
   Colectivo,
   Indicador,
   ListasColectivos,
   ListasPublicaciones,
   LlavesColectivos,
-  LlavesPA,
+  LlavesPublicaciones,
 } from '@/tipos/compartidos';
 
-export const nombresListas = {
-  publicacion: 'Publicacion',
-  autores: 'Autores',
-  tipos: 'Tipos',
-  años: 'Años',
-  dependencias: 'Dependencias',
-  indicadores: 'Indicadores',
-  subindicadores: 'Subindicadores',
-  sedes: 'Sedes',
-  modalidades: 'Modalidades',
-  estados: 'Estado',
-};
-
-export const usarCerebro = defineStore('cerebro', {
-  state: (): Cerebro => {
+export const usarCerebroDatos = defineStore('cerebroDatos', {
+  state: (): CerebroDatos => {
     return {
-      publicacionElegida: null,
-      colectivoElegido: null,
       listaElegida: null,
-      listasPublicaciones: null,
-      cargandoListasPublicaciones: false,
-      listasColectivos: null,
-      cargandoListasColectivos: false,
+
+      // COLECTIVOS
       colectivos: null,
       indicadoresColectivos: null,
       cargandoColectivos: false,
+
+      listasColectivos: null,
+      cargandoListasColectivos: false,
+
+      // PUBLICACIONES
       publicaciones: null,
       indicadoresPublicaciones: null,
       cargandoPublicaciones: false,
+
+      listasPublicaciones: null,
+      cargandoListasPublicaciones: false,
     };
   },
 
   actions: {
-    cambiarLista(llaveLista: LlavesColectivos | LlavesPA) {
+    cambiarLista(llaveLista: LlavesColectivos | LlavesPublicaciones) {
       this.listaElegida = llaveLista;
     },
 

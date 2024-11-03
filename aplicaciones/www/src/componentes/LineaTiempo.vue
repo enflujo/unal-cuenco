@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, type Ref, ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import { usarCerebro } from '@/utilidades/cerebro';
 import { storeToRefs } from 'pinia';
+import { usarCerebroDatos } from '@/cerebros/datos';
 
-const cerebro = usarCerebro();
-const { listasPublicaciones } = storeToRefs(cerebro);
+const cerebroDatos = usarCerebroDatos();
+const { listasPublicaciones } = storeToRefs(cerebroDatos);
 const extremosFechas: Ref<{ min: number; max: number } | null> = ref(null);
 const fechas = computed(() => {
   if (!extremosFechas.value) {
@@ -28,7 +28,7 @@ const fechas = computed(() => {
 });
 
 onMounted(async () => {
-  await cerebro.cargarDatosListaPublicaciones();
+  await cerebroDatos.cargarDatosListaPublicaciones();
 });
 </script>
 
@@ -53,7 +53,7 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/scss/constantes';
 #contenedorLineaTiempo {
   position: absolute;

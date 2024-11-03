@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import type { ElementoLista, LlavesColectivos, LlavesPA } from '@/tipos/compartidos';
-import { usarCerebro } from '@/utilidades/cerebro';
+import type { ElementoLista, LlavesColectivos, LlavesPublicaciones } from '@/tipos/compartidos';
 import { storeToRefs } from 'pinia';
 import { TiposDePagina } from '@/tipos';
+import { usarCerebroDatos } from '@/cerebros/datos';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
 const { pagina } = defineProps<{ pagina: TiposDePagina }>();
-const cerebro = usarCerebro();
-const { listaElegida } = storeToRefs(cerebro);
+const cerebroDatos = usarCerebroDatos();
+const { listaElegida } = storeToRefs(cerebroDatos);
 const listaVisible: Ref<ElementoLista[]> = ref([]);
 const valorMaximo = ref(0);
 let listas: { [llave: string]: ElementoLista[] } = {};
-let listaActual: LlavesColectivos | LlavesPA | '' = '';
+let listaActual: LlavesColectivos | LlavesPublicaciones | '' = '';
 
 watch(listaElegida, (llaveLista) => {
   if (!llaveLista || llaveLista === listaActual) return;
@@ -26,15 +26,15 @@ watch(listaElegida, (llaveLista) => {
 
 onMounted(async () => {
   if (pagina === 'colectivos') {
-    await cerebro.cargarDatosListaColectivos();
-    if (!cerebro.listasColectivos) return;
-    listas = cerebro.listasColectivos;
-    listaElegida.value = Object.keys(cerebro.listasColectivos)[0] as LlavesColectivos;
+    await cerebroDatos.cargarDatosListaColectivos();
+    if (!cerebroDatos.listasColectivos) return;
+    listas = cerebroDatos.listasColectivos;
+    listaElegida.value = Object.keys(cerebroDatos.listasColectivos)[0] as LlavesColectivos;
   } else if (pagina === 'publicaciones') {
-    await cerebro.cargarDatosListaPublicaciones();
-    if (!cerebro.listasPublicaciones) return;
-    listas = cerebro.listasPublicaciones;
-    listaElegida.value = Object.keys(cerebro.listasPublicaciones)[0] as LlavesPA;
+    await cerebroDatos.cargarDatosListaPublicaciones();
+    if (!cerebroDatos.listasPublicaciones) return;
+    listas = cerebroDatos.listasPublicaciones;
+    listaElegida.value = Object.keys(cerebroDatos.listasPublicaciones)[0] as LlavesPublicaciones;
   }
 });
 
@@ -66,7 +66,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 @use '@/scss/constantes';
 
 #contenedorVistaGraficas {
@@ -95,7 +95,6 @@ onUnmounted(() => {
 
 .leyenda {
   margin: 0 1em 0 0;
-  //text-transform: capitalize;
   font-size: 0.7em;
   width: 5vw;
 }

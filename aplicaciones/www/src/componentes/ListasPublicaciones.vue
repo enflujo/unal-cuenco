@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import ListaNodos from './ListaNodos.vue';
-import { usarCerebro } from '@/utilidades/cerebro';
 import { storeToRefs } from 'pinia';
+import { usarCerebroDatos } from '@/cerebros/datos';
 
-const cerebro = usarCerebro();
-const { listasPublicaciones } = storeToRefs(cerebro);
+const cerebroDatos = usarCerebroDatos();
+const { listasPublicaciones } = storeToRefs(cerebroDatos);
 
 onMounted(async () => {
-  await cerebro.cargarDatosListaPublicaciones();
+  await cerebroDatos.cargarDatosListaPublicaciones();
 });
 </script>
 
 <template>
-  <div id="contenedorListas" class="todoVisible" v-if="listasPublicaciones">
+  <div id="contenedorListas" v-if="listasPublicaciones">
     <ListaNodos v-for="(lista, llave) in listasPublicaciones" :id="llave" :lista="lista" />
   </div>
 </template>
