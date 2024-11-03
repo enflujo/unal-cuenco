@@ -22,7 +22,7 @@ export const crearUrlsEnTexto = (texto?: string) => {
 
   if (urls.length) {
     urls.forEach((url) => {
-      textoProcesado = texto.replace(url, `<a class="enlace" href="${url}" target="_blank">${url}</a>`);
+      textoProcesado = texto.replace(url, `<a class="enlace externo" href="${url}" target="_blank">${url}</a>`);
     });
   } else {
     textoProcesado = texto;

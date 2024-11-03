@@ -127,9 +127,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 #contenedorMapa {
-  position: absolute;
-  top: 15vw;
-  left: 30vw;
   width: 55vw;
   height: 60vh;
 }

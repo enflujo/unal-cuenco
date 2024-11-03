@@ -91,14 +91,17 @@ function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
 </template>
 
 <style lang="scss" scoped>
+$margenY: 10px;
+
 #contenedorFicha {
   z-index: 99;
   width: 40vw;
-  height: 90vh;
+  height: calc(100vh - ($margenY * 2));
   background-color: var(--azulOscuroCuenco);
   position: fixed;
-  right: 5vw;
-  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: $margenY;
   border-radius: 20px;
   padding: 1em;
   overflow: hidden;
@@ -143,7 +146,6 @@ function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
   margin-bottom: 0.5em;
 
   li {
-    list-style: none;
     padding-bottom: 0.25em;
   }
 

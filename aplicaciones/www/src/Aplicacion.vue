@@ -20,18 +20,20 @@ import Ficha from './componentes/Ficha.vue';
 
 <style lang="scss">
 @use '@/scss/estilos.scss';
-
-header {
-  line-height: 1.5;
-}
+@use '@/scss/constantes' as *;
 
 #menu {
   width: 100vw;
+  height: $altoMenu;
   display: flex;
   justify-content: space-evenly;
   padding: 1em 20em;
-  position: relative;
   z-index: 9;
+  line-height: 1.5;
+  position: fixed;
+  top: 0;
+  z-index: 9;
+  background-color: rgba(255, 255, 255, 0.8);
 
   .elementoMenu {
     padding: 0.5em 0.7em;
