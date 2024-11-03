@@ -9,7 +9,7 @@ export async function pedirDatos<Esquema>(ruta: string) {
 }
 
 export const extraerUrls = (texto: string) => {
-  const expresion = /(?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*/g;
+  const expresion = /(?:https?:\/\/.)[^\s/$.?#].[^\s]*/g;
   const urls = texto.match(expresion);
   return urls ? urls : [];
 };
@@ -18,14 +18,15 @@ export const crearUrlsEnTexto = (texto?: string) => {
   if (!texto) return '';
 
   const urls = extraerUrls(texto);
-  let textoProcesado = '';
+  let textoProcesado = texto;
 
   if (urls.length) {
     urls.forEach((url) => {
-      textoProcesado = texto.replace(url, `<a class="enlace externo" href="${url}" target="_blank">${url}</a>`);
+      textoProcesado = textoProcesado.replace(
+        url,
+        `<a class="enlace externo" href="${url}" target="_blank">${url}</a>`
+      );
     });
-  } else {
-    textoProcesado = texto;
   }
 
   return textoProcesado;
