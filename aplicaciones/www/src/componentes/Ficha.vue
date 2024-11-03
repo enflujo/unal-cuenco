@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { usarCerebroFicha } from '@/cerebros/ficha';
-import { LlavesColectivos, LlavesPublicaciones } from '@/tipos/compartidos';
+import { TiposNodo } from '@/tipos';
 import { nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
 
 const cerebroFicha = usarCerebroFicha();
 const { datosFicha } = storeToRefs(cerebroFicha);
-const secciones: (LlavesPublicaciones | LlavesColectivos)[] = [
+const secciones: TiposNodo[] = [
+  'publicaciones',
+  'colectivos',
+  'fuente',
   'dependencias',
   'indicadores',
   'modalidades',
@@ -40,12 +43,11 @@ const secciones: (LlavesPublicaciones | LlavesColectivos)[] = [
 
         <div v-for="tipo in secciones" :key="`seccion-${tipo}`">
           <section class="seccionFicha" v-if="datosFicha[tipo]?.length">
-            <div>
-              <h4 class="tituloSeccion">{{ nombresListas[tipo] }}</h4>
-            </div>
+            <h4 class="tituloSeccion">{{ nombresListas[tipo] }}</h4>
 
             <ul class="contenidoSeccion">
               <li
+                v-if="Array.isArray(datosFicha[tipo])"
                 v-for="obj in datosFicha[tipo]"
                 :key="`${tipo}-${obj.indice}`"
                 class="enlace"
@@ -53,6 +55,8 @@ const secciones: (LlavesPublicaciones | LlavesColectivos)[] = [
               >
                 {{ obj.nombre }}
               </li>
+
+              <li v-else v-html="datosFicha[tipo]"></li>
             </ul>
           </section>
         </div>
@@ -105,15 +109,6 @@ const secciones: (LlavesPublicaciones | LlavesColectivos)[] = [
 
 .negrita {
   font-weight: bold;
-}
-
-.enlace {
-  cursor: pointer;
-  color: var(--enlacesFondoOscuro);
-
-  &:hover {
-    color: var(--blanco);
-  }
 }
 
 .seccionFicha {

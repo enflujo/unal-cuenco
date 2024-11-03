@@ -184,10 +184,16 @@ export default async (
 
         /** Dependencia */
         if (fila[11]) {
-          const { nombre, slug } = procesarLista('dependencias', fila[11]);
-          colectivo.dependencias = { nombre, slug };
-        } else {
-          errata.push({ fila: numeroFila, error: `No tiene DEPENDENCIA.` });
+          const partes = fila[11].split(';');
+
+          partes.forEach((dependencia) => {
+            const { nombre, slug } = procesarLista('dependencias', dependencia);
+
+            if (!colectivo.dependencias) {
+              colectivo.dependencias = [];
+            }
+            colectivo.dependencias.push({ nombre, slug });
+          });
         }
 
         /** Modalidad */

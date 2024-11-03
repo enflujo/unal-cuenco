@@ -48,13 +48,13 @@ export interface DatosGeneralesNodo {
   tipos?: DefinicionSimple;
   fuente?: string;
   indicadores?: DefinicionSimple;
+  dependencias?: DefinicionSimple[];
 }
 
 export interface Publicacion extends DatosGeneralesNodo {
   autores?: DefinicionSimple[];
   años?: DefinicionSimple;
   referencia?: string;
-  dependencias?: DefinicionSimple[];
 }
 
 export interface Colectivo extends DatosGeneralesNodo {
@@ -63,6 +63,5 @@ export interface Colectivo extends DatosGeneralesNodo {
   enlaceFuente?: string[];
   contacto?: string;
   sedes?: DefinicionSimple[];
-  dependencias?: DefinicionSimple;
   modalidades?: DefinicionSimple;
 }
