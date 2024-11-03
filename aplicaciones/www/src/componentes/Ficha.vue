@@ -39,6 +39,11 @@ function clicFuera(evento: MouseEvent) {
     }
   }
 }
+
+function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
+  evento.stopPropagation();
+  cerebroFicha.seleccionarNodo(i, id);
+}
 </script>
 
 <template>
@@ -71,7 +76,7 @@ function clicFuera(evento: MouseEvent) {
                 v-for="obj in datosFicha[tipo]"
                 :key="`${tipo}-${obj.indice}`"
                 class="enlace"
-                @click="cerebroFicha.seleccionarNodo(obj.indice, tipo)"
+                @click="abrirElemento($event, obj.indice, tipo)"
               >
                 {{ obj.nombre }}
               </li>
