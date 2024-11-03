@@ -6,6 +6,11 @@
   src: url('/fuentes/AncizarSans/AncizarSans-Regular_02042016.otf');
 }
 
+::selection {
+  background-color: rgb(241, 241, 146);
+  color: black;
+}
+
 body {
   font-family: Ancizar, Arial, Helvetica, sans-serif;
 }
