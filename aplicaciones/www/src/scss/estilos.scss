@@ -22,6 +22,17 @@ a:link {
   font-weight: bold;
 }
 
+.enlace,
+.enlace:link {
+  cursor: pointer;
+  color: var(--enlacesFondoOscuro);
+  line-break: anywhere;
+
+  &:hover {
+    color: var(--magentaCuenco);
+  }
+}
+
 // Nodos listas
 .contenedorElementos {
   height: fit-content;
