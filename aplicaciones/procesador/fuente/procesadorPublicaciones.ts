@@ -180,6 +180,10 @@ export default async (
       // Aquí ya terminó de leer toda la tabla
       construirRelacionesDePublicaciones();
 
+      for (const lista in listas) {
+        ordenarListaObjetos(listas[lista as keyof ListasPublicaciones], 'slug', true);
+      }
+
       guardarJSON(listas, 'listasPublicaciones');
       resolver({ datos: publicaciones, errata });
     });
