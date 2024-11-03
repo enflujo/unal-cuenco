@@ -10,15 +10,15 @@ import type {
   LlavesPublicaciones,
   Publicacion,
 } from '@/tipos/compartidos';
-import { nombresListas } from '@/utilidades/constantes';
 import { crearUrlsEnTexto } from '@/utilidades/ayudas';
+import { nombresListas } from '@/utilidades/constantes';
 
 export const usarCerebroFicha = defineStore('cerebroFichas', {
   state: (): CerebroFicha => {
     return {
       fichaVisible: false,
       datosFicha: null,
-      indiceActual: -1,
+      idActual: '',
       totalNodos: 0,
       llaveLista: 'autores',
     };
@@ -27,26 +27,53 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
   actions: {
     cerrarFicha() {
       this.fichaVisible = false;
-      this.indiceActual = -1;
+      this.idActual = '';
     },
 
-    fichaAnterior() {
-      if (this.indiceActual === 0) {
-        this.seleccionarNodo(this.totalNodos - 1, this.llaveLista);
-      } else {
-        this.seleccionarNodo(this.indiceActual - 1, this.llaveLista);
+    cambiarFicha(id: string, tipo: TiposNodo, direccion: 'adelante' | 'atras' = 'adelante') {
+      const { colectivos, listasColectivos, publicaciones, listasPublicaciones } = usarCerebroDatos();
+      const { paginaActual } = usarCerebroGeneral();
+      let lista: ElementoLista[] | Colectivo[] | Publicacion[] | null = null;
+
+      if (paginaActual === 'colectivos') {
+        if (tipo === 'colectivos') {
+          lista = colectivos;
+        } else {
+          lista = listasColectivos ? listasColectivos[tipo as LlavesColectivos] : null;
+        }
+      } else if (paginaActual === 'publicaciones') {
+        if (tipo === 'publicaciones') {
+          lista = publicaciones;
+        } else {
+          lista = listasPublicaciones ? listasPublicaciones[tipo as LlavesPublicaciones] : null;
+        }
+      }
+
+      if (lista) {
+        const indice = lista.findIndex((obj) => obj.id === id);
+        let nuevoId = '';
+
+        if (direccion === 'atras') {
+          if (indice >= 0) {
+            if (indice === 0) {
+              nuevoId = lista[this.totalNodos - 1].id;
+            } else {
+              nuevoId = lista[indice - 1].id;
+            }
+          }
+        } else if (direccion === 'adelante') {
+          if (indice >= this.totalNodos - 1) {
+            nuevoId = lista[0].id;
+          } else {
+            nuevoId = lista[indice + 1].id;
+          }
+        }
+
+        this.seleccionarNodo(nuevoId, this.llaveLista);
       }
     },
 
-    fichaSiguiente() {
-      if (this.indiceActual >= this.totalNodos - 1) {
-        this.seleccionarNodo(0, this.llaveLista);
-      } else {
-        this.seleccionarNodo(this.indiceActual + 1, this.llaveLista);
-      }
-    },
-
-    seleccionarNodo(i: number, tipo: TiposNodo) {
+    seleccionarNodo(id: string, tipo: TiposNodo) {
       const {
         listasColectivos,
         listasPublicaciones,
@@ -58,30 +85,36 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
       const { paginaActual } = usarCerebroGeneral();
 
       const datosFicha: DatosFicha = {
-        tipo: nombresListas[tipo],
+        id,
+        tipo,
+        nombreTipo: nombresListas[tipo],
         titulo: '',
         resumen: '',
       };
 
       if (paginaActual === 'colectivos') {
         if (tipo === 'colectivos' && colectivos) {
-          llenarDatosFichaColectivo(colectivos[i]);
+          const colectivo = colectivos.find((obj) => obj.id === id);
+          if (colectivo) llenarDatosFichaColectivo(colectivo);
           this.totalNodos = colectivos.length;
         } else if (listasColectivos) {
-          llenarDatosFicha(listasColectivos[tipo as LlavesColectivos][i]);
+          const datos = listasColectivos[tipo as LlavesColectivos].find((obj) => obj.id === id);
+          if (datos) llenarDatosFicha(datos);
           this.totalNodos = listasColectivos[tipo as LlavesColectivos].length;
         }
       } else if (paginaActual === 'publicaciones') {
         if (tipo === 'publicaciones' && publicaciones) {
-          llenarDatosFichaPublicacion(publicaciones[i]);
+          const publicacion = publicaciones.find((obj) => obj.id === id);
+          if (publicacion) llenarDatosFichaPublicacion(publicacion);
           this.totalNodos = publicaciones.length;
         } else if (listasPublicaciones) {
-          llenarDatosFicha(listasPublicaciones[tipo as LlavesPublicaciones][i]);
+          const datos = listasPublicaciones[tipo as LlavesPublicaciones].find((obj) => obj.id === id);
+          if (datos) llenarDatosFicha(datos);
           this.totalNodos = listasPublicaciones[tipo as LlavesPublicaciones].length;
         }
       }
 
-      this.indiceActual = i;
+      this.idActual = id;
       this.fichaVisible = true;
       this.llaveLista = tipo;
       this.datosFicha = datosFicha;
@@ -99,9 +132,9 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         if (datos.dependencias) {
           datosFicha.dependencias = [];
           datos.dependencias.forEach((obj) => {
-            const indice = listasColectivos?.dependencias.findIndex((dep) => dep.slug === obj.slug);
-            if (indice && indice >= 0) {
-              datosFicha.dependencias?.push({ nombre: obj.nombre, conteo: 1, indice });
+            const existe = listasColectivos?.dependencias.find((dep) => dep.slug === obj.slug);
+            if (existe) {
+              datosFicha.dependencias?.push({ nombre: obj.nombre, conteo: 1, id: existe.id });
             }
           });
         }
@@ -115,9 +148,9 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
           if (lista) {
             datosFicha.indicadores = [];
-            const indice = lista.indicadores.findIndex((obj) => obj.slug === datos.indicadores?.slug);
-            if (indice && indice >= 0) {
-              datosFicha.indicadores.push({ nombre: datos.indicadores.nombre, conteo: 1, indice });
+            const existe = lista.indicadores.find((obj) => obj.slug === datos.indicadores?.slug);
+            if (existe) {
+              datosFicha.indicadores.push({ nombre: datos.indicadores.nombre, conteo: 1, id: existe.id });
             }
           }
         }
@@ -127,9 +160,9 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
           if (lista) {
             datosFicha.tipos = [];
-            const indice = lista.tipos.findIndex((obj) => obj.slug === datos.tipos?.slug);
-            if (indice && indice >= 0) {
-              datosFicha.tipos.push({ nombre: datos.tipos.nombre, conteo: 1, indice });
+            const existe = lista.tipos.find((obj) => obj.slug === datos.tipos?.slug);
+            if (existe) {
+              datosFicha.tipos.push({ nombre: datos.tipos.nombre, conteo: 1, id: existe.id });
             }
           }
         }
@@ -153,7 +186,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             const colectivo = colectivos.find((obj) => obj.id === id);
 
             if (colectivo && datosFicha.colectivos) {
-              datosFicha.colectivos.push({ nombre: colectivo.titulo.nombre, conteo: 1, indice: id });
+              datosFicha.colectivos.push({ nombre: colectivo.titulo.nombre, conteo: 1, id });
             }
           });
         }
@@ -165,7 +198,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             const publicacion = publicaciones.find((obj) => obj.id === id);
 
             if (publicacion && datosFicha.publicaciones) {
-              datosFicha.publicaciones.push({ nombre: publicacion.titulo.nombre, conteo: 1, indice: id });
+              datosFicha.publicaciones.push({ nombre: publicacion.titulo.nombre, conteo: 1, id });
             }
           });
         }
@@ -190,16 +223,18 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           let nombre = '';
 
           if (paginaActual === 'colectivos' && listasColectivos) {
-            nombre = listasColectivos[obj.tipo as LlavesColectivos][obj.indice].nombre;
+            const datos = listasColectivos[obj.tipo as LlavesColectivos].find((c) => c.id === obj.id);
+            if (datos) nombre = datos.nombre;
           } else if (paginaActual === 'publicaciones' && listasPublicaciones) {
-            nombre = listasPublicaciones[obj.tipo as LlavesPublicaciones][obj.indice].nombre;
+            const datos = listasPublicaciones[obj.tipo as LlavesPublicaciones].find((p) => p.id === obj.id);
+            if (datos) nombre = datos.nombre;
           }
 
           if (!datosFicha[obj.tipo]) {
             datosFicha[obj.tipo] = [];
           }
 
-          datosFicha[obj.tipo]?.push({ nombre, conteo: obj.conteo, indice: obj.indice });
+          datosFicha[obj.tipo]?.push({ nombre, conteo: obj.conteo, id: obj.id });
         });
       }
     },

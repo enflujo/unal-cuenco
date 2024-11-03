@@ -35,7 +35,7 @@ export interface CerebroDatos {
 export interface CerebroFicha {
   fichaVisible: boolean;
   datosFicha: DatosFicha | null;
-  indiceActual: number;
+  idActual: string;
   totalNodos: number;
   llaveLista: TiposNodo;
 }
@@ -54,14 +54,15 @@ export type TiposNodo =
   | 'enlaceFuente'
   | 'contacto';
 
-export type ELementoFicha = { nombre: string; conteo: number; indice: number };
+export type ELementoFicha = { nombre: string; conteo: number; id: string };
 
 export interface DatosFicha {
-  tipo: string;
+  id: string;
+  tipo: TiposNodo;
+  nombreTipo: string;
   titulo: string;
   resumen?: string;
   referencia?: ELementoFicha[];
-  id?: ELementoFicha[];
   fuente?: string;
   fechaFin?: ELementoFicha[];
   enlaceFuente?: ELementoFicha[];

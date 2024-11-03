@@ -35,7 +35,7 @@ function elegirVista(vistaElegida: string) {
 <template>
   <main>
     <nav class="columna1 contenedorListas" v-if="listasPublicaciones">
-      <ListaNodos v-for="(lista, llave) in listasPublicaciones" :id="llave" :lista="lista">
+      <ListaNodos v-for="(lista, llave) in listasPublicaciones" :tipo="llave" :lista="lista">
         <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
       </ListaNodos>
     </nav>
@@ -52,7 +52,7 @@ function elegirVista(vistaElegida: string) {
     </div>
 
     <div class="columna3 contenedorListas" v-if="publicaciones">
-      <ListaNodos id="publicaciones" :lista="publicaciones">
+      <ListaNodos tipo="publicaciones" :lista="publicaciones">
         <h1 class="titulo" @click="cerebroDatos.cambiarLista('publicaciones')">Producción Académica</h1>
       </ListaNodos>
     </div>

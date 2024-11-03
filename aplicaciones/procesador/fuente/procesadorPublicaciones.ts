@@ -32,6 +32,7 @@ function procesarLista(llaveLista: LlavesPublicaciones, valor: string) {
   const existe = listas[llaveLista].find((obj) => obj.slug === slug);
   if (!existe) {
     listas[llaveLista].push({
+      id: `${listas[llaveLista].length}`,
       nombre,
       slug,
       conteo: 1,
@@ -66,7 +67,7 @@ export default async (
 
       if (titulo) {
         const slug = slugificar(titulo);
-        const publicacion: Publicacion = { id: numeroFila - 2, titulo: { nombre: titulo, slug } };
+        const publicacion: Publicacion = { id: `${numeroFila - 2}`, titulo: { nombre: titulo, slug } };
 
         /** Autores */
         if (fila[0]) {
@@ -148,6 +149,8 @@ export default async (
             }
             publicacion.dependencias.push({ nombre, slug });
           });
+        } else {
+          errata.push({ fila: numeroFila, error: 'No tiene DEPENDENCIA' });
         }
 
         /** Indicadores */
@@ -229,9 +232,9 @@ export default async (
               const slugsCampoProyecto = aplanarDefinicionesASlugs(datosRelacion);
 
               slugsCampoProyecto.forEach((slug) => {
-                const indice = listas[campoRelacion].findIndex((obj) => obj.slug === slug);
+                const existe = listas[campoRelacion].find((obj) => obj.slug === slug);
 
-                if (indice >= 0) {
+                if (existe) {
                   if (!publicacion[campo]) return;
 
                   let datos = publicacion[campo];
@@ -252,7 +255,7 @@ export default async (
                   // }
 
                   const elementosDondeConectar = aplanarDefinicionesASlugs(datos);
-                  llenarRelacion(elementosDondeConectar, listas[campo], indice, campoRelacion, id);
+                  llenarRelacion(elementosDondeConectar, listas[campo], existe.id, campoRelacion, id);
                 } else {
                   console.log('Esto no puede pasar');
                 }
@@ -274,17 +277,17 @@ export default async (
   function llenarRelacion(
     elementosDondeConectar: string[],
     elementoLista: ElementoLista[],
-    indice: number,
+    indice: string,
     campoRelacion: LlavesPublicaciones,
-    id: number
+    id: string
   ) {
     elementosDondeConectar.forEach((elementoConector) => {
       const elementoALlenar = elementoLista.find((obj) => obj.slug === elementoConector);
       if (elementoALlenar) {
-        const existe = elementoALlenar.relaciones.find((obj) => obj.indice === indice);
+        const existe = elementoALlenar.relaciones.find((obj) => obj.id === indice);
 
         if (!existe) {
-          elementoALlenar.relaciones.push({ conteo: 1, indice, tipo: campoRelacion });
+          elementoALlenar.relaciones.push({ conteo: 1, id: indice, tipo: campoRelacion });
         } else {
           existe.conteo++;
         }

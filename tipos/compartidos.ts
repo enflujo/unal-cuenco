@@ -1,4 +1,5 @@
 export interface ElementoLista {
+  id: string;
   nombre: string;
   descripcion?: string;
   slug: string;
@@ -6,10 +7,10 @@ export interface ElementoLista {
   relaciones: {
     tipo: keyof ListasPublicaciones | keyof ListasColectivos;
     conteo: number;
-    indice: number;
+    id: string;
   }[];
-  publicaciones?: number[];
-  colectivos?: number[];
+  publicaciones?: string[];
+  colectivos?: string[];
 }
 
 export interface Indicador {
@@ -38,11 +39,11 @@ export type ListasColectivos = {
   [llave in LlavesColectivos]: ElementoLista[];
 };
 
-export type CamposPA = { llave: LlavesPublicaciones; indice: number }[];
-export type CamposColectivos = { llave: LlavesColectivos; indice: number }[];
+export type CamposPA = { llave: LlavesPublicaciones; id: string }[];
+export type CamposColectivos = { llave: LlavesColectivos; id: string }[];
 
 export interface DatosGeneralesNodo {
-  id: number;
+  id: string;
   titulo: DefinicionSimple;
   resumen?: string;
   tipos?: DefinicionSimple;

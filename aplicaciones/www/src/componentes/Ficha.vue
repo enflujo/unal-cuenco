@@ -40,9 +40,9 @@ function clicFuera(evento: MouseEvent) {
   }
 }
 
-function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
+function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
   evento.stopPropagation();
-  cerebroFicha.seleccionarNodo(i, id);
+  cerebroFicha.seleccionarNodo(id, tipo);
 }
 </script>
 
@@ -52,14 +52,24 @@ function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
       <header id="encabezado">
         <div id="superior">
           <!-- <div class="negrita">#{{ datosNodo.id }}</div> -->
-          <span class="negrita">{{ datosFicha.tipo }}</span>
+          <span class="negrita">{{ datosFicha.nombreTipo }}</span>
           <span class="boton" id="cerrarFichaPA" ref="cerrarFichaPA" @click="cerebroFicha.cerrarFicha">X</span>
         </div>
 
         <div id="inferior">
-          <span class="boton" id="botonAnterior" @click="cerebroFicha.fichaAnterior"><</span>
+          <span
+            class="boton"
+            id="botonAnterior"
+            @click="cerebroFicha.cambiarFicha(datosFicha.id, datosFicha.tipo, 'atras')"
+            ><</span
+          >
           <h3 id="tituloFicha">{{ datosFicha.titulo }}</h3>
-          <span class="boton" id="botonSiguiente" @click="cerebroFicha.fichaSiguiente">></span>
+          <span
+            class="boton"
+            id="botonSiguiente"
+            @click="cerebroFicha.cambiarFicha(datosFicha.id, datosFicha.tipo, 'adelante')"
+            >></span
+          >
         </div>
       </header>
 
@@ -74,9 +84,9 @@ function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
               <li
                 v-if="Array.isArray(datosFicha[tipo])"
                 v-for="obj in datosFicha[tipo]"
-                :key="`${tipo}-${obj.indice}`"
+                :key="`${tipo}-${obj.id}`"
                 class="enlace"
-                @click="abrirElemento($event, obj.indice, tipo)"
+                @click="abrirElemento($event, obj.id, tipo)"
               >
                 {{ obj.nombre }}
               </li>

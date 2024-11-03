@@ -35,6 +35,7 @@ function procesarLista(llaveLista: LlavesColectivos, valor: string) {
   const existe = listas[llaveLista].find((obj) => obj.slug === slug);
   if (!existe) {
     listas[llaveLista].push({
+      id: `${listas[llaveLista].length}`,
       nombre,
       slug,
       conteo: 1,
@@ -68,7 +69,7 @@ export default async (
       const nombre = limpiarTextoSimple(fila[0]);
 
       if (nombre) {
-        const colectivo: Colectivo = { id: numeroFila - 1, titulo: { nombre, slug: slugificar(nombre) } };
+        const colectivo: Colectivo = { id: `${numeroFila - 1}`, titulo: { nombre, slug: slugificar(nombre) } };
 
         /** Tipos de Ámbito */
         if (fila[1]) {
@@ -194,6 +195,8 @@ export default async (
             }
             colectivo.dependencias.push({ nombre, slug });
           });
+        } else {
+          errata.push({ fila: numeroFila, error: 'No tiene DEPENDENCIA' });
         }
 
         /** Modalidad */
@@ -285,9 +288,9 @@ export default async (
               const slugsCampoProyecto = aplanarDefinicionesASlugs(datosRelacion);
 
               slugsCampoProyecto.forEach((slug) => {
-                const indice = listas[campoRelacion].findIndex((obj) => obj.slug === slug);
+                const existe = listas[campoRelacion].find((obj) => obj.slug === slug);
 
-                if (indice >= 0) {
+                if (existe) {
                   if (!colectivo[campo]) return;
 
                   let datos = colectivo[campo];
@@ -311,7 +314,7 @@ export default async (
                   // if (campoRelacion === 'indicadores') {
                   //   console.log(elementosDondeConectar, listas[campoRelacion], indice, campoRelacion, id);
                   // }
-                  llenarRelacion(elementosDondeConectar, listas[campo], indice, campoRelacion, id);
+                  llenarRelacion(elementosDondeConectar, listas[campo], existe.id, campoRelacion, id);
                 } else {
                   console.log('Esto no puede pasar');
                 }
@@ -333,18 +336,18 @@ export default async (
   function llenarRelacion(
     elementosDondeConectar: string[],
     elementoLista: ElementoLista[],
-    indice: number,
+    indice: string,
     campoRelacion: LlavesColectivos,
-    id: number
+    id: string
   ) {
     elementosDondeConectar.forEach((elementoConector) => {
       const elementoALlenar = elementoLista.find((obj) => obj.slug === elementoConector);
 
       if (elementoALlenar) {
-        const existe = elementoALlenar.relaciones.find((obj) => obj.indice === indice);
+        const existe = elementoALlenar.relaciones.find((obj) => obj.id === indice);
 
         if (!existe) {
-          elementoALlenar.relaciones.push({ conteo: 1, indice, tipo: campoRelacion });
+          elementoALlenar.relaciones.push({ conteo: 1, id: indice, tipo: campoRelacion });
         } else {
           existe.conteo++;
         }
