@@ -34,13 +34,13 @@ function elegirVista(vistaElegida: string) {
 
 <template>
   <main>
-    <nav class="columna1 contenedorListas" v-if="listasPublicaciones">
+    <nav class="columna columna1 contenedorListas" v-if="listasPublicaciones">
       <ListaNodos v-for="(lista, llave) in listasPublicaciones" :tipo="llave" :lista="lista">
         <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
       </ListaNodos>
     </nav>
 
-    <div class="columna2">
+    <div class="columna columna2">
       <div class="botonesVista">
         <div class="botonVista" ref="botonGraficas" @click="elegirVista('grafica')">Gráficas</div>
         <div class="botonVista" ref="botonMapa" @click="elegirVista('mapa')">Mapa</div>
@@ -51,7 +51,7 @@ function elegirVista(vistaElegida: string) {
       <Mapa v-else="vista === 'mapa'" />
     </div>
 
-    <div class="columna3 contenedorListas" v-if="publicaciones">
+    <div class="columna columna3 contenedorListas" v-if="publicaciones">
       <ListaNodos tipo="publicaciones" :lista="publicaciones">
         <h1 class="titulo" @click="cerebroDatos.cambiarLista('publicaciones')">Producción Académica</h1>
       </ListaNodos>
