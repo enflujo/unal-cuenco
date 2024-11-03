@@ -74,19 +74,17 @@ export default async (
           const autores = fila[0].split(';');
 
           autores.forEach((autor) => {
-            if (autor) {
-              const { nombre, slug } = procesarLista('autores', autor);
+            const { nombre, slug } = procesarLista('autores', autor);
 
-              if (!publicacion.autores) {
-                publicacion.autores = [];
-              }
-              publicacion.autores.push({ nombre, slug });
-            } else {
-              errata.push({
-                fila: numeroFila,
-                error: `No hay autor en la parte: ${autor} dentro del campo autores ${fila[0]}`,
-              });
+            if (!publicacion.autores) {
+              publicacion.autores = [];
             }
+            publicacion.autores.push({ nombre, slug });
+          });
+        } else {
+          errata.push({
+            fila: numeroFila,
+            error: `No hay autores: ${fila[0]}`,
           });
         }
 
