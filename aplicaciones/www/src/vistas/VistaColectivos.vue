@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import Mapa from '@/componentes/Mapa.vue';
-import ListasColectivos from '@/componentes/ListasColectivos.vue';
 import VistaGraficas from '@/componentes/VistaGraficas.vue';
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import { usarCerebroDatos } from '@/cerebros/datos';
+import { storeToRefs } from 'pinia';
+import ListaNodos from '@/componentes/ListaNodos.vue';
+import { nombresListas } from '@/utilidades/constantes';
 
 const vista: Ref<string> = ref('');
 const botonGraficas: Ref<HTMLDivElement | undefined> = ref();
@@ -13,6 +15,7 @@ const botonMapa: Ref<HTMLDivElement | undefined> = ref();
 const cerebroDatos = usarCerebroDatos();
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
+const { colectivos, listasColectivos } = storeToRefs(cerebroDatos);
 
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'colectivos';
@@ -29,37 +32,44 @@ function elegirVista(vistaElegida: string) {
 </script>
 
 <template>
-  <div>
-    <h1 class="tituloSeccion">Colectivos y Ámbitos</h1>
+  <main>
+    <nav class="columna columna1 contenedorListas" v-if="listasColectivos">
+      <ListaNodos v-for="(lista, llave) in listasColectivos" :id="llave" :lista="lista">
+        <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
+      </ListaNodos>
+    </nav>
 
-    <div class="botonesVista">
-      <div class="botonVista" ref="botonGraficas" @click="elegirVista('grafica')">Gráficas</div>
-      <div class="botonVista" ref="botonMapa" @click="elegirVista('mapa')">Mapa</div>
+    <div class="columna columna2">
+      <div class="botonesVista">
+        <div class="botonVista" ref="botonGraficas" @click="elegirVista('grafica')">Gráficas</div>
+        <div class="botonVista" ref="botonMapa" @click="elegirVista('mapa')">Mapa</div>
+      </div>
+
+      <VistaGraficas pagina="colectivos" v-if="vista === 'grafica'" />
+      <Mapa v-else="vista === 'mapa'" />
     </div>
 
-    <ListasColectivos />
-
-    <div v-if="vista === 'grafica'">
-      <VistaGraficas pagina="colectivos" />
+    <div class="columna columna3 contenedorListas" v-if="colectivos">
+      <ListaNodos id="colectivos" :lista="colectivos">
+        <h1 class="titulo" @click="cerebroDatos.cambiarLista('colectivos')">Colectivos y Ámbitos</h1>
+      </ListaNodos>
     </div>
-
-    <div v-else="vista === 'mapa'">
-      <Mapa />
-    </div>
-  </div>
+  </main>
 </template>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
+
 .botonesVista {
-  position: relative;
-  left: 20vw;
   display: flex;
   justify-content: flex-start;
   width: 20vw;
 }
+
 .tituloSeccion {
   text-align: center;
 }
+
 .botonVista {
   color: var(--magentaCuenco);
   margin: 1em;

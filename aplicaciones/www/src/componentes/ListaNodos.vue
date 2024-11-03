@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import type { TiposNodo } from '@/tipos';
-import type { ElementoLista, LlavesColectivos, LlavesPublicaciones } from '@/tipos/compartidos';
-import { nombresListas } from '@/utilidades/constantes';
+import type { Colectivo, ElementoLista, Publicacion } from '@/tipos/compartidos';
 
 interface Esquema {
-  id: LlavesPublicaciones | LlavesColectivos;
-  lista: ElementoLista[];
+  id: TiposNodo;
+  lista: ElementoLista[] | Colectivo[] | Publicacion[];
 }
 
 defineProps<Esquema>();
-const cerebroDatos = usarCerebroDatos();
 const cerebroFicha = usarCerebroFicha();
 
 function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
@@ -22,44 +19,22 @@ function abrirElemento(evento: MouseEvent, i: number, id: TiposNodo) {
 
 <template>
   <section :id="id" class="lista">
-    <h2 class="titulo" @click="cerebroDatos.cambiarLista(id)">{{ nombresListas[id] }}</h2>
+    <slot />
 
     <ul class="contenedorElementos" :class="id">
       <li
         v-for="(elemento, i) in lista"
-        :key="elemento.slug"
-        :id="elemento.slug"
+        :key="`${id}-${i}`"
         @click="abrirElemento($event, i, id)"
         class="nodo"
         :class="cerebroFicha.llaveLista === id && i === cerebroFicha.indiceActual ? 'actual' : ''"
         :data-tipo="id"
         :data-indice="i"
-        :data-publicaciones="elemento.publicaciones"
-        :data-colectivos="elemento.colectivos"
+        :data-publicaciones="'publicaciones' in elemento ? elemento.publicaciones : null"
+        :data-colectivos="'colectivos' in elemento ? elemento.colectivos : null"
       >
-        {{ elemento.nombre }}
+        {{ 'nombre' in elemento ? elemento.nombre : elemento.titulo.nombre }}
       </li>
     </ul>
   </section>
 </template>
-
-<style lang="scss" scoped>
-.lista {
-  padding: 0 1em 1em 1em;
-
-  .titulo {
-    cursor: pointer;
-  }
-
-  .nodo {
-    margin: 0;
-    font-size: 0.85em;
-    line-height: 1.2;
-
-    &.actual {
-      background-color: var(--magentaCuenco);
-      color: var(--blanco);
-    }
-  }
-}
-</style>

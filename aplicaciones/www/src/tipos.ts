@@ -14,7 +14,7 @@ export interface CerebroGeneral {
   paginaActual: TiposDePagina;
 }
 export interface CerebroDatos {
-  listaElegida: LlavesColectivos | LlavesPublicaciones | null;
+  listaElegida: TiposNodo | null;
   // COLECTIVOS
   colectivos: Colectivo[] | null;
   indicadoresColectivos: Indicador[] | null;

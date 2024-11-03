@@ -121,7 +121,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             }
           }
         }
-        console.log(datos);
+
         if (datos.tipos) {
           const lista = listaActual();
 

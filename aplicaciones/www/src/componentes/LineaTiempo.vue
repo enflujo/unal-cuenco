@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, type Ref, ref } from 'vue';
+import { computed, type Ref, ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import { storeToRefs } from 'pinia';
 import { usarCerebroDatos } from '@/cerebros/datos';
@@ -25,10 +25,6 @@ const fechas = computed(() => {
   }
 
   return extremosFechas.value;
-});
-
-onMounted(async () => {
-  await cerebroDatos.cargarDatosListaPublicaciones();
 });
 </script>
 
@@ -60,16 +56,13 @@ onMounted(async () => {
   bottom: 0;
   width: 100vw;
   margin: 0 auto;
+  background-color: rgb(255, 255, 255);
 }
 
 #contenedorGrafica {
   position: relative;
   height: 100px;
-  background-color: rgb(255, 255, 255);
   z-index: 3;
-  width: 100vw;
-  overflow-y: clip;
-  overflow-x: auto;
 }
 
 svg {

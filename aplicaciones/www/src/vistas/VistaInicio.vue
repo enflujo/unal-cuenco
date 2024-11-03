@@ -10,7 +10,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <main>
     <div id="presentacion">
       <h1>Proyecto UNAL - CUENCO</h1>
 
@@ -45,7 +45,7 @@ onMounted(() => {
     </div>
 
     <Mapa />
-  </div>
+  </main>
 </template>
 
 <style lang="scss" scoped>

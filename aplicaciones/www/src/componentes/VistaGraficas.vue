@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import type { ElementoLista, LlavesColectivos, LlavesPublicaciones } from '@/tipos/compartidos';
 import { storeToRefs } from 'pinia';
-import { TiposDePagina } from '@/tipos';
+import { TiposDePagina, TiposNodo } from '@/tipos';
 import { usarCerebroDatos } from '@/cerebros/datos';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
@@ -13,7 +13,7 @@ const { listaElegida } = storeToRefs(cerebroDatos);
 const listaVisible: Ref<ElementoLista[]> = ref([]);
 const valorMaximo = ref(0);
 let listas: { [llave: string]: ElementoLista[] } = {};
-let listaActual: LlavesColectivos | LlavesPublicaciones | '' = '';
+let listaActual: TiposNodo | '' = '';
 
 watch(listaElegida, (llaveLista) => {
   if (!llaveLista || llaveLista === listaActual) return;
@@ -26,12 +26,10 @@ watch(listaElegida, (llaveLista) => {
 
 onMounted(async () => {
   if (pagina === 'colectivos') {
-    await cerebroDatos.cargarDatosListaColectivos();
     if (!cerebroDatos.listasColectivos) return;
     listas = cerebroDatos.listasColectivos;
     listaElegida.value = Object.keys(cerebroDatos.listasColectivos)[0] as LlavesColectivos;
   } else if (pagina === 'publicaciones') {
-    await cerebroDatos.cargarDatosListaPublicaciones();
     if (!cerebroDatos.listasPublicaciones) return;
     listas = cerebroDatos.listasPublicaciones;
     listaElegida.value = Object.keys(cerebroDatos.listasPublicaciones)[0] as LlavesPublicaciones;
@@ -48,7 +46,7 @@ onUnmounted(() => {
 <template>
   <div id="contenedorVistaGraficas">
     <h2>{{ listaActual }}</h2>
-    <div id="contenedorGrafica" width="100%" height="100%">
+    <div id="contenedorGrafica">
       <div class="contenedorElementos" v-for="(elem, i) in listaVisible">
         <p class="leyenda" :style="`top:${convertirEscala(i, 0, listaVisible.length, 0, 70)}%`">
           {{ elem.nombre }}
@@ -67,23 +65,15 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-@use '@/scss/constantes';
+@use '@/scss/constantes' as *;
 
 #contenedorVistaGraficas {
-  max-height: 48vh;
-  width: 80vw;
-  left: 20vw;
-  position: fixed;
   padding: 0 1em;
-  overflow: auto;
 }
 
 #contenedorGrafica {
   background-color: rgb(255, 255, 255);
-  z-index: 3;
   width: 100%;
-  overflow-y: clip;
-  overflow-x: auto;
 
   .contenedorElementos {
     display: flex;

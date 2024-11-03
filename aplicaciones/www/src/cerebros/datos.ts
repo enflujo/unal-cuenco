@@ -1,15 +1,7 @@
 import { defineStore } from 'pinia';
 import { pedirDatos } from '@/utilidades/ayudas';
-import type { CerebroDatos } from '@/tipos';
-import type {
-  Colectivo,
-  Indicador,
-  ListasColectivos,
-  ListasPublicaciones,
-  LlavesColectivos,
-  LlavesPublicaciones,
-  Publicacion,
-} from '@/tipos/compartidos';
+import type { CerebroDatos, TiposNodo } from '@/tipos';
+import type { Colectivo, Indicador, ListasColectivos, ListasPublicaciones, Publicacion } from '@/tipos/compartidos';
 
 export const usarCerebroDatos = defineStore('cerebroDatos', {
   state: (): CerebroDatos => {
@@ -35,7 +27,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
   },
 
   actions: {
-    cambiarLista(llaveLista: LlavesColectivos | LlavesPublicaciones) {
+    cambiarLista(llaveLista: TiposNodo) {
       this.listaElegida = llaveLista;
     },
 
@@ -74,6 +66,8 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       } catch (error) {
         console.error('Problema cargando datos de colectivos', JSON.stringify(error));
       }
+
+      await this.cargarDatosListaColectivos();
     },
 
     async cargarDatosPublicaciones() {
@@ -87,6 +81,8 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       } catch (error) {
         console.error('Problema cargando datos de publicaciones', JSON.stringify(error));
       }
+
+      await this.cargarDatosListaPublicaciones();
     },
   },
 });

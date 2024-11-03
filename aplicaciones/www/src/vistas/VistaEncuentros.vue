@@ -16,10 +16,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
+  <main>
     <h1>Encuentros</h1>
-    <p></p>
-  </div>
+  </main>
 </template>
 
 <style lang="scss" scoped></style>

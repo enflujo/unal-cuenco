@@ -22,18 +22,74 @@ a:link {
   font-weight: bold;
 }
 
+main {
+  margin-top: $altoMenu;
+  display: flex;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
 .enlace,
 .enlace:link {
   cursor: pointer;
   color: var(--enlacesFondoOscuro);
-  line-break: anywhere;
 
   &:hover {
     color: var(--magentaCuenco);
   }
+
+  &.externo {
+    line-break: anywhere;
+  }
+}
+
+.columna {
+  height: calc(100vh - $altoMenu);
+  overflow: auto;
+}
+
+.columna1 {
+  width: 20vw;
+}
+
+.columna2 {
+  width: 55vw;
+}
+
+.columna3 {
+  width: 25vw;
 }
 
 // Nodos listas
+.contenedorListas {
+  padding: 0 2em 4em 2em;
+}
+
+.lista {
+  .titulo {
+    cursor: pointer;
+  }
+
+  .nodo {
+    margin: 0;
+    font-size: 0.85em;
+    line-height: 1.2;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--verdeCuenco);
+    }
+
+    &.actual {
+      background-color: var(--magentaCuenco);
+      color: var(--blanco);
+    }
+  }
+}
+
 .contenedorElementos {
   height: fit-content;
   transition: opacity 0.35s ease-in-out;
@@ -41,14 +97,6 @@ a:link {
   &.abierto {
     height: 100%;
     opacity: 1;
-  }
-
-  li {
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--verdeCuenco);
-    }
   }
 
   .barra {
@@ -64,18 +112,5 @@ a:link {
     .conteo {
       margin-left: 3px;
     }
-  }
-}
-
-#contenedorListas {
-  position: absolute;
-  width: 20vw;
-  max-height: 70vh;
-  overflow-y: auto;
-  padding: 0 3em;
-
-  ul {
-    padding: 0;
-    list-style: none;
   }
 }

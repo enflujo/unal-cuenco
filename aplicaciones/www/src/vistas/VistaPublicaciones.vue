@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import Mapa from '@/componentes/Mapa.vue';
 import LineaTiempo from '@/componentes/LineaTiempo.vue';
-import ListasPublicaciones from '@/componentes/ListasPublicaciones.vue';
 import VistaGraficas from '@/componentes/VistaGraficas.vue';
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
+import { storeToRefs } from 'pinia';
+import ListaNodos from '@/componentes/ListaNodos.vue';
+import { nombresListas } from '@/utilidades/constantes';
 
 const vista: Ref<string> = ref('');
 const botonGraficas: Ref<HTMLDivElement | undefined> = ref();
@@ -14,6 +16,7 @@ const botonMapa: Ref<HTMLDivElement | undefined> = ref();
 const cerebroDatos = usarCerebroDatos();
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
+const { publicaciones, listasPublicaciones } = storeToRefs(cerebroDatos);
 
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'publicaciones';
@@ -30,24 +33,32 @@ function elegirVista(vistaElegida: string) {
 </script>
 
 <template>
-  <div>
-    <h1 class="tituloSeccion">Producción Académica</h1>
-    <div class="botonesVista">
-      <div class="botonVista" ref="botonGraficas" @click="elegirVista('grafica')">Gráficas</div>
-      <div class="botonVista" ref="botonMapa" @click="elegirVista('mapa')">Mapa</div>
-    </div>
-    <ListasPublicaciones />
+  <main>
+    <nav class="columna1 contenedorListas" v-if="listasPublicaciones">
+      <ListaNodos v-for="(lista, llave) in listasPublicaciones" :id="llave" :lista="lista">
+        <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
+      </ListaNodos>
+    </nav>
 
-    <div v-if="vista === 'grafica'">
-      <VistaGraficas pagina="publicaciones" />
+    <div class="columna2">
+      <div class="botonesVista">
+        <div class="botonVista" ref="botonGraficas" @click="elegirVista('grafica')">Gráficas</div>
+        <div class="botonVista" ref="botonMapa" @click="elegirVista('mapa')">Mapa</div>
+      </div>
+
+      <VistaGraficas v-if="vista === 'grafica'" pagina="publicaciones" />
+
+      <Mapa v-else="vista === 'mapa'" />
     </div>
 
-    <div v-else="vista === 'mapa'">
-      <Mapa />
+    <div class="columna3 contenedorListas" v-if="publicaciones">
+      <ListaNodos id="publicaciones" :lista="publicaciones">
+        <h1 class="titulo" @click="cerebroDatos.cambiarLista('publicaciones')">Producción Académica</h1>
+      </ListaNodos>
     </div>
 
     <LineaTiempo />
-  </div>
+  </main>
 </template>
 
 <style lang="scss" scoped>
