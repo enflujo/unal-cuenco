@@ -3,10 +3,10 @@ import mapbox from 'mapbox-gl';
 import type { Map } from 'mapbox-gl';
 import type { FeatureCollection } from 'geojson';
 
-defineProps<{}>();
-
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { onMounted, ref, type Ref } from 'vue';
+
+//POR HACER: Desmontar mapa en evento onUnmounted porque sino, se crean muchas instancias de mapa en Vue
 
 // POR HACER: PASAR A ARCHIVO
 const datosGeo: FeatureCollection = {
@@ -125,13 +125,12 @@ onMounted(() => {
   <div id="contenedorMapa" ref="contenedorMapa"></div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #contenedorMapa {
   position: absolute;
   top: 15vw;
   left: 30vw;
   width: 55vw;
   height: 60vh;
-  //border-radius: 50%;
 }
 </style>
