@@ -32,7 +32,7 @@ function procesarLista(llaveLista: LlavesPublicaciones, valor: string) {
   const existe = listas[llaveLista].find((obj) => obj.slug === slug);
   if (!existe) {
     listas[llaveLista].push({
-      id: `${listas[llaveLista].length}`,
+      id: `${listas[llaveLista].length + 1}`,
       nombre,
       slug,
       conteo: 1,
@@ -182,6 +182,12 @@ export default async (
         ordenarListaObjetos(listas[lista as keyof ListasPublicaciones], 'slug', true);
       }
 
+      publicaciones.sort((a, b) => {
+        if (a.titulo.slug < b.titulo.slug) return -1;
+        else if (a.titulo.slug > b.titulo.slug) return 1;
+        return 0;
+      });
+
       guardarJSON(listas, 'listasPublicaciones');
       resolver({ datos: publicaciones, errata });
     });
@@ -266,12 +272,6 @@ export default async (
             // }
           });
         }
-      });
-
-      publicaciones.sort((a, b) => {
-        if (a.titulo.slug < b.titulo.slug) return -1;
-        else if (a.titulo.slug > b.titulo.slug) return 1;
-        return 0;
       });
     });
   }

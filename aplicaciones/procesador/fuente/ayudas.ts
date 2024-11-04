@@ -76,8 +76,8 @@ export const extraerUrls = (texto: string) => {
   return urls ? urls : [];
 };
 
-export function aplanarDefinicionesASlugs(datos: DefinicionSimple | DefinicionSimple[] | number | undefined) {
-  if (datos && typeof datos !== 'number') {
+export function aplanarDefinicionesASlugs(datos: DefinicionSimple | DefinicionSimple[] | undefined) {
+  if (datos) {
     return Array.isArray(datos)
       ? (datos as DefinicionSimple[]).map(({ slug }) => slug)
       : [(datos as DefinicionSimple).slug];
