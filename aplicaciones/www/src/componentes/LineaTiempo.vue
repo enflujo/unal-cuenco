@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, type Ref, ref } from 'vue';
+import { computed, type Ref, ref, watch } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import { storeToRefs } from 'pinia';
 import { usarCerebroDatos } from '@/cerebros/datos';
 
 const cerebroDatos = usarCerebroDatos();
-const { listasPublicaciones } = storeToRefs(cerebroDatos);
+const { publicaciones, listasPublicaciones } = storeToRefs(cerebroDatos);
 const extremosFechas: Ref<{ min: number; max: number } | null> = ref(null);
 const fechas = computed(() => {
   if (!extremosFechas.value) {
@@ -26,23 +26,25 @@ const fechas = computed(() => {
 
   return extremosFechas.value;
 });
+
+watch(listasPublicaciones, (lista) => {
+  if (!lista) return;
+  console.log(lista.años);
+});
+
+function posX(valor: number) {
+  const { min, max } = fechas.value;
+  return convertirEscala(valor, min, max, 0, 97);
+}
 </script>
 
 <template>
   <div id="contenedorLineaTiempo">
     <div id="contenedorGrafica">
       <svg id="marcas" width="100%" height="100%">
-        <g v-for="a in listasPublicaciones?.años">
-          <circle
-            r="20"
-            :cx="`${convertirEscala(+a.nombre, fechas.min, fechas.max, 0, 90) + 2}%`"
-            cy="50"
-            stroke="white"
-            stroke-width="1px"
-          />
-          <text class="fecha" :x="`${convertirEscala(+a.nombre, fechas.min, fechas.max, 0, 90)}%`" :y="70">
-            {{ a.nombre }}: {{ a.conteo }}
-          </text>
+        <g v-for="a in listasPublicaciones?.años" :style="{ transform: `translateX(${posX(+a.nombre)}%)` }">
+          <circle class="punto" r="16" cx="25" cy="30" />
+          <text class="fecha" x="15" y="60">{{ a.nombre }}</text>
         </g>
       </svg>
     </div>
@@ -50,43 +52,23 @@ const fechas = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-@use '@/scss/constantes';
+@use '@/scss/constantes' as *;
+
 #contenedorLineaTiempo {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100vw;
-  margin: 0 auto;
-  background-color: rgb(255, 255, 255);
-}
-
-#contenedorGrafica {
-  position: relative;
-  height: 100px;
-  z-index: 3;
+  height: $altoLinea;
+  background: rgb(41, 41, 41);
+  background: radial-gradient(circle, rgba(41, 41, 41, 1) 0%, rgba(74, 74, 74, 1) 35%, rgba(41, 41, 41, 1) 100%);
 }
 
 svg {
-  position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100vw;
-
-  path {
-    fill: black;
-  }
 
   .punto {
     cursor: pointer;
-
-    &.desactivado {
-      opacity: 0.7;
-      &:hover {
-        opacity: 0.8;
-        circle {
-          opacity: 0.8;
-        }
-      }
-    }
+    fill: #d2c2b3;
   }
 
   .punto,
@@ -102,16 +84,11 @@ svg {
       opacity: 0.2;
     }
   }
-  text {
-    //width: 10vw;
-    transform: translate(20px, 20px);
-    font-size: 0.6em;
-    fill: var(--magentaCuenco);
-  }
 
-  circle {
-    fill: var(--magentaCuenco);
-    opacity: 0.7;
+  .fecha {
+    font-weight: 100;
+    font-size: 0.6em;
+    fill: #faeddc;
   }
 }
 </style>

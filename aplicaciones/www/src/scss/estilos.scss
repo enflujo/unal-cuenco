@@ -2,8 +2,31 @@
 @use './constantes' as *;
 
 @font-face {
-  font-family: Ancizar;
+  font-family: 'Ancizar';
   src: url('/fuentes/AncizarSans/AncizarSans-Regular_02042016.otf');
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Ancizar';
+  src: url('/fuentes/AncizarSans/AncizarSans-Light_02042016.otf');
+  font-style: normal;
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Ancizar';
+  src: url('/fuentes/AncizarSans/AncizarSans-Thin_02042016.otf');
+  font-style: normal;
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: 'Ancizar';
+  src: url('/fuentes/AncizarSans/AncizarSans-Bold_02042016.otf');
+  font-style: bold;
+  font-weight: 700;
 }
 
 ::selection {
@@ -12,7 +35,8 @@
 }
 
 body {
-  font-family: Ancizar, Arial, Helvetica, sans-serif;
+  font-family: 'Ancizar', Arial, Helvetica, sans-serif;
+  font-weight: 300;
 }
 
 a,
@@ -43,7 +67,7 @@ ul {
   color: var(--enlacesFondoOscuro);
 
   &:hover {
-    color: var(--magentaCuenco);
+    color: var(--verdeCuenco);
   }
 
   &.externo {

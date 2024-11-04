@@ -62,6 +62,12 @@ function elegirVista(vistaElegida: string) {
 </template>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
+
+.columna {
+  height: calc(100vh - $altoMenu - $altoLinea);
+}
+
 .botonesVista {
   position: relative;
   left: 20vw;
