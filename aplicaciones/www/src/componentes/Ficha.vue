@@ -28,10 +28,12 @@ const secciones: TiposNodo[] = [
 
 onMounted(() => {
   document.body.addEventListener('click', clicFuera);
+  document.body.addEventListener('keydown', cambiarFicha);
 });
 
 onUnmounted(() => {
   document.body.removeEventListener('click', clicFuera);
+  document.body.removeEventListener('keydown', cambiarFicha);
 });
 
 watch(datosFicha, (datos) => {
@@ -40,7 +42,20 @@ watch(datosFicha, (datos) => {
   }
 });
 
+function cambiarFicha(evento: KeyboardEvent) {
+  if (!datosFicha.value || !fichaVisible.value) return;
+  const tecla = evento.key;
+
+  if (tecla === 'ArrowLeft') {
+    cerebroFicha.cambiarFicha(datosFicha.value.id, datosFicha.value.tipo, 'atras');
+  } else if (tecla === 'ArrowRight') {
+    cerebroFicha.cambiarFicha(datosFicha.value.id, datosFicha.value.tipo, 'adelante');
+  }
+}
+
 function clicFuera(evento: MouseEvent) {
+  evento.stopPropagation();
+  evento.preventDefault();
   if (!contenedorFicha.value) return;
   const elemento = evento.target as HTMLElement;
   if (!(contenedorFicha.value === elemento || contenedorFicha.value.contains(elemento))) {
@@ -73,7 +88,7 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
             @click="cerebroFicha.cambiarFicha(datosFicha.id, datosFicha.tipo, 'atras')"
             ><</span
           >
-          <h3 id="tituloFicha">{{ datosFicha.titulo }}</h3>
+          <h2 id="tituloFicha">{{ datosFicha.titulo }}</h2>
           <span
             class="boton"
             id="botonSiguiente"
@@ -88,7 +103,9 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
 
         <div v-for="tipo in secciones" :key="`seccion-${tipo}`">
           <section class="seccionFicha" v-if="datosFicha[tipo]">
-            <h4 class="tituloSeccion">{{ nombresListas[tipo] }}</h4>
+            <div class="contenedorPegajoso">
+              <h3 class="tituloSeccion">{{ nombresListas[tipo] }}</h3>
+            </div>
 
             <ul class="contenidoSeccion">
               <li
@@ -139,6 +156,8 @@ $margenY: 10px;
 
   h2 {
     margin: 0;
+    font-size: 1em;
+    padding: 1em 2em;
   }
 
   .boton {
@@ -169,11 +188,14 @@ $margenY: 10px;
     padding-bottom: 0.25em;
   }
 
-  .tituloSeccion {
-    position: sticky;
-    top: 0;
+  .contenedorPegajoso {
     width: 35%;
     margin: 0.5em 1em 0 0;
+  }
+
+  .tituloSeccion {
+    position: sticky;
+    top: 100px;
   }
 
   .contenidoSeccion {
