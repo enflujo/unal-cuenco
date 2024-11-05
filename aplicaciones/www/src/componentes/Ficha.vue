@@ -55,7 +55,6 @@ function cambiarFicha(evento: KeyboardEvent) {
 
 function clicFuera(evento: MouseEvent) {
   evento.stopPropagation();
-  evento.preventDefault();
   if (!contenedorFicha.value) return;
   const elemento = evento.target as HTMLElement;
   if (!(contenedorFicha.value === elemento || contenedorFicha.value.contains(elemento))) {
