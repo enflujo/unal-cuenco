@@ -1,5 +1,6 @@
 import { alerta, chulo, guardarJSON, logAviso, logNaranjaPulso } from './ayudas';
 import { procesarIndicadores } from './indicadores';
+import procesadorCaracterizacion from './procesadorCaracterizacionCopy';
 import procesadorColectivos from './procesadorColectivos';
 import procesadorPublicaciones from './procesadorPublicaciones';
 import type { Errata } from './tipos';
@@ -40,6 +41,14 @@ async function inicio() {
     'Colectivos y ámbitos (C.A)',
     indicadoresColectivos.datos
   );
+
+  /**
+   * CARACTERIZACION
+   */
+  const rutaCaracterizacion = './datos/Visualización_Caracterización_20240909.xlsx';
+  const caracterizacion = await procesadorCaracterizacion(rutaCaracterizacion, 'Hoja1');
+
+  guardar(caracterizacion.datos, caracterizacion.errata, 'colectivos', 'errataColectivos');
 
   guardar(
     indicadoresColectivos.datos,

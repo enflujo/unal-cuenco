@@ -39,3 +39,23 @@ export type FilaColectivos = [
   indicador: string,
   subindicador: string,
 ];
+
+export type FilaCaracterizacion = [
+  id: number,
+  encuentro: string,
+  persona: string,
+  sedes: string,
+  tipoSede: string,
+  rol: string,
+  cargoArea: string,
+];
+
+export type FilaCaracterizacionConteo = [
+  id: number,
+  encuentro: string,
+  personas: string[],
+  sedes: { nombre: string; conteo: number }[],
+  tipoSede: { nombre: string; conteo: number }[],
+  roles: { nombre: string; conteo: number }[],
+  cargoAreas: { nombre: string; conteo: number }[],
+];
