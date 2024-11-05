@@ -1,6 +1,6 @@
 import { alerta, chulo, guardarJSON, logAviso, logNaranjaPulso } from './ayudas';
 import { procesarIndicadores } from './indicadores';
-import procesadorCaracterizacion from './procesadorCaracterizacionCopy';
+import procesadorCaracterizacion from './procesadorCaracterizacion';
 import procesadorColectivos from './procesadorColectivos';
 import procesadorPublicaciones from './procesadorPublicaciones';
 import type { Errata } from './tipos';
