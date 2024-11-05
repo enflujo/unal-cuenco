@@ -9,12 +9,13 @@ import type {
 } from '@/tipos/compartidos';
 
 export type TiposDePagina = 'inicio' | 'colectivos' | 'publicaciones' | 'encuentros';
-
+export type TMinMax = { min: number; max: number; total: number };
 export interface CerebroGeneral {
   paginaActual: TiposDePagina;
 }
 export interface CerebroDatos {
   listaElegida: TiposNodo | null;
+  extremosFechasPublicaciones: TMinMax | null;
   // COLECTIVOS
   colectivos: Colectivo[] | null;
   indicadoresColectivos: Indicador[] | null;

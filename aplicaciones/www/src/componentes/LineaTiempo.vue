@@ -1,53 +1,66 @@
 <script setup lang="ts">
-import { computed, type Ref, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import { storeToRefs } from 'pinia';
 import { usarCerebroDatos } from '@/cerebros/datos';
 
 const cerebroDatos = usarCerebroDatos();
-const { publicaciones, listasPublicaciones } = storeToRefs(cerebroDatos);
-const extremosFechas: Ref<{ min: number; max: number } | null> = ref(null);
-const fechas = computed(() => {
-  if (!extremosFechas.value) {
-    if (!listasPublicaciones.value) return { min: 0, max: 0 };
-    const { años } = listasPublicaciones.value;
-    let añoMin = Infinity;
-    let añoMax = 0;
+const { listasPublicaciones, extremosFechasPublicaciones } = storeToRefs(cerebroDatos);
+const dims = ref({ ancho: 0, alto: 100, pasoX: 0, r: 0, margenX: 0, margenIzq: 0, cortarFechas: false });
 
-    años.forEach((año) => {
-      const valorAño = +año.nombre;
-      if (añoMin > valorAño) añoMin = valorAño;
-      if (añoMax < valorAño) añoMax = valorAño;
-    });
-    const valores = { min: añoMin, max: añoMax };
-    extremosFechas.value = valores;
-    return valores;
+onMounted(() => {
+  escalar();
+  window.addEventListener('resize', escalar);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', escalar);
+});
+
+watch(extremosFechasPublicaciones, escalar);
+
+function escalar() {
+  if (!extremosFechasPublicaciones.value) return;
+  const { total } = extremosFechasPublicaciones.value;
+  const ancho = window.innerWidth;
+  const anchoColumna = (ancho / (total - 0)) | 0;
+  const anchoMaxColumna = 20;
+  const margenX = 4;
+  const caben = anchoColumna > anchoMaxColumna; // Revisar si caben todos los puntos en la pantalla.
+  let r = 0;
+
+  if (caben) {
+    dims.value.cortarFechas = false;
+    r = anchoMaxColumna - margenX;
+  } else {
+    dims.value.cortarFechas = true;
+    r = anchoColumna / 2;
   }
-
-  return extremosFechas.value;
-});
-
-watch(listasPublicaciones, (lista) => {
-  if (!lista) return;
-  console.log(lista.años);
-});
+  dims.value.margenX = ((anchoColumna - r * 2) / 2) * 2;
+  dims.value.pasoX = anchoColumna;
+  dims.value.ancho = ancho;
+  dims.value.r = r;
+}
 
 function posX(valor: number) {
-  const { min, max } = fechas.value;
-  return convertirEscala(valor, min, max, 0, 97);
+  if (!extremosFechasPublicaciones.value) return 0;
+  const { min, max } = extremosFechasPublicaciones.value;
+  const { ancho, pasoX, margenX, r } = dims.value;
+  const margenIzq = margenX / 2;
+  return convertirEscala(valor, min, max, 0, ancho - pasoX) + margenIzq + r;
 }
 </script>
 
 <template>
   <div id="contenedorLineaTiempo">
-    <div id="contenedorGrafica">
-      <svg id="marcas" width="100%" height="100%">
-        <g v-for="a in listasPublicaciones?.años" :style="{ transform: `translateX(${posX(+a.nombre)}%)` }">
-          <circle class="punto" r="16" cx="25" cy="30" />
-          <text class="fecha" x="15" y="60">{{ a.nombre }}</text>
-        </g>
-      </svg>
-    </div>
+    <svg id="marcas" :width="`${dims.ancho}px`" height="100%">
+      <g v-for="a in listasPublicaciones?.años" :style="{ transform: `translateX(${posX(+a.nombre)}px)` }">
+        <circle class="punto" :r="dims.r" cx="0" cy="30" />
+        <text class="fecha" x="0" y="60" text-anchor="middle">
+          {{ dims.cortarFechas ? a.nombre.slice(2, 4) : a.nombre }}
+        </text>
+      </g>
+    </svg>
   </div>
 </template>
 
@@ -64,8 +77,6 @@ function posX(valor: number) {
 }
 
 svg {
-  width: 100vw;
-
   .punto {
     cursor: pointer;
     fill: #d2c2b3;
