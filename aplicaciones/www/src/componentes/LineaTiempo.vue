@@ -3,8 +3,10 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import { storeToRefs } from 'pinia';
 import { usarCerebroDatos } from '@/cerebros/datos';
+import { usarCerebroFicha } from '@/cerebros/ficha';
 
 const cerebroDatos = usarCerebroDatos();
+const cerebroFicha = usarCerebroFicha();
 const { listasPublicaciones, extremosFechasPublicaciones } = storeToRefs(cerebroDatos);
 const dims = ref({ ancho: 0, alto: 100, pasoX: 0, r: 0, margenX: 0, margenIzq: 0, cortarFechas: false });
 
@@ -49,13 +51,38 @@ function posX(valor: number) {
   const margenIzq = margenX / 2;
   return convertirEscala(valor, min, max, 0, ancho - pasoX) + margenIzq + r;
 }
+
+function abrirElemento(evento: MouseEvent, i: string) {
+  evento.stopPropagation();
+  cerebroFicha.seleccionarNodo(i, 'años');
+}
 </script>
 
 <template>
   <div id="contenedorLineaTiempo">
     <svg id="marcas" :width="`${dims.ancho}px`" height="100%">
-      <g v-for="a in listasPublicaciones?.años" :style="{ transform: `translateX(${posX(+a.nombre)}px)` }">
-        <circle class="punto" :r="dims.r" cx="0" cy="30" />
+      <filter id="inset-shadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feComponentTransfer in="SourceAlpha">
+          <feFuncA type="table" tableValues="1 0" />
+        </feComponentTransfer>
+        <feGaussianBlur stdDeviation="4" />
+        <feOffset dx="0" dy="2" result="offsetblur" />
+        <feFlood flood-color="rgb(0, 0, 0)" result="color" />
+        <feComposite in2="offsetblur" operator="in" />
+        <feComposite in2="SourceAlpha" operator="in" />
+        <feMerge>
+          <feMergeNode in="SourceGraphic" />
+          <feMergeNode />
+        </feMerge>
+      </filter>
+      <g
+        v-for="a in listasPublicaciones?.años"
+        :style="{ transform: `translateX(${posX(+a.nombre)}px)` }"
+        @click="abrirElemento($event, a.id)"
+        class="punto"
+        :class="cerebroFicha.datosFicha?.id === a.id ? 'activo' : ''"
+      >
+        <circle :r="dims.r" cx="0" cy="30" filter="url(#inset-shadow)" />
         <text class="fecha" x="0" y="60" text-anchor="middle">
           {{ dims.cortarFechas ? a.nombre.slice(2, 4) : a.nombre }}
         </text>
@@ -72,34 +99,32 @@ function posX(valor: number) {
   bottom: 0;
   width: 100vw;
   height: $altoLinea;
-  background: rgb(41, 41, 41);
-  background: radial-gradient(circle, rgba(41, 41, 41, 1) 0%, rgba(74, 74, 74, 1) 35%, rgba(41, 41, 41, 1) 100%);
+  background: rgb(57, 73, 164);
+  background: radial-gradient(circle, rgba(57, 73, 164, 1) 0%, rgb(75, 90, 177) 25%, rgba(57, 73, 164, 1) 100%);
 }
 
 svg {
   .punto {
     cursor: pointer;
-    fill: #d2c2b3;
+
+    &.activo circle {
+      fill: var(--magentaCuenco);
+    }
   }
 
-  .punto,
   .punto circle {
+    fill: #d2c2b3;
     transition: all 0.8s ease-out;
-  }
 
-  .desactivado {
-    opacity: 0.3;
-
-    circle {
-      fill: rgba(26, 42, 34, 0.8);
-      opacity: 0.2;
+    &:hover {
+      fill: var(--verdeCuenco);
     }
   }
 
   .fecha {
-    font-weight: 100;
+    font-weight: 400;
     font-size: 0.6em;
-    fill: #faeddc;
+    fill: #f0eeeb;
   }
 }
 </style>

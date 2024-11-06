@@ -127,17 +127,19 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
 </template>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
 $margenY: 10px;
 
 #contenedorFicha {
   z-index: 99;
   width: 40vw;
-  height: calc(100vh - ($margenY * 2));
-  background-color: var(--azulOscuroCuenco);
+  height: calc(100vh - $altoMenu - $altoLinea);
+  background: rgb(57, 73, 164);
+  background: radial-gradient(circle, rgba(57, 73, 164, 1) 0%, rgb(75, 90, 177) 25%, rgba(57, 73, 164, 1) 100%);
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  top: $margenY;
+  top: $altoMenu;
   border-radius: 20px;
   padding: 1em;
   overflow: hidden;
