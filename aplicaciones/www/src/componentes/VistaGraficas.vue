@@ -5,10 +5,12 @@ import type { ElementoLista, LlavesColectivos, LlavesPublicaciones, Relacion } f
 import { storeToRefs } from 'pinia';
 import { TiposDePagina, TiposNodo } from '@/tipos';
 import { usarCerebroDatos } from '@/cerebros/datos';
+import { usarCerebroGeneral } from '@/cerebros/general';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
 const { pagina } = defineProps<{ pagina: TiposDePagina }>();
 const cerebroDatos = usarCerebroDatos();
+const { paginaActual } = usarCerebroGeneral();
 const { listaElegida } = storeToRefs(cerebroDatos);
 const listaVisible: Ref<ElementoLista[]> = ref([]);
 const valorMaximo = ref(0);
@@ -25,34 +27,34 @@ watch(listaElegida, (llaveLista) => {
   listaActual = llaveLista;
 
   // Cambiar lista elegida al hacer click en una lista del menú
-  listaVisible.value = listas[llaveLista]; //.sort((a, b) => b.conteo - a.conteo);
+  listaVisible.value = listas[llaveLista];
+  // console.log(listaVisible.value);
+  // console.time('measure');
+  // listaOrdenada.value = listaVisible.value.sort((a, b) => b.conteo - a.conteo);
+  // console.timeEnd('measure');
   valorMaximo.value = Math.max(...listaVisible.value.map((o) => o.conteo));
 });
 
 watch(filtroElegido, () => {
   if (!filtroElegido || listaActual === filtroElegido.value) return;
-  // cambiar
-
   filtrados = [];
   listaVisible.value.forEach((elementoElegido) => {
     const filtrado = elementoElegido.relaciones.filter((relacion) => relacion.tipo === `${filtroElegido.value}`);
+
     filtrado.sort((a, b) => b.conteo - a.conteo);
     filtrados.push(filtrado);
   });
-
-  //console.log(filtroElegido.value);
-  //console.log(filtrados);
 });
 
 onMounted(async () => {
   if (pagina === 'colectivos') {
-    if (!cerebroDatos.listasColectivos) return;
-    listas = cerebroDatos.listasColectivos;
-    listaElegida.value = Object.keys(cerebroDatos.listasColectivos)[0] as LlavesColectivos;
+    if (!cerebroDatos.listasColectivosOrdenadas) return;
+    listas = cerebroDatos.listasColectivosOrdenadas;
+    listaElegida.value = Object.keys(cerebroDatos.listasColectivosOrdenadas)[0] as LlavesColectivos;
   } else if (pagina === 'publicaciones') {
-    if (!cerebroDatos.listasPublicaciones) return;
-    listas = cerebroDatos.listasPublicaciones;
-    listaElegida.value = Object.keys(cerebroDatos.listasPublicaciones)[0] as LlavesPublicaciones;
+    if (!cerebroDatos.listasPublicacionesOrdenadas) return;
+    listas = cerebroDatos.listasPublicacionesOrdenadas;
+    listaElegida.value = Object.keys(cerebroDatos.listasPublicacionesOrdenadas)[0] as LlavesPublicaciones;
   }
 });
 
@@ -74,6 +76,16 @@ function elegirFiltro(filtro: string) {
     <div id="filtros">
       Filtrar:
       <div
+        v-if="paginaActual === 'publicaciones'"
+        ref="filtroEstados"
+        class="botonFiltro"
+        :class="filtroElegido === 'años' ? 'seleccionado' : ''"
+        @click="elegirFiltro('años')"
+      >
+        años
+      </div>
+      <div
+        v-if="paginaActual === 'colectivos'"
         ref="filtroEstados"
         class="botonFiltro"
         :class="filtroElegido === 'estados' ? 'seleccionado' : ''"
@@ -82,6 +94,7 @@ function elegirFiltro(filtro: string) {
         estados
       </div>
       <div
+        v-if="paginaActual === 'colectivos'"
         ref="filtroModalidades"
         class="botonFiltro"
         :class="filtroElegido === 'modalidades' ? 'seleccionado' : ''"
@@ -90,6 +103,15 @@ function elegirFiltro(filtro: string) {
         modalidades
       </div>
       <div
+        ref="filtroSedes"
+        class="botonFiltro"
+        :class="filtroElegido === 'indicadores' ? 'seleccionado' : ''"
+        @click="elegirFiltro('indicadores')"
+      >
+        indicadores
+      </div>
+      <div
+        v-if="paginaActual === 'colectivos'"
         ref="filtroSedes"
         class="botonFiltro"
         :class="filtroElegido === 'sedes' ? 'seleccionado' : ''"
@@ -173,7 +195,7 @@ function elegirFiltro(filtro: string) {
 
 .linea {
   height: 3px;
-  //background-color: var(--azulOscuroCuenco);
+  background-color: var(--azulOscuroCuenco);
 }
 
 .colombino {

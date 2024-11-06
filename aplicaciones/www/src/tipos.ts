@@ -21,6 +21,8 @@ export interface CerebroDatos {
   indicadoresColectivos: Indicador[] | null;
   cargandoColectivos: boolean;
   listasColectivos: ListasColectivos | null;
+  listasColectivosOrdenadas: ListasColectivos | null;
+
   cargandoListasColectivos: boolean;
 
   // PUBLICACIONES
@@ -30,6 +32,7 @@ export interface CerebroDatos {
   indicadoresPublicaciones: Indicador[] | null;
   cargandoPublicaciones: boolean;
   listasPublicaciones: ListasPublicaciones | null;
+  listasPublicacionesOrdenadas: ListasPublicaciones | null;
   cargandoListasPublicaciones: boolean;
 }
 

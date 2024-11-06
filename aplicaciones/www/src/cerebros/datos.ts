@@ -1,7 +1,15 @@
 import { defineStore } from 'pinia';
-import { pedirDatos } from '@/utilidades/ayudas';
+import { ordenarRapido, pedirDatos } from '@/utilidades/ayudas';
 import type { CerebroDatos, TiposNodo } from '@/tipos';
-import type { Colectivo, Indicador, ListasColectivos, ListasPublicaciones, Publicacion } from '@/tipos/compartidos';
+import type {
+  Colectivo,
+  Indicador,
+  ListasColectivos,
+  ListasPublicaciones,
+  LlavesColectivos,
+  LlavesPublicaciones,
+  Publicacion,
+} from '@/tipos/compartidos';
 
 export const usarCerebroDatos = defineStore('cerebroDatos', {
   state: (): CerebroDatos => {
@@ -15,6 +23,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       cargandoColectivos: false,
 
       listasColectivos: null,
+      listasColectivosOrdenadas: null,
       cargandoListasColectivos: false,
 
       // PUBLICACIONES
@@ -23,6 +32,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       cargandoPublicaciones: false,
 
       listasPublicaciones: null,
+      listasPublicacionesOrdenadas: null,
       cargandoListasPublicaciones: false,
     };
   },
@@ -52,8 +62,8 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       this.cargandoListasPublicaciones = true;
 
       try {
-        const lista = await pedirDatos<ListasPublicaciones>('datos/listasPublicaciones.json');
-        const { años } = lista;
+        const listas = await pedirDatos<ListasPublicaciones>('datos/listasPublicaciones.json');
+        const { años } = listas;
         let añoMin = Infinity;
         let añoMax = 0;
 
@@ -65,8 +75,15 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
         });
         const valores = { min: añoMin, max: añoMax };
         this.extremosFechasPublicaciones = { ...valores, total: añoMax - añoMin };
+        this.listasPublicacionesOrdenadas = { tipos: [], años: [], dependencias: [], indicadores: [], autores: [] };
 
-        this.listasPublicaciones = lista;
+        for (const tipo in listas) {
+          const lista = [...listas[tipo as LlavesPublicaciones]];
+          const largo = lista.length;
+          ordenarRapido(lista, 0, largo - 1, largo);
+          this.listasPublicacionesOrdenadas[tipo as LlavesPublicaciones] = lista;
+        }
+        this.listasPublicaciones = listas;
         this.cargandoListasPublicaciones = false;
       } catch (error) {
         console.error('Problema cargando datos de listasPublicaciones', JSON.stringify(error));
@@ -93,7 +110,23 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       this.cargandoListasColectivos = true;
 
       try {
-        this.listasColectivos = await pedirDatos<ListasColectivos>('datos/listasColectivos.json');
+        const listas = await pedirDatos<ListasColectivos>('datos/listasColectivos.json');
+        this.listasColectivosOrdenadas = {
+          tipos: [],
+          estados: [],
+          dependencias: [],
+          indicadores: [],
+          sedes: [],
+          modalidades: [],
+        };
+
+        for (const tipo in listas) {
+          const lista = [...listas[tipo as LlavesColectivos]];
+          const largo = lista.length;
+          ordenarRapido(lista, 0, largo - 1, largo);
+          this.listasColectivosOrdenadas[tipo as LlavesColectivos] = lista;
+        }
+        this.listasColectivos = listas;
         this.cargandoListasColectivos = false;
       } catch (error) {
         console.error('Problema cargando datos de listasColectivos', JSON.stringify(error));
