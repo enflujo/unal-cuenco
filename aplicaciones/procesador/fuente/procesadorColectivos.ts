@@ -19,7 +19,7 @@ import type {
 } from '@/tipos/compartidos';
 import type { Errata, FilaColectivos } from './tipos';
 import { datosGeo } from '../datos/datosGeo';
-import type { Feature } from 'geojson';
+import type { Feature, Position } from 'geojson';
 
 const colectivos: Colectivo[] = [];
 const listas: ListasColectivos = {
@@ -45,7 +45,7 @@ function procesarLista(llaveLista: LlavesColectivos, valor: string) {
 
   if (llaveLista === 'sedes') {
     const lugarDatosGeo = datosGeo.features.find((lugar: Feature) => lugar.properties?.slug === slug);
-    let coordenadas: number[] = [];
+    let coordenadas: Position = [];
     if (lugarDatosGeo?.geometry.type === 'Point') {
       coordenadas = lugarDatosGeo?.geometry.coordinates;
     }

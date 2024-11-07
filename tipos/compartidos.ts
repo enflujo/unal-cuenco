@@ -1,9 +1,10 @@
+import type { Position } from 'geojson';
 export interface ElementoLista {
   id: string;
   nombre: string;
   descripcion?: string;
   slug: string;
-  coordenadas?: number[];
+  coordenadas?: Position;
   conteo: number;
   relaciones: Relacion[];
   publicaciones?: string[];
