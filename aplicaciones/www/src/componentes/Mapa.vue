@@ -4,7 +4,7 @@ import type { Map } from 'mapbox-gl';
 import type { FeatureCollection } from 'geojson';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { onMounted, ref, type Ref } from 'vue';
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 //POR HACER: Desmontar mapa en evento onUnmounted porque sino, se crean muchas instancias de mapa en Vue
 
@@ -81,10 +81,10 @@ const datosGeo: FeatureCollection = {
 };
 
 const contenedorMapa: Ref<HTMLDivElement | null> = ref(null);
+let mapa: Map;
 
 onMounted(() => {
   if (!contenedorMapa.value) return;
-  let mapa: Map;
 
   // POR HACER: Cambiar el estilo
   const estilo = 'mapbox://styles/enflujo/cm1s6qduv00c701pgd1tm5sxh'; //'mapbox://styles/enflujo/cm1s7mjel00ce01pg63yy7uxj';
@@ -111,13 +111,17 @@ onMounted(() => {
       paint: {
         'circle-radius': 8,
         'circle-stroke-width': 2,
-        'circle-color': '#c30a93',
+        'circle-color': '#c30a92',
         'circle-stroke-color': 'white',
       },
     });
 
     // POR HACER: Clústers según cantidad de colectivos por sedes
   });
+});
+
+onUnmounted(() => {
+  mapa.remove();
 });
 </script>
 
