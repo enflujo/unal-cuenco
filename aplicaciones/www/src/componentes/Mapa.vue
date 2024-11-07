@@ -34,8 +34,6 @@ onMounted(() => {
     });
   });
 
-  console.log(datosSedesGeo);
-
   if (!contenedorMapa.value) return;
 
   // POR HACER: Cambiar el estilo
