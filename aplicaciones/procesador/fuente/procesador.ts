@@ -9,7 +9,7 @@ async function inicio() {
   /**
    * PUBLICACIONES
    */
-  const rutaPublicaciones = './datos/Base_Producción_ academica_contactos_V25.xlsx';
+  const rutaPublicaciones = './datos/Base_Producción_ académica_anonimizado_V25.xlsx';
   // Extraer diccionario de indicadores
   const indicadoresPublicaciones = await procesarIndicadores(rutaPublicaciones, 'Diccionario de Indicadores');
   // Extraer sub-indicadores y crear relaciones con indicadores
