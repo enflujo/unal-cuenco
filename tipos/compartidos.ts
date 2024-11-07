@@ -3,6 +3,7 @@ export interface ElementoLista {
   nombre: string;
   descripcion?: string;
   slug: string;
+  coordenadas?: number[];
   conteo: number;
   relaciones: Relacion[];
   publicaciones?: string[];
