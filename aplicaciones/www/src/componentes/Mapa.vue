@@ -56,18 +56,6 @@ onMounted(() => {
     attributionControl: false,
   });
 
-  // Tratando de hacer filtros
-  const estado1 = ['get', 'estados[0]'];
-  const estado2 = ['get', 'estados[1]'];
-  const estados1 = ['+', ['get', 'estadoActivo']];
-  const estados2 = ['+', ['get', 'estadoInactivo']];
-
-  //const estado1 = ['all', ['===', ['get', 'relaciones.tipos'], 'estados'], ['===', ['get', 'relaciones.id'], 1]];
-  //const estado2 = ['all', ['===', ['get', 'relaciones.tipos'], 'estados'], ['===', ['get', 'relaciones.id'], 0]];
-
-  // colores para usar si se divide el círculo en dona
-  const colors = ['#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c'];
-
   mapa.on('load', () => {
     mapa.addSource('colectivos-sedes', {
       type: 'geojson',
