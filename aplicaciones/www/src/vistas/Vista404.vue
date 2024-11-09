@@ -1,3 +1,5 @@
+<script setup lang="ts"></script>
+
 <template>
   <main class="pagina-404">
     <div class="error">
