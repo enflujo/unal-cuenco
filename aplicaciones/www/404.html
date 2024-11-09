@@ -6,8 +6,11 @@
     <script>
       // Redirige a la ruta correcta en el cliente
       const ruta = window.location.pathname;
-      const nuevaRuta = ruta.replace(/\/$/, '') + '/index.html';
-      window.location.replace(nuevaRuta);
+      if (!ruta.endsWith('/index.html')) {
+        const nuevaRuta = ruta.replace(/\/$/, '') + '/index.html';
+        console.log(nuevaRuta);
+        //window.location.replace(nuevaRuta);
+      }
     </script>
   </head>
   <body></body>
