@@ -55,11 +55,6 @@ export const datosGeo: FeatureCollection = {
     },
     {
       type: 'Feature',
-      properties: { slug: 'palmira', conteo: 20 },
-      geometry: { type: 'Point', coordinates: [-76.3099641, 3.5119486] },
-    },
-    {
-      type: 'Feature',
       properties: { slug: 'palmira-medellin', conteo: 1 },
       geometry: { type: 'Point', coordinates: [-76.306479, 3.517151] },
     },
