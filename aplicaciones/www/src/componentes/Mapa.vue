@@ -1,52 +1,41 @@
 <script setup lang="ts">
-import mapbox from 'mapbox-gl';
-import type { Map } from 'mapbox-gl';
-import type { GeoJSON, Position } from 'geojson';
-
 import 'mapbox-gl/dist/mapbox-gl.css';
+import mapbox from 'mapbox-gl';
+import type { Map, MapMouseEvent } from 'mapbox-gl';
 import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { usarCerebroDatos } from '@/cerebros/datos';
-import { ElementoLista } from '@/tipos/compartidos';
+import { storeToRefs } from 'pinia';
+import { usarCerebroFicha } from '@/cerebros/ficha';
+import { PropiedadesGeoColectivos } from '@/tipos';
 
 const cerebroDatos = usarCerebroDatos();
-const datosSedesGeo: GeoJSON = { type: 'FeatureCollection', features: [] }; //: Ref<FeatureCollection | null> = ref(null);
-const cargado: Ref<boolean> = ref(false);
-
-const listaSedes: Ref<ElementoLista[] | undefined> = ref();
-
+const cerebroFicha = usarCerebroFicha();
+const { geoColectivos } = storeToRefs(cerebroDatos);
 const contenedorMapa: Ref<HTMLDivElement | null> = ref(null);
-let mapa: Map;
+const infoMapa: Ref<HTMLDivElement | null> = ref(null);
+let mapa: Map | undefined;
 
-watch(cerebroDatos, (datos) => {
-  listaSedes.value = datos.listasColectivos?.sedes;
-  cargado.value = true;
+// Crear mapa si no existe y si hay datos.
+watch(geoColectivos, (geo) => {
+  if (!geo || mapa) return;
+  crearMapa();
 });
 
 onMounted(() => {
-  // POR HACER: Esperar a que se carguen los datos para mostrar el mapa
-  const listaSedes = cerebroDatos.listasColectivos?.sedes;
+  if (!geoColectivos.value) return;
+  crearMapa();
+});
 
-  listaSedes?.forEach((sede) => {
-    // esto podría usarse si se van a hacer donas. Por definir
-    const cantActivos = sede.relaciones.find((relacion) => relacion.tipo === 'estados' && relacion.id === '1');
-    const cantInactivos = sede.relaciones.find((relacion) => relacion.tipo === 'estados' && relacion.id === '2');
+onUnmounted(() => {
+  if (!mapa) return;
+  mapa.remove();
+});
 
-    datosSedesGeo.features.push({
-      type: 'Feature',
-      properties: {
-        slug: `${sede.slug}`,
-        conteo: sede.conteo,
-        estadoActivo: cantActivos?.conteo ? cantActivos?.conteo : 0, // esto podría usarse si se van a hacer donas. Por definir
-        estadoInactivo: cantInactivos?.conteo ? cantInactivos?.conteo : 0,
-      },
-      geometry: { type: 'Point', coordinates: sede.coordenadas as Position },
-    });
-  });
-
-  if (!contenedorMapa.value) return;
-
-  const estilo = 'mapbox://styles/enflujo/cm1s6qduv00c701pgd1tm5sxh'; //'mapbox://styles/enflujo/cm1s7mjel00ce01pg63yy7uxj';
+function crearMapa() {
+  if (!contenedorMapa.value || mapa) return;
+  const estilo = 'mapbox://styles/enflujo/cm1s6qduv00c701pgd1tm5sxh';
   mapbox.accessToken = 'pk.eyJ1IjoiZW5mbHVqbyIsImEiOiJjbDNrOXNndXQwMnZsM2lvNDd4N2x0M3dvIn0.eWs4BHs67PcETEUI00T66Q';
+  let idDePuntoSeleccionado: string | null = null;
 
   mapa = new mapbox.Map({
     container: contenedorMapa.value,
@@ -57,66 +46,147 @@ onMounted(() => {
   });
 
   mapa.on('load', () => {
-    mapa.addSource('colectivos-sedes', {
+    if (!geoColectivos.value || !mapa) return;
+
+    mapa.addSource('colectivos', {
       type: 'geojson',
-      data: datosSedesGeo,
-      cluster: false, // Por ahora false porque se comporta raro
-      clusterRadius: 20,
-      clusterProperties: {
-        sum: [
-          ['+', ['accumulated'], ['get', 'sum']],
-          ['get', 'conteo'],
-        ],
-        clusterAggregate: [
-          ['+', ['accumulated'], ['get', 'sum']],
-          ['get', 'conteo'],
-        ],
-      },
+      data: geoColectivos.value,
     });
 
-    /* circle-radius: 
-        valor1: radio si la cantidad es menor que valor2
-        valor3: radio si la cantidad está entre valor2 y valor4
-        valor5: radio si la cantidad supera valor4 
-        */
     mapa.addLayer({
-      id: 'colectivos-layer',
+      id: 'sedes',
       type: 'circle',
-      source: 'colectivos-sedes',
+      source: 'colectivos',
       paint: {
         'circle-radius': ['step', ['get', 'conteo'], 12, 20, 25, 100, 35],
         'circle-stroke-width': 2,
-        'circle-color': '#00bc96', //['case', estados1, colors[0], estados2],
+        'circle-color': ['case', ['boolean', ['feature-state', 'hover'], false], '#c30a93', '#00bc96'],
         'circle-stroke-color': 'white',
       },
     });
 
     mapa.addLayer({
-      id: 'colectivos-cuenta',
+      id: 'conteos',
       type: 'symbol',
-      source: 'colectivos-sedes',
+      source: 'colectivos',
       filter: ['has', 'conteo'],
       paint: {
-        'text-color': '#000000',
+        'text-color': '#000',
       },
       layout: {
         'text-field': ['get', 'conteo'],
         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-        'text-size': 14,
+        'text-size': 12,
       },
     });
-    // POR HACER: Donas ?
-  });
-});
 
-onUnmounted(() => {
-  mapa.remove();
-});
+    mapa.on('click', 'sedes', (evento) => {
+      evento.originalEvent.stopPropagation();
+      if (!evento.features || evento.features.length === 0) return;
+      const propiedades = evento.features[0].properties;
+
+      if (propiedades && propiedades.id) {
+        cerebroDatos.cambiarLista('sedes');
+        cerebroFicha.seleccionarNodo(propiedades.id, 'sedes');
+      }
+    });
+
+    mapa.on('mouseenter', 'sedes', () => {
+      if (!infoMapa.value || !mapa) return;
+      mapa.getCanvas().style.cursor = 'pointer';
+      infoMapa.value.classList.add('activo');
+    });
+
+    mapa.on('mouseleave', 'sedes', () => {
+      if (!infoMapa.value || !mapa) return;
+      mapa.getCanvas().style.cursor = '';
+      infoMapa.value.classList.remove('activo');
+    });
+
+    mapa.on('mousemove', (evento) => {
+      if (!infoMapa.value || !mapa) return;
+      const features = mapa.queryRenderedFeatures(evento.point, { layers: ['sedes'] });
+
+      if (features && features.length > 0) {
+        const { clientX, clientY } = evento.originalEvent;
+        const datosPunto = features[0].properties as PropiedadesGeoColectivos;
+        if (!datosPunto) return;
+
+        infoMapa.value.innerHTML = crearTextoSede(datosPunto);
+        infoMapa.value.style.left = `${clientX}px`;
+        infoMapa.value.style.top = `${clientY}px`;
+
+        if (idDePuntoSeleccionado !== datosPunto.id) {
+          if (idDePuntoSeleccionado) {
+            mapa.setFeatureState({ source: 'colectivos', id: idDePuntoSeleccionado }, { hover: false });
+          }
+
+          idDePuntoSeleccionado = datosPunto.id as string;
+
+          mapa.setFeatureState({ source: 'colectivos', id: idDePuntoSeleccionado }, { hover: true });
+        }
+      } else {
+        infoMapa.value.innerHTML = '';
+
+        if (idDePuntoSeleccionado) {
+          mapa.setFeatureState({ source: 'colectivos', id: idDePuntoSeleccionado }, { hover: false });
+        }
+      }
+    });
+  });
+}
+
+function crearTextoSede(datos: PropiedadesGeoColectivos) {
+  let nombre = `Sede ${datos.nombre}`;
+
+  if (datos.nombre === 'Nivel Internacional' || datos.nombre === 'Nivel Nacional') {
+    nombre = datos.nombre;
+  }
+
+  return `<p class="nombre">${nombre}</p>
+    <p class="conteo">${datos.conteo} colectivo${datos.conteo > 1 ? 's' : ''}</p>`;
+}
 </script>
 
 <template>
   <div id="contenedorMapa" ref="contenedorMapa"></div>
+  <div id="infoMapa" ref="infoMapa"></div>
 </template>
+
+<style lang="scss">
+@use '@/scss/constantes' as *;
+#infoMapa {
+  @include gradienteAzulCircular;
+  color: var(--blanco);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1em;
+  z-index: 1;
+  max-width: 150px;
+  transform: translate(-50%, -111%);
+  pointer-events: none;
+  text-align: center;
+  display: none;
+  border-radius: 5px;
+
+  .nombre {
+    font-weight: bold;
+  }
+
+  .conteo {
+    font-size: 0.8em;
+  }
+
+  &.activo {
+    display: block;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 #contenedorMapa {
