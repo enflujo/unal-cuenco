@@ -7,12 +7,22 @@ import type {
   LlavesPublicaciones,
   Publicacion,
 } from '@/tipos/compartidos';
+import type { FeatureCollection, Point } from 'geojson';
 
 export type TiposDePagina = 'inicio' | 'colectivos' | 'publicaciones' | 'encuentros';
 export type TMinMax = { min: number; max: number; total: number };
 export interface CerebroGeneral {
   paginaActual: TiposDePagina;
 }
+
+export type PropiedadesGeoColectivos = {
+  id: string;
+  conteo: number;
+  nombre: string;
+};
+
+export type GeoColectivos = FeatureCollection<Point, PropiedadesGeoColectivos>;
+
 export interface CerebroDatos {
   listaElegida: TiposNodo | null;
   extremosFechasPublicaciones: TMinMax | null;
@@ -22,8 +32,8 @@ export interface CerebroDatos {
   cargandoColectivos: boolean;
   listasColectivos: ListasColectivos | null;
   listasColectivosOrdenadas: ListasColectivos | null;
-
   cargandoListasColectivos: boolean;
+  geoColectivos: GeoColectivos | null;
 
   // PUBLICACIONES
   /** Datos de las publicaciones */

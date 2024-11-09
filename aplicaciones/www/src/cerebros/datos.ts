@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ordenarRapido, pedirDatos } from '@/utilidades/ayudas';
-import type { CerebroDatos, TiposNodo } from '@/tipos';
+import type { CerebroDatos, GeoColectivos, TiposNodo } from '@/tipos';
 import type {
   Colectivo,
   Indicador,
@@ -26,6 +26,8 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       listasColectivosOrdenadas: null,
       cargandoListasColectivos: false,
 
+      geoColectivos: null,
+
       // PUBLICACIONES
       publicaciones: null,
       indicadoresPublicaciones: null,
@@ -38,6 +40,11 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
   },
 
   actions: {
+    /**
+     * Define la lista a mostrar.
+     *
+     * @param llaveLista Llave de la lista a cambiar.
+     */
     cambiarLista(llaveLista: TiposNodo) {
       this.listaElegida = llaveLista;
     },
@@ -103,6 +110,31 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       }
 
       await this.cargarDatosListaColectivos();
+
+      /**
+       * Crear geojson de colectivos.
+       */
+      const sedes = this.listasColectivos?.sedes;
+
+      if (!sedes) return;
+      const geo: GeoColectivos = { type: 'FeatureCollection', features: [] };
+
+      sedes?.forEach((sede) => {
+        if (!sede.coordenadas) return;
+
+        geo.features.push({
+          type: 'Feature',
+          id: sede.id,
+          properties: {
+            id: sede.id,
+            conteo: sede.conteo,
+            nombre: sede.nombre,
+          },
+          geometry: { type: 'Point', coordinates: sede.coordenadas },
+        });
+      });
+
+      this.geoColectivos = geo;
     },
 
     async cargarDatosListaColectivos() {
