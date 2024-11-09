@@ -21,3 +21,8 @@ $minTablet: 768px;
 $minPantalla: 992px;
 $minPantallaGrande: 1200px;
 $minPantallaGigante: 1920px;
+
+@mixin gradienteAzulCircular {
+  background: rgb(57, 73, 164);
+  background: radial-gradient(circle, rgba(57, 73, 164, 1) 0%, rgb(75, 90, 177) 25%, rgba(57, 73, 164, 1) 100%);
+}

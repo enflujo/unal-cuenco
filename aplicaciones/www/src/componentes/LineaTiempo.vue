@@ -99,8 +99,7 @@ function abrirElemento(evento: MouseEvent, i: string) {
   bottom: 0;
   width: 100vw;
   height: $altoLinea;
-  background: rgb(57, 73, 164);
-  background: radial-gradient(circle, rgba(57, 73, 164, 1) 0%, rgb(75, 90, 177) 25%, rgba(57, 73, 164, 1) 100%);
+  @include gradienteAzulCircular;
 }
 
 svg {
