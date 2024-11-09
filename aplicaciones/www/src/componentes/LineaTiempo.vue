@@ -61,7 +61,7 @@ function abrirElemento(evento: MouseEvent, i: string) {
 <template>
   <div id="contenedorLineaTiempo">
     <svg id="marcas" :width="`${dims.ancho}px`" height="100%">
-      <filter id="inset-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <filter id="sombra" x="-50%" y="-50%" width="200%" height="200%">
         <feComponentTransfer in="SourceAlpha">
           <feFuncA type="table" tableValues="1 0" />
         </feComponentTransfer>
@@ -82,7 +82,7 @@ function abrirElemento(evento: MouseEvent, i: string) {
         class="punto"
         :class="cerebroFicha.datosFicha?.id === a.id ? 'activo' : ''"
       >
-        <circle :r="dims.r" cx="0" cy="30" filter="url(#inset-shadow)" />
+        <circle :r="dims.r" cx="0" cy="30" filter="url(#sombra)" />
         <text class="fecha" x="0" y="60" text-anchor="middle">
           {{ dims.cortarFechas ? a.nombre.slice(2, 4) : a.nombre }}
         </text>
