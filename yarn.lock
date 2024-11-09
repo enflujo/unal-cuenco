@@ -1819,6 +1819,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"geojson@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "geojson@npm:0.5.0"
+  checksum: 10c0/d7fd376c201933dea1307b7c08032f249f73b9399d6287211f6a523d0efa9260caf2a38319f55075682d53dc4cb4c52b9f9c845f2fd03bef9832903f16177ab0
+  languageName: node
+  linkType: hard
+
 "gl-matrix@npm:^3.4.3":
   version: 3.4.3
   resolution: "gl-matrix@npm:3.4.3"
@@ -3625,6 +3632,8 @@ __metadata:
   resolution: "unal-cuenco@workspace:."
   dependencies:
     "@enflujo/alquimia": "npm:^2.0.0"
+    "@types/geojson": "npm:^7946.0.14"
+    geojson: "npm:^0.5.0"
     pinia: "npm:^2.2.5"
     prettier: "npm:^3.3.3"
     typescript: "npm:^5.6.3"
