@@ -18,15 +18,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 🐜 Activar Corepack
+        run: corepack enable
+
       - name: 🐝 Usar Node
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'yarn'
           cache-dependency-path: './yarn.lock'
-
-      - name: 🐜 Activar Corepack
-        run: corepack enable
 
       - name: 🦒 Instalar dependencias y hacer build
         run: |
