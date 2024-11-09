@@ -36,7 +36,7 @@ export type DefinicionSimple = { nombre: string; slug: string };
 
 export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
 export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
-export type LlavesCaracterizacion = 'sedes' | 'tiposSede' | 'roles' | 'cargos';
+export type LlavesCaracterizacion = 'sedes' | 'tipos' | 'roles' | 'cargos';
 
 export type ListasPublicaciones = {
   [llave in LlavesPublicaciones]: ElementoLista[];
@@ -86,17 +86,17 @@ export interface PersonaCaracterizacion {
 }
 
 export interface EncuentroCaracterizacion {
-  id: number;
+  id: string;
   numero?: string;
   personas?: PersonaCaracterizacion[];
   sedes?: DefinicionSimple[];
-  tiposSede?: DefinicionSimple[];
+  tipos?: DefinicionSimple[];
   roles?: DefinicionSimple[];
   cargos?: DefinicionSimple[];
 }
 
 export interface EncuentroCaracterizacionConteo {
-  id: number;
+  id: string;
   numero?: string;
   personas?: PersonaCaracterizacion[];
   sedes?: { slug: string; conteo: number }[];

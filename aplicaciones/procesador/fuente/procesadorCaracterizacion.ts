@@ -1,33 +1,13 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import {
-  ordenarListaObjetos,
-  guardarJSON,
-  limpiarTextoSimple,
-  esUrl,
-  extraerUrls,
-  esNumero,
-  aplanarDefinicionesASlugs,
-} from './ayudas';
-import type {
-  Colectivo,
-  DefinicionSimple,
-  ElementoLista,
-  EncuentroCaracterizacion,
-  EncuentroCaracterizacionConteo,
-  Indicador,
-  ListasCaracterizacion,
-  ListasColectivos,
-  LlavesCaracterizacion,
-  LlavesColectivos,
-} from '@/tipos/compartidos';
-import type { Errata, FilaCaracterizacion, FilaCaracterizacionConteo, FilaColectivos } from './tipos';
-import { conector } from './ayudas';
+import { ordenarListaObjetos, limpiarTextoSimple } from './ayudas';
+import type { EncuentroCaracterizacionConteo, ListasCaracterizacion, LlavesCaracterizacion } from '@/tipos/compartidos';
+import type { Errata, FilaCaracterizacion } from './tipos';
 
 const encuentrosCaracterizacion: EncuentroCaracterizacionConteo[] = [];
 const listas: ListasCaracterizacion = {
   sedes: [],
-  tiposSede: [],
+  tipos: [],
   roles: [],
   cargos: [],
 };
@@ -50,10 +30,6 @@ function procesarLista(llaveLista: LlavesCaracterizacion, valor: string) {
   }
 
   return { nombre, slug };
-}
-
-function procesarEncuentro(id: number) {
-  const idEncuentro = id;
 }
 
 export default async (
@@ -160,14 +136,9 @@ export default async (
     });
 
     flujo.on('close', () => {
-      // Aquí ya terminó de leer toda la tabla
-
       for (const lista in listas) {
         ordenarListaObjetos(listas[lista as keyof ListasCaracterizacion], 'slug', true);
       }
-
-      // guardar datos encuentros (no listas)
-      guardarJSON(encuentrosCaracterizacion, 'encuentros');
       resolver({ datos: encuentrosCaracterizacion, errata });
     });
 
