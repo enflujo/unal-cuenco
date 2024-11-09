@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=./index.html" />
+    <script>
+      // Redirige a la ruta correcta en el cliente
+      const ruta = window.location.pathname;
+      const nuevaRuta = ruta.replace(/\/$/, '') + '/index.html';
+      window.location.replace(nuevaRuta);
+    </script>
+  </head>
+  <body></body>
+</html>
