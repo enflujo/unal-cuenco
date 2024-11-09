@@ -19,7 +19,7 @@ import type {
 } from '@/tipos/compartidos';
 import type { Errata, FilaColectivos } from './tipos';
 import { datosGeo } from '../datos/datosGeo';
-import type { Feature, Position } from 'geojson';
+import type { Feature, Geometry, Point, Position } from 'geojson';
 
 const colectivos: Colectivo[] = [];
 const listas: ListasColectivos = {
@@ -30,37 +30,6 @@ const listas: ListasColectivos = {
   modalidades: [],
   indicadores: [],
 };
-
-function procesarLista(llaveLista: LlavesColectivos, valor: string) {
-  const nombre = limpiarTextoSimple(valor);
-  const slug = slugificar(nombre);
-  const objeto: ElementoLista = {
-    id: `${listas[llaveLista].length + 1}`,
-    nombre,
-    slug,
-    conteo: 1,
-    relaciones: [],
-    colectivos: [],
-  };
-
-  if (llaveLista === 'sedes') {
-    const lugarDatosGeo = datosGeo.features.find((lugar: Feature) => lugar.properties?.slug === slug);
-    let coordenadas: Position = [];
-    if (lugarDatosGeo?.geometry.type === 'Point') {
-      coordenadas = lugarDatosGeo?.geometry.coordinates;
-    }
-
-    objeto.coordenadas = coordenadas;
-  }
-  const existe = listas[llaveLista].find((obj) => obj.slug === slug);
-  if (!existe) {
-    listas[llaveLista].push(objeto);
-  } else {
-    existe.conteo++;
-  }
-
-  return { nombre, slug };
-}
 
 export default async (
   ruta: string,
@@ -239,6 +208,39 @@ export default async (
       }
 
       numeroFila++;
+
+      function procesarLista(llaveLista: LlavesColectivos, valor: string) {
+        const nombre = limpiarTextoSimple(valor);
+        const slug = slugificar(nombre);
+        const objeto: ElementoLista = {
+          id: `${listas[llaveLista].length + 1}`,
+          nombre,
+          slug,
+          conteo: 1,
+          relaciones: [],
+          colectivos: [],
+        };
+
+        const existe = listas[llaveLista].find((obj) => obj.slug === slug);
+
+        if (!existe) {
+          if (llaveLista === 'sedes') {
+            const coordenadas = datosGeo[slug];
+
+            if (coordenadas) {
+              objeto.coordenadas = coordenadas;
+            } else {
+              errata.push({ fila: numeroFila, error: `No se encontraron coordenadas para la sede: ${nombre}` });
+            }
+          }
+
+          listas[llaveLista].push(objeto);
+        } else {
+          existe.conteo++;
+        }
+
+        return { nombre, slug };
+      }
     });
 
     flujo.on('close', () => {
