@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "yarn workspace www dev",
-    "revisar": "yarn workspace www check",
+    "revisar": "yarn workspace www revisar",
     "procesar": "yarn workspace procesador dev",
     "build": "yarn workspace www build",
     "preview": "yarn workspace www preview",

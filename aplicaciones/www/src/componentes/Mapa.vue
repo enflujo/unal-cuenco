@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import 'mapbox-gl/dist/mapbox-gl.css';
 import mapbox from 'mapbox-gl';
-import type { Map, MapMouseEvent } from 'mapbox-gl';
+import type { Map } from 'mapbox-gl';
 import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { storeToRefs } from 'pinia';
