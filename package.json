@@ -23,6 +23,6 @@
   },
   "dependencies": {
     "@enflujo/alquimia": "^2.0.0",
-    "pinia": "^2.2.5"
+    "pinia": "^2.2.6"
   }
 }
