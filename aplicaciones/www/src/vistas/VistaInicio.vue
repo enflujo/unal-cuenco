@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import Mapa from '@/componentes/Mapa.vue';
 import { onMounted } from 'vue';
 const cerebroGeneral = usarCerebroGeneral();
+const cerebroDatos = usarCerebroDatos();
 
-onMounted(() => {
+onMounted(async () => {
   cerebroGeneral.paginaActual = 'inicio';
+  await cerebroDatos.cargarDatosColectivos();
 });
 </script>
 

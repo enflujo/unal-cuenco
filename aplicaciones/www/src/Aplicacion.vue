@@ -6,6 +6,7 @@ import Ficha from './componentes/Ficha.vue';
 <template>
   <header>
     <nav id="menu">
+      <RouterLink class="icono" to="/"><img src="/icono_cuenco.webp" /></RouterLink>
       <RouterLink class="elementoMenu" to="/">Inicio</RouterLink>
       <RouterLink class="elementoMenu" to="/colectivos-ambitos">Colectivos y Ámbitos</RouterLink>
       <RouterLink class="elementoMenu" to="/publicaciones">Producción Académica</RouterLink>
@@ -41,14 +42,14 @@ import Ficha from './componentes/Ficha.vue';
     display: inline-block;
     padding: 0 1rem;
 
+    &.router-link-exact-active {
+      border-bottom: 1px solid;
+      pointer-events: none;
+    }
+
     &:hover {
       color: var(--azulClaroCuenco);
     }
-  }
-
-  .router-link-exact-active {
-    border-bottom: 1px solid;
-    pointer-events: none;
   }
 }
 </style>
