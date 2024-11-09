@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Mapa from '@/componentes/Mapa.vue';
 import LineaTiempo from '@/componentes/LineaTiempo.vue';
 import VistaGraficas from '@/componentes/VistaGraficas.vue';
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
@@ -11,8 +10,6 @@ import ListaNodos from '@/componentes/ListaNodos.vue';
 import { nombresListas } from '@/utilidades/constantes';
 
 const vista: Ref<string> = ref('');
-const botonGraficas: Ref<HTMLDivElement | undefined> = ref();
-const botonMapa: Ref<HTMLDivElement | undefined> = ref();
 const cerebroDatos = usarCerebroDatos();
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
