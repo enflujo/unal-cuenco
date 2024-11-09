@@ -1,18 +1,21 @@
+import type { Position } from 'geojson';
 export interface ElementoLista {
   id: string;
   nombre: string;
   descripcion?: string;
   slug: string;
+  coordenadas?: Position;
   conteo: number;
-  relaciones: {
-    tipo: keyof ListasPublicaciones | keyof ListasColectivos | keyof ListasCaracterizacion;
-    conteo: number;
-    id: string;
-    nombre?: string;
-  }[];
+  relaciones: Relacion[];
   publicaciones?: string[];
   colectivos?: string[];
   encuentrosCaracterizacion?: string[];
+}
+
+export interface Relacion {
+  tipo: keyof ListasPublicaciones | keyof ListasColectivos;
+  conteo: number;
+  id: string;
 }
 
 export interface Indicador {

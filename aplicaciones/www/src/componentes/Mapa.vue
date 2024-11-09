@@ -1,92 +1,50 @@
 <script setup lang="ts">
 import mapbox from 'mapbox-gl';
 import type { Map } from 'mapbox-gl';
-import type { FeatureCollection } from 'geojson';
+import type { GeoJSON, Position } from 'geojson';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { onMounted, ref, type Ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
+import { usarCerebroDatos } from '@/cerebros/datos';
+import { ElementoLista } from '@/tipos/compartidos';
 
-//POR HACER: Desmontar mapa en evento onUnmounted porque sino, se crean muchas instancias de mapa en Vue
+const cerebroDatos = usarCerebroDatos();
+const datosSedesGeo: GeoJSON = { type: 'FeatureCollection', features: [] }; //: Ref<FeatureCollection | null> = ref(null);
+const cargado: Ref<boolean> = ref(false);
 
-// POR HACER: PASAR A ARCHIVO
-const datosGeo: FeatureCollection = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      properties: { slug: 'amazonia', conteo: 9 },
-      geometry: { type: 'Point', coordinates: [-69.9435977, -4.1937385] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'bogota', conteo: 243 },
-      geometry: { type: 'Point', coordinates: [-74.0858796, 4.6363615] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'caribe', conteo: 5 },
-      geometry: { type: 'Point', coordinates: [-81.7127803, 12.5362943] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'de-la-paz', conteo: 9 },
-      geometry: { type: 'Point', coordinates: [-73.2029951, 10.3899886] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'manizales', conteo: 41 },
-      geometry: { type: 'Point', coordinates: [-75.4923199, 5.0425434] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'medellin', conteo: 85 },
-      geometry: { type: 'Point', coordinates: [-75.497473, 5.4558195] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'nivel-internacional', conteo: 1 },
-      geometry: { type: 'Point', coordinates: [-74.1134451, 4.6359316] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'nivel-nacional', conteo: 10 },
-      geometry: { type: 'Point', coordinates: [-73.5163515, 3.54245] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'orinoquia', conteo: 6 },
-      geometry: { type: 'Point', coordinates: [-70.7493953, 7.013354] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'palmira', conteo: 20 },
-      geometry: { type: 'Point', coordinates: [-76.3099641, 3.5119486] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'palmira', conteo: 20 },
-      geometry: { type: 'Point', coordinates: [-76.3099641, 3.5119486] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'palmira-medellin', conteo: 1 },
-      geometry: { type: 'Point', coordinates: [-76.306479, 3.517151] },
-    },
-    {
-      type: 'Feature',
-      properties: { slug: 'tumaco', conteo: 4 },
-      geometry: { type: 'Point', coordinates: [-78.827125, 1.7099745] },
-    },
-  ],
-};
+const listaSedes: Ref<ElementoLista[] | undefined> = ref();
 
 const contenedorMapa: Ref<HTMLDivElement | null> = ref(null);
+let mapa: Map;
+
+watch(cerebroDatos, (datos) => {
+  listaSedes.value = datos.listasColectivos?.sedes;
+  cargado.value = true;
+});
 
 onMounted(() => {
-  if (!contenedorMapa.value) return;
-  let mapa: Map;
+  // POR HACER: Esperar a que se carguen los datos para mostrar el mapa
+  const listaSedes = cerebroDatos.listasColectivos?.sedes;
 
-  // POR HACER: Cambiar el estilo
+  listaSedes?.forEach((sede) => {
+    // esto podría usarse si se van a hacer donas. Por definir
+    const cantActivos = sede.relaciones.find((relacion) => relacion.tipo === 'estados' && relacion.id === '1');
+    const cantInactivos = sede.relaciones.find((relacion) => relacion.tipo === 'estados' && relacion.id === '2');
+
+    datosSedesGeo.features.push({
+      type: 'Feature',
+      properties: {
+        slug: `${sede.slug}`,
+        conteo: sede.conteo,
+        estadoActivo: cantActivos?.conteo ? cantActivos?.conteo : 0, // esto podría usarse si se van a hacer donas. Por definir
+        estadoInactivo: cantInactivos?.conteo ? cantInactivos?.conteo : 0,
+      },
+      geometry: { type: 'Point', coordinates: sede.coordenadas as Position },
+    });
+  });
+
+  if (!contenedorMapa.value) return;
+
   const estilo = 'mapbox://styles/enflujo/cm1s6qduv00c701pgd1tm5sxh'; //'mapbox://styles/enflujo/cm1s7mjel00ce01pg63yy7uxj';
   mapbox.accessToken = 'pk.eyJ1IjoiZW5mbHVqbyIsImEiOiJjbDNrOXNndXQwMnZsM2lvNDd4N2x0M3dvIn0.eWs4BHs67PcETEUI00T66Q';
 
@@ -101,23 +59,58 @@ onMounted(() => {
   mapa.on('load', () => {
     mapa.addSource('colectivos-sedes', {
       type: 'geojson',
-      data: datosGeo,
+      data: datosSedesGeo,
+      cluster: false, // Por ahora false porque se comporta raro
+      clusterRadius: 20,
+      clusterProperties: {
+        sum: [
+          ['+', ['accumulated'], ['get', 'sum']],
+          ['get', 'conteo'],
+        ],
+        clusterAggregate: [
+          ['+', ['accumulated'], ['get', 'sum']],
+          ['get', 'conteo'],
+        ],
+      },
     });
 
+    /* circle-radius: 
+        valor1: radio si la cantidad es menor que valor2
+        valor3: radio si la cantidad está entre valor2 y valor4
+        valor5: radio si la cantidad supera valor4 
+        */
     mapa.addLayer({
       id: 'colectivos-layer',
       type: 'circle',
       source: 'colectivos-sedes',
       paint: {
-        'circle-radius': 8,
+        'circle-radius': ['step', ['get', 'conteo'], 12, 20, 25, 100, 35],
         'circle-stroke-width': 2,
-        'circle-color': '#c30a93',
+        'circle-color': '#00bc96', //['case', estados1, colors[0], estados2],
         'circle-stroke-color': 'white',
       },
     });
 
-    // POR HACER: Clústers según cantidad de colectivos por sedes
+    mapa.addLayer({
+      id: 'colectivos-cuenta',
+      type: 'symbol',
+      source: 'colectivos-sedes',
+      filter: ['has', 'conteo'],
+      paint: {
+        'text-color': '#000000',
+      },
+      layout: {
+        'text-field': ['get', 'conteo'],
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 14,
+      },
+    });
+    // POR HACER: Donas ?
   });
+});
+
+onUnmounted(() => {
+  mapa.remove();
 });
 </script>
 

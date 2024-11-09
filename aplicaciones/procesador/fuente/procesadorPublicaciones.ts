@@ -126,8 +126,8 @@ export default async (
         }
 
         /** Fuente */
-        if (fila[7]) {
-          const enlace = limpiarTextoSimple(fila[7]);
+        if (fila[6]) {
+          const enlace = limpiarTextoSimple(fila[6]);
           if (esUrl(enlace)) {
             publicacion.fuente = enlace;
           } else {
@@ -136,8 +136,8 @@ export default async (
         }
 
         /** Dependencia */
-        if (fila[8]) {
-          const partes = fila[8].split(';');
+        if (fila[7]) {
+          const partes = fila[7].split(';');
 
           partes.forEach((dependencia) => {
             const { nombre, slug } = procesarLista('dependencias', dependencia);
@@ -152,8 +152,8 @@ export default async (
         }
 
         /** Indicadores */
-        if (fila[11]) {
-          const { nombre, slug } = procesarLista('indicadores', fila[11]);
+        if (fila[8]) {
+          const { nombre, slug } = procesarLista('indicadores', fila[8]);
           const existe = indicadores.find((indicador) => indicador.slug === slug);
           let id = existe?.id;
           // Acá estoy agregando el indicador a la lista de indicadores si no existe, pero iría sin definición.

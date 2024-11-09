@@ -18,6 +18,8 @@ import type {
   LlavesColectivos,
 } from '@/tipos/compartidos';
 import type { Errata, FilaColectivos } from './tipos';
+import { datosGeo } from '../datos/datosGeo';
+import type { Feature, Position } from 'geojson';
 
 const colectivos: Colectivo[] = [];
 const listas: ListasColectivos = {
@@ -32,16 +34,27 @@ const listas: ListasColectivos = {
 function procesarLista(llaveLista: LlavesColectivos, valor: string) {
   const nombre = limpiarTextoSimple(valor);
   const slug = slugificar(nombre);
+  const objeto: ElementoLista = {
+    id: `${listas[llaveLista].length + 1}`,
+    nombre,
+    slug,
+    conteo: 1,
+    relaciones: [],
+    colectivos: [],
+  };
+
+  if (llaveLista === 'sedes') {
+    const lugarDatosGeo = datosGeo.features.find((lugar: Feature) => lugar.properties?.slug === slug);
+    let coordenadas: Position = [];
+    if (lugarDatosGeo?.geometry.type === 'Point') {
+      coordenadas = lugarDatosGeo?.geometry.coordinates;
+    }
+
+    objeto.coordenadas = coordenadas;
+  }
   const existe = listas[llaveLista].find((obj) => obj.slug === slug);
   if (!existe) {
-    listas[llaveLista].push({
-      id: `${listas[llaveLista].length + 1}`,
-      nombre,
-      slug,
-      conteo: 1,
-      relaciones: [],
-      colectivos: [],
-    });
+    listas[llaveLista].push(objeto);
   } else {
     existe.conteo++;
   }

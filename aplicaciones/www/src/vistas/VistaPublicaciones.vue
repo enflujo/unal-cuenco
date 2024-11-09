@@ -21,15 +21,12 @@ const { publicaciones, listasPublicaciones } = storeToRefs(cerebroDatos);
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'publicaciones';
   await cerebroDatos.cargarDatosPublicaciones();
+  vista.value = 'grafica';
 });
 
 onUnmounted(() => {
   cerebroFicha.fichaVisible = false;
 });
-
-function elegirVista(vistaElegida: string) {
-  vista.value = vistaElegida;
-}
 </script>
 
 <template>
@@ -41,14 +38,7 @@ function elegirVista(vistaElegida: string) {
     </nav>
 
     <div class="columna columna2">
-      <div class="botonesVista">
-        <div class="botonVista" ref="botonGraficas" @click="elegirVista('grafica')">Gráficas</div>
-        <div class="botonVista" ref="botonMapa" @click="elegirVista('mapa')">Mapa</div>
-      </div>
-
       <VistaGraficas v-if="vista === 'grafica'" pagina="publicaciones" />
-
-      <Mapa v-else="vista === 'mapa'" />
     </div>
 
     <div class="columna columna3 contenedorListas" v-if="publicaciones">
