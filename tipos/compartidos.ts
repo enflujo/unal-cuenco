@@ -5,12 +5,14 @@ export interface ElementoLista {
   slug: string;
   conteo: number;
   relaciones: {
-    tipo: keyof ListasPublicaciones | keyof ListasColectivos;
+    tipo: keyof ListasPublicaciones | keyof ListasColectivos | keyof ListasCaracterizacion;
     conteo: number;
     id: string;
+    nombre?: string;
   }[];
   publicaciones?: string[];
   colectivos?: string[];
+  encuentrosCaracterizacion?: string[];
 }
 
 export interface Indicador {
@@ -31,12 +33,17 @@ export type DefinicionSimple = { nombre: string; slug: string };
 
 export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
 export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
+export type LlavesCaracterizacion = 'sedes' | 'tiposSede' | 'roles' | 'cargos';
 
 export type ListasPublicaciones = {
   [llave in LlavesPublicaciones]: ElementoLista[];
 };
 export type ListasColectivos = {
   [llave in LlavesColectivos]: ElementoLista[];
+};
+
+export type ListasCaracterizacion = {
+  [llave in LlavesCaracterizacion]: ElementoLista[];
 };
 
 export type CamposPA = { llave: LlavesPublicaciones; id: string }[];
@@ -65,4 +72,32 @@ export interface Colectivo extends DatosGeneralesNodo {
   contacto?: string;
   sedes?: DefinicionSimple[];
   modalidades?: DefinicionSimple;
+}
+
+export interface PersonaCaracterizacion {
+  iniciales: string;
+  sede: string;
+  tipoSede: string;
+  rol: string;
+  cargoArea: string;
+}
+
+export interface EncuentroCaracterizacion {
+  id: number;
+  numero?: string;
+  personas?: PersonaCaracterizacion[];
+  sedes?: DefinicionSimple[];
+  tiposSede?: DefinicionSimple[];
+  roles?: DefinicionSimple[];
+  cargos?: DefinicionSimple[];
+}
+
+export interface EncuentroCaracterizacionConteo {
+  id: number;
+  numero?: string;
+  personas?: PersonaCaracterizacion[];
+  sedes?: { slug: string; conteo: number }[];
+  tiposSede?: { slug: string; conteo: number }[];
+  roles?: { slug: string; conteo: number }[];
+  cargos?: { slug: string; conteo: number }[];
 }
