@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
 import Ficha from './componentes/Ficha.vue';
+import { usarCerebroGeneral } from './cerebros/general';
+const { paginaActual } = usarCerebroGeneral();
 </script>
 
 <template>
@@ -8,7 +10,9 @@ import Ficha from './componentes/Ficha.vue';
     <nav id="menu">
       <RouterLink class="icono" to="/"><img src="/icono_cuenco.webp" /></RouterLink>
       <RouterLink class="elementoMenu" to="/">Inicio</RouterLink>
-      <RouterLink class="elementoMenu" to="/colectivos-ambitos">Colectivos y Ámbitos</RouterLink>
+      <RouterLink class="elementoMenu" :class="paginaActual === 'colectivos' ? 'activo' : ''" to="/colectivos/mapa">
+        Colectivos y Ámbitos
+      </RouterLink>
       <RouterLink class="elementoMenu" to="/publicaciones">Producción Académica</RouterLink>
       <RouterLink class="elementoMenu" to="/encuentros">Encuentros</RouterLink>
     </nav>
@@ -42,7 +46,8 @@ import Ficha from './componentes/Ficha.vue';
     display: inline-block;
     padding: 0 1rem;
 
-    &.router-link-exact-active {
+    &.router-link-exact-active,
+    &.activo {
       border-bottom: 1px solid;
       pointer-events: none;
     }

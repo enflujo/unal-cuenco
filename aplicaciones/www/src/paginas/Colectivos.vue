@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import Mapa from '@/componentes/Mapa.vue';
 import VistaGraficas from '@/componentes/VistaGraficas.vue';
-import { onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { storeToRefs } from 'pinia';
 import ListaNodos from '@/componentes/ListaNodos.vue';
 import { nombresListas } from '@/utilidades/constantes';
+import { RouterLink } from 'vue-router';
 
-const vistaActual: Ref<string> = ref('mapa');
 const cerebroDatos = usarCerebroDatos();
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const { colectivos, listasColectivos } = storeToRefs(cerebroDatos);
+const { vistaColectivos } = storeToRefs(cerebroGeneral);
 const vistas = [
   { llave: 'mapa', nombre: 'Mapa' },
-  { llave: 'grafica', nombre: 'Gráficas' },
+  { llave: 'graficas', nombre: 'Gráficas' },
 ];
 
 onMounted(async () => {
@@ -27,10 +28,6 @@ onMounted(async () => {
 onUnmounted(() => {
   cerebroFicha.fichaVisible = false;
 });
-
-function elegirVista(vistaElegida: string) {
-  vistaActual.value = vistaElegida;
-}
 </script>
 
 <template>
@@ -42,25 +39,25 @@ function elegirVista(vistaElegida: string) {
     </nav>
 
     <div class="columna columna2">
-      <ul class="botonesVista">
-        <li
+      <div class="botonesVista">
+        <RouterLink
           v-for="vista in vistas"
+          :to="`/colectivos/${vista.llave}`"
           :key="`vista-${vista.llave}`"
           class="botonVista"
-          :class="vista.llave === vistaActual ? 'activo' : ''"
-          @click="elegirVista(vista.llave)"
+          :class="vista.llave === vistaColectivos ? 'activo' : ''"
         >
           {{ vista.nombre }}
-        </li>
-      </ul>
+        </RouterLink>
+      </div>
 
-      <VistaGraficas pagina="colectivos" v-if="vistaActual === 'grafica'" />
+      <VistaGraficas v-if="vistaColectivos === 'graficas'" />
       <Mapa v-else="vistaActual === 'mapa'" />
     </div>
 
     <div class="columna columna3 contenedorListas" v-if="colectivos">
       <ListaNodos tipo="colectivos" :lista="colectivos">
-        <h1 class="titulo" @click="cerebroDatos.cambiarLista('colectivos')">Colectivos y Ámbitos</h1>
+        <h1 class="titulo">Colectivos y Ámbitos</h1>
       </ListaNodos>
     </div>
   </main>

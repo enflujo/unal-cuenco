@@ -35,12 +35,12 @@ onUnmounted(() => {
     </nav>
 
     <div class="columna columna2">
-      <VistaGraficas v-if="vista === 'grafica'" pagina="publicaciones" />
+      <VistaGraficas v-if="vista === 'grafica'" />
     </div>
 
     <div class="columna columna3 contenedorListas" v-if="publicaciones">
       <ListaNodos tipo="publicaciones" :lista="publicaciones">
-        <h1 class="titulo" @click="cerebroDatos.cambiarLista('publicaciones')">Producción Académica</h1>
+        <h1 class="titulo">Producción Académica</h1>
       </ListaNodos>
     </div>
 

@@ -5,6 +5,7 @@ export const usarCerebroGeneral = defineStore('cerebroGeneral', {
   state: (): CerebroGeneral => {
     return {
       paginaActual: 'inicio',
+      vistaColectivos: 'mapa',
     };
   },
 });
