@@ -98,28 +98,6 @@ ul {
   padding: 0 2em 4em 2em;
 }
 
-.lista {
-  .titulo {
-    cursor: pointer;
-  }
-
-  .nodo {
-    margin: 0;
-    font-size: 0.85em;
-    line-height: 1.2;
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--verdeCuenco);
-    }
-
-    &.actual {
-      background-color: var(--magentaCuenco);
-      color: var(--blanco);
-    }
-  }
-}
-
 .contenedorElementos {
   height: fit-content;
   transition: opacity 0.35s ease-in-out;

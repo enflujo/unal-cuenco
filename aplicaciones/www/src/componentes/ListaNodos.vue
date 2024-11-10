@@ -38,3 +38,28 @@ function abrirElemento(evento: MouseEvent, i: string, id: TiposNodo) {
     </ul>
   </section>
 </template>
+
+<style lang="scss" scoped>
+.lista {
+  .titulo {
+    cursor: pointer;
+  }
+
+  .nodo {
+    margin: 0;
+    font-size: 0.85em;
+    line-height: 1.1;
+    cursor: pointer;
+    padding: 0.3em 0;
+
+    &:hover {
+      background-color: var(--verdeCuenco);
+    }
+
+    &.actual {
+      background-color: var(--magentaCuenco);
+      color: var(--blanco);
+    }
+  }
+}
+</style>
