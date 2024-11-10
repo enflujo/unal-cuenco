@@ -2,7 +2,9 @@
 import { RouterLink, RouterView } from 'vue-router';
 import Ficha from './componentes/Ficha.vue';
 import { usarCerebroGeneral } from './cerebros/general';
-const { paginaActual } = usarCerebroGeneral();
+import { storeToRefs } from 'pinia';
+const cerebroGeneral = usarCerebroGeneral();
+const { paginaActual } = storeToRefs(cerebroGeneral);
 </script>
 
 <template>
