@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ordenarRapido, pedirDatos } from '@/utilidades/ayudas';
-import type { CerebroDatos, GeoColectivos, TiposNodo } from '@/tipos';
+import type { CerebroDatos, GeoColectivos } from '@/tipos';
 import type {
   Colectivo,
   Indicador,
@@ -45,7 +45,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
      *
      * @param llaveLista Llave de la lista a cambiar.
      */
-    cambiarLista(llaveLista: TiposNodo) {
+    cambiarLista(llaveLista: LlavesColectivos | LlavesPublicaciones) {
       this.listaElegida = llaveLista;
     },
 

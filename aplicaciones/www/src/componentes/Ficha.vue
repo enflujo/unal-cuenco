@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usarCerebroFicha } from '@/cerebros/ficha';
-import { TiposNodo } from '@/tipos';
+import { TiposNodo, TiposNodoSinRelaciones } from '@/tipos';
 import { nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, type Ref, ref, watch } from 'vue';
@@ -9,7 +9,7 @@ const cerebroFicha = usarCerebroFicha();
 const { datosFicha, fichaVisible } = storeToRefs(cerebroFicha);
 const contenedorFicha: Ref<HTMLDivElement | null> = ref(null);
 const ficha: Ref<HTMLDivElement | null> = ref(null);
-const secciones: TiposNodo[] = [
+const secciones: Array<TiposNodo | TiposNodoSinRelaciones> = [
   'publicaciones',
   'colectivos',
   'fuente',
@@ -112,7 +112,7 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
                 v-for="obj in datosFicha[tipo]"
                 :key="`${tipo}-${obj.id}`"
                 class="enlace"
-                @click="abrirElemento($event, obj.id, tipo)"
+                @click="abrirElemento($event, obj.id, tipo as TiposNodo)"
               >
                 {{ obj.nombre }} {{ tipo === 'estados' && datosFicha.fechaFin ? ` (${datosFicha.fechaFin})` : '' }}
               </li>

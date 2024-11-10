@@ -13,6 +13,7 @@ export type TiposDePagina = 'inicio' | 'colectivos' | 'publicaciones' | 'encuent
 export type TMinMax = { min: number; max: number; total: number };
 export interface CerebroGeneral {
   paginaActual: TiposDePagina;
+  vistaColectivos: TiposDeVistas;
 }
 
 export type PropiedadesGeoColectivos = {
@@ -24,7 +25,7 @@ export type PropiedadesGeoColectivos = {
 export type GeoColectivos = FeatureCollection<Point, PropiedadesGeoColectivos>;
 
 export interface CerebroDatos {
-  listaElegida: TiposNodo | null;
+  listaElegida: LlavesColectivos | LlavesPublicaciones | null;
   extremosFechasPublicaciones: TMinMax | null;
   // COLECTIVOS
   colectivos: Colectivo[] | null;
@@ -54,20 +55,9 @@ export interface CerebroFicha {
   llaveLista: TiposNodo;
 }
 
-export type TiposDeVistas = 'mapa' | 'grafica';
-export type TiposNodo =
-  | LlavesColectivos
-  | LlavesPublicaciones
-  | 'publicaciones'
-  | 'colectivos'
-  | 'publicacion'
-  | 'colectivo'
-  | 'referencia'
-  | 'fuente'
-  | 'fechaFin'
-  | 'enlaceFuente'
-  | 'contacto';
-
+export type TiposDeVistas = 'mapa' | 'graficas';
+export type TiposNodo = LlavesColectivos | LlavesPublicaciones | 'publicaciones' | 'colectivos';
+export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto';
 export type ELementoFicha = { nombre: string; conteo: number; id: string };
 
 export interface DatosFicha {
@@ -83,8 +73,8 @@ export interface DatosFicha {
   enlaceFuente?: string;
   contacto?: string;
   modalidades?: ELementoFicha[];
-  publicacion?: ELementoFicha[];
-  colectivo?: ELementoFicha[];
+  // publicacion?: ELementoFicha[];
+  // colectivo?: ELementoFicha[];
   dependencias?: ELementoFicha[];
   indicadores?: ELementoFicha[];
   sedes?: ELementoFicha[];

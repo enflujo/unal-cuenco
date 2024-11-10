@@ -1,59 +1,66 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
-import type { ElementoLista, LlavesColectivos, LlavesPublicaciones, Relacion } from '@/tipos/compartidos';
+import type {
+  ElementoLista,
+  ListasColectivos,
+  ListasPublicaciones,
+  LlavesColectivos,
+  LlavesPublicaciones,
+  Relacion,
+} from '@/tipos/compartidos';
 import { storeToRefs } from 'pinia';
-import { TiposDePagina, TiposNodo } from '@/tipos';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroGeneral } from '@/cerebros/general';
+import { nombresListas } from '@/utilidades/constantes';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
-const { pagina } = defineProps<{ pagina: TiposDePagina }>();
 const cerebroDatos = usarCerebroDatos();
 const { paginaActual } = usarCerebroGeneral();
 const { listaElegida } = storeToRefs(cerebroDatos);
-const listaVisible: Ref<ElementoLista[]> = ref([]);
+const listaVisible: Ref<ElementoLista[] | null> = ref(null);
 const valorMaximo = ref(0);
-let listas: { [llave: string]: ElementoLista[] } = {};
-let listaActual: TiposNodo | '' = '';
+const listas: Ref<ListasColectivos | ListasPublicaciones | null> = ref(null);
+const listaActual: Ref<LlavesColectivos | LlavesPublicaciones | null> = ref(null);
+const listaFiltros = computed<{ llave: LlavesColectivos | LlavesPublicaciones; nombre: string }[] | null>(() => {
+  if (listas.value) {
+    return (Object.keys(listas.value) as (LlavesColectivos | LlavesPublicaciones)[])
+      .sort()
+      .map((llave) => ({ llave, nombre: nombresListas[llave] }));
+  }
+  return null;
+});
 
 let filtrados: Relacion[][] = [];
 
 const filtroElegido: Ref<string> = ref('sedes');
-const filtroEstados: Ref<string> = ref('filtroEstados');
 
 watch(listaElegida, (llaveLista) => {
-  if (!llaveLista || llaveLista === listaActual) return;
-  listaActual = llaveLista;
+  if (!llaveLista || llaveLista === listaActual.value) return;
+  listaActual.value = llaveLista;
 
   // Cambiar lista elegida al hacer click en una lista del menú
-  listaVisible.value = listas[llaveLista];
-  // console.log(listaVisible.value);
-  // console.time('measure');
-  // listaOrdenada.value = listaVisible.value.sort((a, b) => b.conteo - a.conteo);
-  // console.timeEnd('measure');
-  valorMaximo.value = Math.max(...listaVisible.value.map((o) => o.conteo));
-});
+  if (listas.value) {
+    if (paginaActual === 'colectivos') {
+      listaVisible.value = (listas.value as ListasColectivos)[llaveLista as LlavesColectivos];
+    } else if (paginaActual === 'publicaciones') {
+      listaVisible.value = (listas.value as ListasPublicaciones)[llaveLista as LlavesPublicaciones];
+    }
+  }
 
-watch(filtroElegido, () => {
-  if (!filtroElegido || listaActual === filtroElegido.value) return;
-  filtrados = [];
-  listaVisible.value.forEach((elementoElegido) => {
-    const filtrado = elementoElegido.relaciones.filter((relacion) => relacion.tipo === `${filtroElegido.value}`);
-
-    filtrado.sort((a, b) => b.conteo - a.conteo);
-    filtrados.push(filtrado);
-  });
+  if (listaVisible.value) {
+    valorMaximo.value = Math.max(...listaVisible.value.map((o) => o.conteo));
+  }
 });
 
 onMounted(async () => {
-  if (pagina === 'colectivos') {
+  if (paginaActual === 'colectivos') {
     if (!cerebroDatos.listasColectivosOrdenadas) return;
-    listas = cerebroDatos.listasColectivosOrdenadas;
+    listas.value = cerebroDatos.listasColectivosOrdenadas;
     listaElegida.value = Object.keys(cerebroDatos.listasColectivosOrdenadas)[0] as LlavesColectivos;
-  } else if (pagina === 'publicaciones') {
+  } else if (paginaActual === 'publicaciones') {
     if (!cerebroDatos.listasPublicacionesOrdenadas) return;
-    listas = cerebroDatos.listasPublicacionesOrdenadas;
+    listas.value = cerebroDatos.listasPublicacionesOrdenadas;
     listaElegida.value = Object.keys(cerebroDatos.listasPublicacionesOrdenadas)[0] as LlavesPublicaciones;
   }
 });
@@ -61,80 +68,47 @@ onMounted(async () => {
 onUnmounted(() => {
   // Reiniciar variables al desmontar
   listaElegida.value = null;
-  listaActual = '';
 });
 
 function elegirFiltro(filtro: string) {
-  if (listaActual === filtro) return;
+  if (listaActual.value === filtro || !listaVisible.value) return;
+  filtrados = [];
+  listaVisible.value.forEach((elementoElegido) => {
+    const filtrado = elementoElegido.relaciones.filter((relacion) => relacion.tipo === `${filtroElegido.value}`);
+
+    filtrado.sort((a, b) => b.conteo - a.conteo);
+    filtrados.push(filtrado);
+  });
+
   filtroElegido.value = filtro;
 }
 </script>
 
 <template>
   <div id="contenedorVistaGraficas">
-    <h2>{{ listaActual }}</h2>
+    <h2 v-if="listaActual">{{ nombresListas[listaActual] }}</h2>
+
     <div id="filtros">
       Filtrar:
+
       <div
-        v-if="paginaActual === 'publicaciones'"
-        ref="filtroEstados"
+        v-if="listas"
+        v-for="obj in listaFiltros"
         class="botonFiltro"
-        :class="filtroElegido === 'años' ? 'seleccionado' : ''"
-        @click="elegirFiltro('años')"
+        :class="filtroElegido === obj.llave ? 'seleccionado' : ''"
+        @click="elegirFiltro(obj.llave)"
       >
-        años
-      </div>
-      <div
-        v-if="paginaActual === 'colectivos'"
-        ref="filtroEstados"
-        class="botonFiltro"
-        :class="filtroElegido === 'estados' ? 'seleccionado' : ''"
-        @click="elegirFiltro('estados')"
-      >
-        estados
-      </div>
-      <div
-        v-if="paginaActual === 'colectivos'"
-        ref="filtroModalidades"
-        class="botonFiltro"
-        :class="filtroElegido === 'modalidades' ? 'seleccionado' : ''"
-        @click="elegirFiltro('modalidades')"
-      >
-        modalidades
-      </div>
-      <div
-        ref="filtroSedes"
-        class="botonFiltro"
-        :class="filtroElegido === 'indicadores' ? 'seleccionado' : ''"
-        @click="elegirFiltro('indicadores')"
-      >
-        indicadores
-      </div>
-      <div
-        v-if="paginaActual === 'colectivos'"
-        ref="filtroSedes"
-        class="botonFiltro"
-        :class="filtroElegido === 'sedes' ? 'seleccionado' : ''"
-        @click="elegirFiltro('sedes')"
-      >
-        sedes
-      </div>
-      <div
-        ref="filtroTipos"
-        class="botonFiltro"
-        :class="filtroElegido === 'tipos' ? 'seleccionado' : ''"
-        @click="elegirFiltro('tipos')"
-      >
-        tipos
+        {{ obj.nombre }}
       </div>
     </div>
 
     <!-- Mostrar filtrados -->
-    <div v-for="(elementos, i) in filtrados">
+    <div v-if="listaVisible" v-for="(elementos, i) in filtrados">
       {{ listaVisible[i].nombre }}
       <div v-for="e in elementos">{{ e.id }}: {{ e.conteo }}</div>
     </div>
-    <div id="contenedorGrafica">
+
+    <div id="contenedorGrafica" v-if="listaVisible">
       <div class="contenedorElementos" v-for="(elem, i) in listaVisible">
         <p class="leyenda" :style="`top:${convertirEscala(i, 0, listaVisible.length, 0, 70)}%`">
           {{ elem.nombre }}
@@ -194,7 +168,7 @@ function elegirFiltro(filtro: string) {
 }
 
 .linea {
-  height: 3px;
+  height: 1px;
   background-color: var(--azulOscuroCuenco);
 }
 

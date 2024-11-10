@@ -1,8 +1,6 @@
-import { TiposNodo } from '@/tipos';
+import { TiposNodo, TiposNodoSinRelaciones } from '@/tipos';
 
-export const nombresListas: { [llave in TiposNodo]: string } = {
-  publicacion: 'Publicacion',
-  colectivo: 'Colectivo',
+export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: string } = {
   publicaciones: 'Publicaciones',
   colectivos: 'Colectivos',
   autores: 'Autores',
