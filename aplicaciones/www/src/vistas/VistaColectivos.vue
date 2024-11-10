@@ -9,13 +9,15 @@ import { storeToRefs } from 'pinia';
 import ListaNodos from '@/componentes/ListaNodos.vue';
 import { nombresListas } from '@/utilidades/constantes';
 
-const vista: Ref<string> = ref('');
-const botonGraficas: Ref<HTMLDivElement | undefined> = ref();
-const botonMapa: Ref<HTMLDivElement | undefined> = ref();
+const vistaActual: Ref<string> = ref('mapa');
 const cerebroDatos = usarCerebroDatos();
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const { colectivos, listasColectivos } = storeToRefs(cerebroDatos);
+const vistas = [
+  { llave: 'mapa', nombre: 'Mapa' },
+  { llave: 'grafica', nombre: 'Gráficas' },
+];
 
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'colectivos';
@@ -27,7 +29,7 @@ onUnmounted(() => {
 });
 
 function elegirVista(vistaElegida: string) {
-  vista.value = vistaElegida;
+  vistaActual.value = vistaElegida;
 }
 </script>
 
@@ -40,13 +42,20 @@ function elegirVista(vistaElegida: string) {
     </nav>
 
     <div class="columna columna2">
-      <div class="botonesVista">
-        <div class="botonVista" ref="botonGraficas" @click="elegirVista('grafica')">Gráficas</div>
-        <div class="botonVista" ref="botonMapa" @click="elegirVista('mapa')">Mapa</div>
-      </div>
+      <ul class="botonesVista">
+        <li
+          v-for="vista in vistas"
+          :key="`vista-${vista.llave}`"
+          class="botonVista"
+          :class="vista.llave === vistaActual ? 'activo' : ''"
+          @click="elegirVista(vista.llave)"
+        >
+          {{ vista.nombre }}
+        </li>
+      </ul>
 
-      <VistaGraficas pagina="colectivos" v-if="vista === 'grafica'" />
-      <Mapa v-else="vista === 'mapa'" />
+      <VistaGraficas pagina="colectivos" v-if="vistaActual === 'grafica'" />
+      <Mapa v-else="vistaActual === 'mapa'" />
     </div>
 
     <div class="columna columna3 contenedorListas" v-if="colectivos">
@@ -80,6 +89,11 @@ function elegirVista(vistaElegida: string) {
 
   &:hover {
     color: var(--azulClaroCuenco);
+  }
+
+  &.activo {
+    background-color: var(--azulClaroCuenco);
+    color: var(--blanco);
   }
 }
 </style>
