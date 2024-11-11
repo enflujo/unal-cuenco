@@ -4,11 +4,15 @@ import { TiposNodo, TiposNodoSinRelaciones } from '@/tipos';
 import { nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, type Ref, ref, watch } from 'vue';
+import VisFicha from './VisFicha.vue';
 
 const cerebroFicha = usarCerebroFicha();
 const { datosFicha, fichaVisible } = storeToRefs(cerebroFicha);
 const contenedorFicha: Ref<HTMLDivElement | null> = ref(null);
 const ficha: Ref<HTMLDivElement | null> = ref(null);
+/**
+ * Las secciones de la ficha en el orden que se muestran
+ */
 const secciones: Array<TiposNodo | TiposNodoSinRelaciones> = [
   'publicaciones',
   'colectivos',
@@ -71,11 +75,10 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
 </script>
 
 <template>
-  <div id="contenedorFicha" ref="contenedorFicha" v-if="fichaVisible">
+  <div id="contenedorFicha" ref="contenedorFicha" :class="fichaVisible ? 'visible' : ''">
     <div class="ficha" ref="ficha" v-if="datosFicha">
       <header id="encabezado">
         <div id="superior">
-          <!-- <div class="negrita">#{{ datosNodo.id }}</div> -->
           <span class="negrita">{{ datosFicha.nombreTipo }}</span>
           <span class="boton" id="cerrarFichaPA" ref="cerrarFichaPA" @click="cerebroFicha.cerrarFicha">X</span>
         </div>
@@ -123,6 +126,10 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
         </div>
       </div>
     </div>
+
+    <div id="contendorVis">
+      <VisFicha />
+    </div>
   </div>
 </template>
 
@@ -132,7 +139,7 @@ $margenY: 10px;
 
 #contenedorFicha {
   z-index: 99;
-  width: 40vw;
+  width: 80vw;
   height: calc(100vh - $altoMenu - $altoLinea);
   @include gradienteAzulCircular;
   position: fixed;
@@ -142,8 +149,15 @@ $margenY: 10px;
   border-radius: 20px;
   padding: 1em;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: none;
+
+  &.visible {
+    display: flex;
+  }
+}
+
+#contendorVis {
+  width: 50%;
 }
 
 #descripcionFicha {
@@ -153,6 +167,9 @@ $margenY: 10px;
 .ficha {
   border: 1px white solid;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
 
   h2 {
     margin: 0;
@@ -211,6 +228,7 @@ $margenY: 10px;
   padding: 0.5em 1em;
   position: sticky;
   top: 0;
+  z-index: 2;
 
   #superior {
     display: flex;
