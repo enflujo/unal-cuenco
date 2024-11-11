@@ -8,8 +8,7 @@
       const ruta = window.location.pathname;
       if (!ruta.endsWith('/index.html')) {
         const nuevaRuta = ruta.replace(/\/$/, '') + '/index.html';
-        console.log(nuevaRuta);
-        //window.location.replace(nuevaRuta);
+        window.location.replace(nuevaRuta);
       }
     </script>
   </head>
