@@ -2,13 +2,14 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=./index.html" />
     <script>
       // Redirige a la ruta correcta en el cliente
       const ruta = window.location.pathname;
-      if (!ruta.endsWith('/index.html')) {
-        const nuevaRuta = ruta.replace(/\/$/, '') + '/index.html';
+      if (!ruta.endsWith('/')) {
+        const nuevaRuta = ruta.replace(/\/$/, '') + '/';
         window.location.replace(nuevaRuta);
+      } else {
+        window.location.replace('/unal-cuenco/');
       }
     </script>
   </head>
