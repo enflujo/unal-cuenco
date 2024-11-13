@@ -56,11 +56,12 @@ onUnmounted(() => {
 
   <RouterView />
 </template>
-
 <style lang="scss">
 @use '@/scss/estilos.scss';
-@use '@/scss/constantes' as *;
+</style>
 
+<style lang="scss" scoped>
+@use '@/scss/constantes' as *;
 #encabezado {
   height: $altoMenuCelular;
   display: flex;
