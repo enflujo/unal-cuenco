@@ -73,8 +73,6 @@ export interface DatosFicha {
   enlaceFuente?: string;
   contacto?: string;
   modalidades?: ELementoFicha[];
-  // publicacion?: ELementoFicha[];
-  // colectivo?: ELementoFicha[];
   dependencias?: ELementoFicha[];
   indicadores?: ELementoFicha[];
   sedes?: ELementoFicha[];

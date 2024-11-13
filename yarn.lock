@@ -1812,6 +1812,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fuzzysort@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "fuzzysort@npm:3.1.0"
+  checksum: 10c0/da9bb32de16f2a5c2c000b99031d9f4f8a01380c12d5d3b67296443a1152c55987ce3c4ddbfe97481b0e9b6f2fb77d61dceba29a93ad36ee23ef5bab6a31afb8
+  languageName: node
+  linkType: hard
+
 "geojson-vt@npm:^4.0.2":
   version: 4.0.2
   resolution: "geojson-vt@npm:4.0.2"
@@ -3893,6 +3900,7 @@ __metadata:
     "@vue/tsconfig": "npm:^0.5.1"
     autoprefixer: "npm:^10.4.20"
     cssnano: "npm:^7.0.6"
+    fuzzysort: "npm:^3.1.0"
     mapbox-gl: "npm:^3.7.0"
     npm-run-all2: "npm:^7.0.1"
     pinia: "npm:^2.2.6"

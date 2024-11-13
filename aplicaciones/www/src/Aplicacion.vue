@@ -3,37 +3,43 @@ import { RouterLink, RouterView } from 'vue-router';
 import Ficha from './componentes/Ficha.vue';
 import { usarCerebroGeneral } from './cerebros/general';
 import { storeToRefs } from 'pinia';
-import { onMounted, Ref, ref } from 'vue';
+import { onMounted, onUnmounted, Ref, ref } from 'vue';
+import Buscador from './componentes/Buscador.vue';
 const cerebroGeneral = usarCerebroGeneral();
 const { paginaActual } = storeToRefs(cerebroGeneral);
 
-const menu: Ref<HTMLElement | null> = ref(null);
+const abierto = ref(false);
+const menu: Ref<HTMLDivElement | null> = ref(null);
 
-function abrirCerrarMenu() {
-  if (!menu.value?.classList.contains('abierto')) {
-    menu.value?.classList.add('abierto');
-  } else {
-    menu.value?.classList.remove('abierto');
-  }
+function abrirCerrarMenu(evento: MouseEvent) {
+  evento.stopPropagation();
+  abierto.value = !abierto.value;
 }
 
 function clicFuera(evento: MouseEvent) {
+  evento.stopPropagation();
   if (!menu.value) return;
   const elemento = evento.target as HTMLElement;
+  const icono = elemento.classList.contains('icono');
+  if (icono) return;
   if (!(menu.value === elemento || menu.value.contains(elemento))) {
-    menu.value?.classList.remove('abierto');
+    abierto.value = false;
   }
 }
 
 onMounted(() => {
   document.body.addEventListener('click', clicFuera);
 });
+
+onUnmounted(() => {
+  document.body.removeEventListener('click', clicFuera);
+});
 </script>
 
 <template>
-  <header>
-    <nav id="menu" ref="menu">
-      <div :onclick="abrirCerrarMenu" class="icono"><img src="/icono_cuenco.webp" /></div>
+  <header id="encabezado">
+    <div :onclick="abrirCerrarMenu" class="icono"><img src="/icono_cuenco.webp" /></div>
+    <nav id="menu" ref="menu" :class="abierto ? 'abierto' : ''">
       <RouterLink class="elementoMenu" to="/">Inicio</RouterLink>
       <RouterLink class="elementoMenu" :class="paginaActual === 'colectivos' ? 'activo' : ''" to="/colectivos/mapa">
         Colectivos y Ámbitos
@@ -42,6 +48,8 @@ onMounted(() => {
       <RouterLink class="elementoMenu" to="/encuentros">Encuentros</RouterLink>
       <RouterLink class="elementoMenu" to="/creditos">Créditos</RouterLink>
     </nav>
+
+    <Buscador />
   </header>
 
   <Ficha />
@@ -53,27 +61,36 @@ onMounted(() => {
 @use '@/scss/estilos.scss';
 @use '@/scss/constantes' as *;
 
-#menu {
-  width: 100vw;
+#encabezado {
   height: $altoMenuCelular;
   display: flex;
-  padding: 1em 1em;
-  z-index: 9;
-  line-height: 1.2;
   position: fixed;
   top: 0;
   z-index: 9;
-  background-color: rgba(255, 255, 255, 0.9);
+  width: 100vw;
+}
+
+.icono {
+  padding: 1em;
+}
+
+#menu {
+  display: flex;
   flex-direction: column;
+  line-height: 1.2;
+  background-color: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  top: $altoMenuCelular + 20;
   overflow: hidden;
+  height: 0;
+  transition: all 0.25s ease-in-out;
 
   &.abierto {
     height: 100vh;
-    width: 40vw;
+    width: 70vw;
   }
 
   .elementoMenu {
-    padding: 0.5em 0.7em;
     color: var(--magentaCuenco);
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -90,28 +107,24 @@ onMounted(() => {
   }
 }
 
-@media screen and (min-width: $minTablet) {
-  #menu {
-    max-width: 30vw;
-  }
-}
-
 @media screen and (min-width: $minPantalla) {
-  #menu {
-    width: 100vw;
-    max-width: 100vw;
+  #encabezado {
     height: $altoMenuPantalla;
-    justify-content: space-evenly;
+    justify-content: space-between;
+  }
+
+  #menu {
     align-items: flex-start;
-    padding: 1em 1em;
     flex-direction: row;
     line-height: 1.5;
-    justify-content: space-around;
     align-items: center;
+    position: relative;
+    height: $altoMenuPantalla;
+    top: 0;
 
     &.abierto {
       height: $altoMenuPantalla;
-      width: 100vw;
+      width: initial;
     }
   }
 }
