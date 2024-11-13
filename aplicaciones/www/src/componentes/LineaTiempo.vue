@@ -80,7 +80,7 @@ function abrirElemento(evento: MouseEvent, i: string) {
         :style="{ transform: `translateX(${posX(+a.nombre)}px)` }"
         @click="abrirElemento($event, a.id)"
         class="punto"
-        :class="cerebroFicha.idActual === a.id ? 'activo' : ''"
+        :class="cerebroFicha.llaveLista === 'años' && cerebroFicha.idActual === a.id ? 'activo' : ''"
       >
         <circle :r="dims.r" cx="0" cy="30" filter="url(#sombra)" />
         <text class="fecha" x="0" y="60" text-anchor="middle">
