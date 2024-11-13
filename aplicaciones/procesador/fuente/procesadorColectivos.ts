@@ -35,7 +35,7 @@ export default async (
   ruta: string,
   tabla: string,
   indicadores: Indicador[]
-): Promise<{ datos: Colectivo[]; errata: Errata[] }> => {
+): Promise<{ datos: Colectivo[]; errata: Errata[]; listas: ListasColectivos }> => {
   const flujo = await getXlsxStream({
     filePath: ruta,
     sheet: tabla,
@@ -257,8 +257,7 @@ export default async (
         return 0;
       });
 
-      guardarJSON(listas, 'listasColectivos');
-      resolver({ datos: colectivos, errata });
+      resolver({ datos: colectivos, errata, listas });
     });
 
     flujo.on('error', (error) => {

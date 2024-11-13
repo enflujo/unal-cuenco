@@ -104,3 +104,10 @@ export interface EncuentroCaracterizacionConteo {
   roles?: { slug: string; conteo: number }[];
   cargos?: { slug: string; conteo: number }[];
 }
+
+export interface OpcionBuscadorDatos {
+  nombre: string;
+  tipo: string;
+  id: string;
+  vista: 'publicaciones' | 'colectivos' | 'encuentros';
+}

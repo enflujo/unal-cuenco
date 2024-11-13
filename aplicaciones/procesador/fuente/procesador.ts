@@ -1,3 +1,10 @@
+import type {
+  Colectivo,
+  ListasColectivos,
+  ListasPublicaciones,
+  OpcionBuscadorDatos,
+  Publicacion,
+} from '@/tipos/compartidos';
 import { alerta, chulo, guardarJSON, logAviso, logNaranjaPulso } from './ayudas';
 import { procesarIndicadores } from './indicadores';
 import procesadorCaracterizacion from './procesadorCaracterizacion';
@@ -24,6 +31,7 @@ async function inicio() {
     'errataIndicadoresPublicaciones'
   );
   guardar(publicaciones.datos, publicaciones.errata, 'publicaciones', 'errataPublicaciones');
+  guardarJSON(publicaciones.listas, 'listasPublicaciones');
 
   /**
    * COLECTIVOS
@@ -42,13 +50,25 @@ async function inicio() {
     'errataIndicadoresColectivos'
   );
   guardar(colectivos.datos, colectivos.errata, 'colectivos', 'errataColectivos');
+  guardarJSON(colectivos.listas, 'listasColectivos');
 
   /**
-   * CARACTERIZACION
+   * ENCUENTROS
    */
   const rutaCaracterizacion = './datos/Visualización_Caracterización_20240909.xlsx';
   const caracterizacion = await procesadorCaracterizacion(rutaCaracterizacion, 'Hoja1');
   guardar(caracterizacion.datos, caracterizacion.errata, 'encuentros', 'errataEncuentros');
+
+  /**
+   * DATOS BUSCADOR
+   */
+  const datosBuscador = procesarDatosBuscador(
+    publicaciones.datos,
+    colectivos.datos,
+    publicaciones.listas,
+    colectivos.listas
+  );
+  guardar(datosBuscador, [], 'buscador', 'errataBuscador');
 }
 
 inicio().catch(console.error);
@@ -67,4 +87,55 @@ function guardar(datos: any, errata: Errata[], nombre: string, nombreErrata = `e
     guardarJSON(datos, nombre);
     console.log(chulo, logAviso(`Procesados ${nombre}`));
   }
+}
+
+function procesarDatosBuscador(
+  publicaciones: Publicacion[],
+  colectivos: Colectivo[],
+  listaPublicaciones: ListasPublicaciones,
+  listaColectivos: ListasColectivos
+) {
+  const opciones: OpcionBuscadorDatos[] = [];
+
+  publicaciones.forEach((publicacion, i) => {
+    opciones.push({
+      nombre: publicacion.titulo.nombre,
+      tipo: 'publicacion',
+      id: publicacion.id,
+      vista: 'publicaciones',
+    });
+  });
+
+  colectivos.forEach((colectivo, i) => {
+    opciones.push({ nombre: colectivo.titulo.nombre, tipo: 'colectivo', id: colectivo.id, vista: 'colectivos' });
+  });
+
+  for (const llave in listaPublicaciones) {
+    const lista = listaPublicaciones[llave as keyof ListasPublicaciones];
+    lista.forEach((elemento, i) => {
+      const elementoBuscador: OpcionBuscadorDatos = {
+        nombre: elemento.nombre,
+        tipo: llave,
+        id: elemento.id,
+        vista: 'publicaciones',
+      };
+      opciones.push(elementoBuscador);
+    });
+  }
+
+  for (const llave in listaColectivos) {
+    const lista = listaColectivos[llave as keyof ListasColectivos];
+    lista.forEach((elemento, i) => {
+      const elementoBuscador: OpcionBuscadorDatos = {
+        nombre: elemento.nombre,
+        tipo: llave,
+        id: elemento.id,
+        vista: 'colectivos',
+      };
+
+      opciones.push(elementoBuscador);
+    });
+  }
+
+  return opciones;
 }
