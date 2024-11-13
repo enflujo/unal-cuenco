@@ -9,7 +9,7 @@ import type {
 } from '@/tipos/compartidos';
 import type { FeatureCollection, Point } from 'geojson';
 
-export type TiposDePagina = 'inicio' | 'colectivos' | 'publicaciones' | 'encuentros';
+export type TiposDePagina = 'inicio' | 'colectivos' | 'publicaciones' | 'encuentros' | 'creditos';
 export type TMinMax = { min: number; max: number; total: number };
 export interface CerebroGeneral {
   paginaActual: TiposDePagina;

@@ -34,14 +34,14 @@ const rutas = createRouter({
       component: () => import('@/paginas/Encuentros.vue'),
     },
     {
-      path: '/:pathMatch(.*)*',
+      path: '/creditos',
       name: 'creditos',
-      component: import('@/paginas/Creditos.vue'),
+      component: () => import('@/paginas/Creditos.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'perdido',
-      component: import('@/paginas/404.vue'),
+      component: () => import('@/paginas/404.vue'),
     },
   ],
 });
