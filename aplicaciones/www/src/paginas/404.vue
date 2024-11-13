@@ -23,7 +23,7 @@ export default {
 
 .pagina-404 {
   text-align: center;
-  margin-top: $altoMenu;
+  margin-top: $altoMenuPantalla;
   width: 100vw;
   display: block;
   min-height: 100vh;

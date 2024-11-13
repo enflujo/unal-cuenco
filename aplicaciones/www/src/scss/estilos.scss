@@ -52,8 +52,9 @@ a:link {
 }
 
 main {
-  margin-top: $altoMenu;
+  margin-top: $altoMenuCelular;
   display: flex;
+  flex-direction: column;
 }
 
 ul {
@@ -77,7 +78,7 @@ ul {
 }
 
 .columna {
-  height: calc(100vh - $altoMenu);
+  height: calc(100vh - $altoMenuPantalla);
   overflow: auto;
 }
 
@@ -120,5 +121,12 @@ ul {
     .conteo {
       margin-left: 3px;
     }
+  }
+}
+
+@media screen and (min-width: $minTablet) {
+  main {
+    margin-top: $altoMenuPantalla;
+    flex-direction: row;
   }
 }

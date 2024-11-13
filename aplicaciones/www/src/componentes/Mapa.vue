@@ -155,6 +155,7 @@ function crearTextoSede(datos: PropiedadesGeoColectivos) {
 
 <style lang="scss">
 @use '@/scss/constantes' as *;
+
 #infoMapa {
   @include gradienteAzulCircular;
   color: var(--blanco);
@@ -189,8 +190,24 @@ function crearTextoSede(datos: PropiedadesGeoColectivos) {
 </style>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
 #contenedorMapa {
-  width: 55vw;
+  width: 80vw;
   height: 60vh;
+  margin: 1em auto;
+}
+
+@media screen and (min-width: $minTablet) {
+  #contenedorMapa {
+    width: 45vw;
+    margin: 7em 0;
+  }
+}
+
+@media screen and (min-width: $minPantalla) {
+  #contenedorMapa {
+    width: 55vw;
+    margin: 7em 0;
+  }
 }
 </style>
