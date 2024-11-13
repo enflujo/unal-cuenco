@@ -1,52 +1,42 @@
 <script setup lang="ts">
-import { onMounted, type Ref, ref } from 'vue';
+import { onMounted, onUnmounted, type Ref, ref } from 'vue';
 
 import fuzzysort from 'fuzzysort';
 import { pedirDatos } from '@/utilidades/ayudas';
 import { OpcionBuscadorDatos } from '@/tipos/compartidos';
 import { nombresListas } from '@/utilidades/constantes';
 import type { TiposNodo } from '@/tipos';
-// import { opcionesBuscador } from '@/utilidades/cerebro';
+import { usarCerebroFicha } from '@/cerebros/ficha';
+import { usarCerebroGeneral } from '@/cerebros/general';
+import { useRouter } from 'vue-router';
 
+const contenedorBuscador = ref<HTMLDivElement | null>(null);
 const buscador: Ref<HTMLInputElement | null> = ref(null);
 const botonBuscador: Ref<HTMLDivElement | null> = ref(null);
 const sugerencias: Ref<HTMLDataListElement | null> = ref(null);
-const resultados: { [llave: string]: Fuzzysort.Result[] | null } = {
-  publicaciones: null,
-  colectivos: null,
-  autores: null,
-  tipos: null,
-  años: null,
-  dependencias: null,
-  indicadores: null,
-  sedes: null,
-  modalidades: null,
-  estado: null,
-};
-// const cajas = sugerencias.querySelectorAll<HTMLDivElement>('.cajaBuscador');
-// const sinResultados = document.getElementById('sinResultados') as HTMLSpanElement;
+const resultados: Ref<{ [llave: string]: OpcionBuscadorDatos[] }> = ref({});
 const sinResultadosPara = ref('');
-const listas = Object.keys(nombresListas);
-
-interface ListasBuscador {
-  tipo: string;
-  puntaje: number;
-  elementos: HTMLSpanElement[];
-}
-
 const datos = ref<OpcionBuscadorDatos[]>([]);
+const textoBusqueda = ref('');
+const visible = ref(false);
+const cerebroFicha = usarCerebroFicha();
+const cerebroGeneral = usarCerebroGeneral();
+const enrutador = useRouter();
+
 onMounted(async () => {
   const respuesta = await pedirDatos<OpcionBuscadorDatos[]>('datos/buscador.json');
   if (!respuesta) return;
+
+  document.body.addEventListener('click', clicFuera);
 
   datos.value = respuesta;
 
   if (botonBuscador.value) {
     botonBuscador.value.onclick = () => {
       if (!sugerencias.value || !buscador.value) return;
-      sugerencias.value.classList.toggle('visible');
+      visible.value = !visible.value;
 
-      if (sugerencias.value.classList.contains('visible')) {
+      if (visible.value) {
         buscador.value.classList.add('visibleCelular');
       } else {
         buscador.value.classList.remove('visibleCelular');
@@ -55,104 +45,106 @@ onMounted(async () => {
   }
 
   if (buscador.value) {
-    buscador.value.oninput = buscar;
-    buscador.value.addEventListener('focusin', (evento) => {
-      console.log(evento, evento.target);
-      if (buscador.value && sugerencias.value) {
-        const texto = buscador.value.value.trim();
-        if (texto && texto.length) sugerencias.value.classList.add('visible');
-      }
-    });
-  }
-
-  function buscar() {
-    console.log('buscar');
-    if (!buscador.value || !sugerencias.value) return;
-    const texto = buscador.value.value.trim();
-    console.log(texto);
-    sinResultadosPara.value = '';
-    // cajas.forEach((caja) => caja.classList.remove('visible'));
-
-    // if (!texto || !texto.length) {
-    //   sugerencias.classList.remove('visible');
-    //   buscador.classList.remove('visibleCelular');
-    //   return;
-    // }
-
-    const busqueda = fuzzysort.go<OpcionBuscadorDatos>(texto, respuesta, {
-      key: 'nombre',
-      threshold: -1000,
-      limit: 100,
-    });
-
-    if (busqueda.total > 0) {
-      console.log(busqueda);
-      busqueda.forEach((resultado) => {
-        const { tipo } = resultado.obj;
-
-        if (!resultados[tipo]) resultados[tipo] = [];
-
-        resultados[tipo].push(resultado);
-
-        console.log();
-      });
-      // sugerencias.classList.add('visible');
-
-      // const resultadoEnListas = busqueda.reduce((listas: ListasBuscador[], actual) => {
-      //   const llave = actual.obj.tipo;
-      //   const enLista = listas.find((lista: ListasBuscador) => lista.tipo === llave);
-
-      //   if (!enLista) {
-      //     listas.push({ puntaje: actual.score, tipo: llave, elementos: [actual.obj.opcion] });
-      //   } else {
-      //     if (enLista.puntaje < actual.score) enLista.puntaje = actual.score;
-      //     enLista.elementos.push(actual.obj.opcion);
-      //   }
-
-      //   return listas;
-      // }, []);
-
-      // resultadoEnListas.forEach((obj) => {
-      //   const contenedor = document.getElementById(`caja-${obj.tipo}`) as HTMLDivElement;
-      //   const ul = contenedor.querySelector<HTMLUListElement>('.subLista') as HTMLUListElement;
-      //   sugerencias.insertBefore(contenedor, sugerencias.lastChild);
-      //   ul.innerHTML = '';
-      //   contenedor.classList.add('visible');
-
-      //   obj.elementos.forEach((elemento) => ul.appendChild(elemento));
-      // });
-    } else {
-      sinResultadosPara.value = texto;
-    }
+    buscador.value.addEventListener('input', buscar);
+    buscador.value.addEventListener('focusin', enModoBusqueda);
   }
 });
 
-// opcionesBuscador.subscribe((opciones) => {
-// if (!opciones) return;
+onUnmounted(() => {
+  document.body.removeEventListener('click', clicFuera);
+  if (buscador.value) {
+    buscador.value.removeEventListener('input', buscar);
+    buscador.value.removeEventListener('focusin', enModoBusqueda);
+  }
+});
 
-// });
+function buscar() {
+  if (!buscador.value || !sugerencias.value) return;
+  const texto = buscador.value.value.trim();
+  sinResultadosPara.value = '';
+  resultados.value = {};
 
-// import type { Listas } from '@/tipos';
-// import { nombresListasEgresados, nombresListasProyectos } from '@/utilidades/cerebro';
-// const listas = { ...nombresListasProyectos, ...nombresListasEgresados };
+  if (!texto || !texto.length) {
+    visible.value = false;
+    return;
+  }
+
+  const busqueda = fuzzysort.go<OpcionBuscadorDatos>(texto, datos.value, {
+    key: 'nombre',
+    threshold: 0.4,
+    limit: 100,
+  });
+
+  if (busqueda.total > 0) {
+    busqueda.forEach((resultado) => {
+      const { tipo } = resultado.obj;
+
+      if (!resultados.value[tipo]) resultados.value[tipo] = [];
+      resultados.value[tipo].push(resultado.obj);
+    });
+
+    textoBusqueda.value = texto;
+  } else {
+    sinResultadosPara.value = texto;
+  }
+
+  visible.value = true;
+}
+
+function clicFuera(evento: MouseEvent) {
+  evento.stopPropagation();
+  if (!contenedorBuscador.value || !sugerencias.value) return;
+  const elemento = evento.target as HTMLElement;
+  if (!(contenedorBuscador.value === elemento || contenedorBuscador.value.contains(elemento))) {
+    if (visible.value) {
+      visible.value = false;
+    }
+  }
+}
+
+function enModoBusqueda() {
+  if (buscador.value && buscador.value.value && sugerencias.value) {
+    const texto = buscador.value.value.trim();
+    if (texto && texto.length) sugerencias.value.classList.add('visible');
+  }
+}
+
+function resaltarCoincidencia(texto: string) {
+  const regex = new RegExp(`(${textoBusqueda.value})`, 'gi');
+  return texto.replace(regex, (match) => `<span class="resaltado">${match}</span>`);
+}
+
+async function abrirElemento(evento: MouseEvent, resultado: OpcionBuscadorDatos) {
+  evento.stopPropagation();
+  // Navegar a página correspondiente si es diferente a la actual
+  if (cerebroGeneral.paginaActual !== resultado.vista) {
+    const navegacionDetenida = await enrutador.push({ path: `/${resultado.vista}` });
+    if (navegacionDetenida) return;
+  }
+
+  cerebroFicha.seleccionarNodo(resultado.id, resultado.tipo as TiposNodo);
+}
 </script>
 
 <template>
-  <div id="contenedorBuscador">
+  <div id="contenedorBuscador" ref="contenedorBuscador">
     <img id="botonBuscador" ref="botonBuscador" src="/lupa.svg" alt="Buscador" />
     <input id="buscador" ref="buscador" type="search" placeholder="Buscar" />
 
-    <div id="sugerencias" ref="sugerencias">
+    <div id="sugerencias" ref="sugerencias" :class="{ visible }">
       <div v-for="(resultados, llave) in resultados" class="cajaBuscador">
         <h4>{{ nombresListas[llave as TiposNodo] }}</h4>
-        <ul class="subLista" v-for="resultado in resultados">
-          {{
-            resultado
-          }}
+        <ul class="subLista">
+          <li
+            v-for="resultado in resultados"
+            v-html="resaltarCoincidencia(resultado.nombre)"
+            @click="abrirElemento($event, resultado)"
+            class="enlace"
+          ></li>
         </ul>
       </div>
 
-      <span id="sinResultados" v-if="sinResultadosPara.length" :class="{ visible: sinResultadosPara }">
+      <span id="sinResultados" :class="{ visible: sinResultadosPara.length }">
         No hay resultados para la busqueda:
         <span class="sinResultadoPara" ref="sinResultadoPara">{{ sinResultadosPara }}</span>
       </span>
@@ -221,8 +213,8 @@ onMounted(async () => {
 #sinResultados {
   font-size: 1.6em;
   text-align: center;
-  color: black;
   display: none;
+  color: white;
   width: 100%;
 
   &.visible {
@@ -238,19 +230,23 @@ onMounted(async () => {
   @include gradienteAzulCircular;
   position: fixed;
   left: 50%;
-  transform: translateX(200%); // translateX(200%);
+  transform: translateX(200%);
   top: $altoMenuPantalla;
   padding: 3em 1.5em 1.5em 1.5em;
   width: 100vw;
   display: flex;
   flex-wrap: wrap;
   overflow: auto;
-  height: calc(100vh - $altoMenuPantalla);
+  height: calc(100vh - $altoMenuPantalla - $altoLinea);
   text-transform: none;
   transition: transform 0.2s ease-out;
 
   &.visible {
     transform: translateX(-50%);
+  }
+
+  .resaltado {
+    background-color: #f7e9b76e;
   }
 
   .cajaBuscador {

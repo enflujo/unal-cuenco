@@ -100,14 +100,14 @@ function procesarDatosBuscador(
   publicaciones.forEach((publicacion, i) => {
     opciones.push({
       nombre: publicacion.titulo.nombre,
-      tipo: 'publicacion',
+      tipo: 'publicaciones',
       id: publicacion.id,
       vista: 'publicaciones',
     });
   });
 
   colectivos.forEach((colectivo, i) => {
-    opciones.push({ nombre: colectivo.titulo.nombre, tipo: 'colectivo', id: colectivo.id, vista: 'colectivos' });
+    opciones.push({ nombre: colectivo.titulo.nombre, tipo: 'colectivos', id: colectivo.id, vista: 'colectivos' });
   });
 
   for (const llave in listaPublicaciones) {
