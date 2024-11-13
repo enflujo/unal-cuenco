@@ -35,6 +35,11 @@ const rutas = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
+      name: 'creditos',
+      component: import('@/paginas/Creditos.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
       name: 'perdido',
       component: import('@/paginas/404.vue'),
     },
