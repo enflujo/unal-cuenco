@@ -140,12 +140,12 @@ $margenY: 10px;
 #contenedorFicha {
   z-index: 99;
   width: 80vw;
-  height: calc(100vh - $altoMenu - $altoLinea);
+  height: calc(100vh - $altoMenuPantalla - $altoLinea);
   @include gradienteAzulCircular;
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  top: $altoMenu;
+  top: $altoMenuPantalla;
   border-radius: 20px;
   padding: 1em;
   overflow: hidden;

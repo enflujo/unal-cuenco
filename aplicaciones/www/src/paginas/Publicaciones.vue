@@ -52,7 +52,7 @@ onUnmounted(() => {
 @use '@/scss/constantes' as *;
 
 .columna {
-  height: calc(100vh - $altoMenu - $altoLinea);
+  height: calc(100vh - $altoMenuPantalla - $altoLinea);
 }
 
 .botonesVista {

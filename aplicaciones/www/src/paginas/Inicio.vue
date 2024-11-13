@@ -52,10 +52,29 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
+
 #presentacion {
   overflow: auto;
-  margin-left: 4em;
+  margin: 0 10vw;
   padding-right: 1em;
-  width: 25vw;
+  width: 80vw;
+}
+
+@media screen and (min-width: $minTablet) {
+  #presentacion {
+    margin: 0 2em;
+    padding-right: 1em;
+    width: 40vw;
+  }
+}
+
+@media screen and (min-width: $minPantalla) {
+  #presentacion {
+    overflow: auto;
+    margin-left: 4em;
+    padding-right: 1em;
+    width: 30vw;
+  }
 }
 </style>
