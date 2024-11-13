@@ -37,6 +37,7 @@ const filtroElegido: Ref<string> = ref('sedes');
 let posicionIzq = 0;
 
 // Colores para dividir las barras
+// POR HACER: Que cada elemento de los filtros quede con el mismo color.
 const colores: string[] = [
   '#3949a4',
   '#c30a93',
