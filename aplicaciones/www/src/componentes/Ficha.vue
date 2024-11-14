@@ -127,9 +127,7 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
       </div>
     </div>
 
-    <div id="contendorVis">
-      <VisFicha />
-    </div>
+    <VisFicha />
   </div>
 </template>
 
@@ -154,10 +152,6 @@ $margenY: 10px;
   &.visible {
     display: flex;
   }
-}
-
-#contendorVis {
-  width: 50%;
 }
 
 #descripcionFicha {
