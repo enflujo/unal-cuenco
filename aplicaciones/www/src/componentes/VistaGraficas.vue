@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import type {
   ElementoLista,
+  ListasColectivos,
   ListasPublicaciones,
   LlavesColectivos,
   LlavesPublicaciones,
@@ -12,6 +13,7 @@ import { storeToRefs } from 'pinia';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { nombresListas } from '@/utilidades/constantes';
+import { coloresFiltros } from '@/utilidades/constantes';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
 const cerebroDatos = usarCerebroDatos();
@@ -32,38 +34,9 @@ const listaFiltros = computed<{ llave: LlavesColectivos | LlavesPublicaciones; n
 });
 
 let filtrados: Relacion[][] = [];
+
 const filtroElegido: Ref<string> = ref('sedes');
 let posicionIzq = 0;
-
-// Colores para dividir las barras
-// POR HACER: Que cada elemento de los filtros quede con el mismo color.
-const colores: string[] = [
-  '#3949a4',
-  '#c30a93',
-  '#2B2D42',
-  '#8D99AE',
-  '#EE8B98',
-  '#EF233C',
-  '#45CB85',
-  '#22AED1',
-  '#773344',
-  '#d8cc34',
-  '#edc9ff',
-  '#6eeb83',
-  '#e8aa14',
-  '#3bf4fb',
-  '#ff5714',
-  '#1a1b41',
-  '#c2e7da',
-  '#a4243b',
-  '#c879ff',
-  '#caff8a',
-  '#363457',
-  '#735290',
-  '#465c69',
-  '#C4A69D',
-  '#240046',
-];
 
 watch(listaElegida, (llaveLista) => {
   if (!llaveLista || llaveLista === listaActual.value) return;
@@ -133,9 +106,9 @@ function ratonEntra({ target, clientX, clientY }: MouseEvent) {
 
   if (!etiquetaCortada.value || !elemento.dataset.conteo) return;
 
-  etiquetaCortada.value.innerText = resaltado?.nombre ? resaltado.nombre : '';
-  etiquetaCortada.value.style.left = `${clientX - 310}px`;
-  etiquetaCortada.value.style.top = `${clientY - 270}px`;
+  etiquetaCortada.value.innerText = resaltado?.nombre ? `${resaltado.nombre}: ${elemento.dataset.conteo}` : '';
+  etiquetaCortada.value.style.left = `${clientX + 10}px`;
+  etiquetaCortada.value.style.top = `${clientY - 20}px`;
   etiquetaCortada.value.style.display = 'block';
 }
 
@@ -157,7 +130,7 @@ function ratonFuera() {
         v-if="listas"
         v-for="obj in listaFiltros"
         class="botonFiltro"
-        :class="filtroElegido === obj.llave ? 'seleccionado' : ''"
+        :class="filtroElegido === obj.llave ? 'seleccionado' : listaActual === obj.llave ? 'inactivo' : ''"
         @click="elegirFiltro(obj.llave)"
       >
         {{ obj.nombre }}
@@ -178,14 +151,9 @@ function ratonFuera() {
           <div
             v-for="(e, i) in elementos"
             @mouseenter="ratonEntra"
-            @mouseleave="ratonFuera"
+            @mouseout="ratonFuera"
             class="lineaCortada"
-            :v-on="
-              i === 0
-                ? (posicionIzq = 0)
-                : (posicionIzq += convertirEscala(elementos[i - 1].conteo, 0, valorMaximo, 0, 70))
-            "
-            :style="`width:${convertirEscala(e.conteo, 0, valorMaximo, 0, 70)}%; top: ${j * 4}%; left: ${i === 0 ? 0 : posicionIzq}%; background-color:${i < colores.length ? colores[i] : colores[0]}`"
+            :style="`width:${convertirEscala(e.conteo, 0, valorMaximo, 0, 70)}%; top: ${j * 4}%; left: ${i === 0 ? 0 : posicionIzq}%; background-color:${coloresFiltros[+e.id] ? coloresFiltros[+e.id] : 'pink'}`"
             :data-conteo="`${e.conteo}`"
             :data-id="`${e.id}`"
           ></div>
@@ -217,6 +185,7 @@ function ratonFuera() {
 #filtros {
   display: flex;
   align-items: center;
+  opacity: 1;
 
   .botonFiltro {
     margin: 0.5em;
@@ -225,6 +194,10 @@ function ratonFuera() {
 
     &.seleccionado {
       border: 1px black solid;
+    }
+
+    &.inactivo {
+      opacity: 0.2;
     }
   }
 }
@@ -278,8 +251,8 @@ function ratonFuera() {
 
 .etiquetaCortada {
   display: none;
-  position: absolute;
-  background-color: white;
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.6);
   padding: 0.2em 0.5em;
 }
 
