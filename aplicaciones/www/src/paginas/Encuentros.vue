@@ -2,39 +2,134 @@
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { usarCerebroDatos } from '@/cerebros/datos';
-import { onMounted, onUnmounted, watch } from 'vue';
+import { onMounted, onUnmounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { EncuentroCaracterizacionConteo, LlavesCaracterizacion } from '@/tipos/compartidos';
+import { DonaProcesada, IDona, TiposNodo } from '@/tipos';
+import { nombresListasCaracterizacion } from '@/utilidades/constantes';
+import Dona from '@/componentes/Dona.vue';
+import { redondearDecimal } from '@/utilidades/ayudas';
+const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const cerebroDatos = usarCerebroDatos();
 
-const { listasCaracterizacion, encuentroCaracterizacion } = storeToRefs(cerebroDatos);
+const { listasCaracterizacion, encuentrosCaracterizacionConteo } = storeToRefs(cerebroDatos);
+
+const info: Ref<string | null> = ref(null);
+
+/* 
+function crearDonas(datos: EncuentroCaracterizacionConteo) {
+  const nuevasDonas: { tipo: TiposNodo; valores: IDona[] }[] = [];
+  let datosSeccion: {sedes:{ slug: string; conteo: number }[] | PersonaCaracterizacion[] | undefined = [];
+  llavesEncuentro.forEach((llave: LlavesEncuentro) => {
+    if (llave !== 'id' && llave !== 'numero') {
+      datosSeccion = datos[llave];
+    }
+
+    if (datosSeccion) {
+      const total = datosSeccion.sedes?.reduce((acumulado: number, actual) => acumulado + actual.conteo, 0);
+      const datosDona = datosSeccion.sedes?.map((obj, i) => {
+        return { nombre: obj.slug, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
+      });
+
+      nuevasDonas.push({ tipo: llave, valores: datosDona });
+    }
+  });
+
+  if (datos.tipo === 'colectivos') {
+  } else {
+    total.value = datos.colectivos ? datos.colectivos.length : 0;
+    tituloTotal.value = 'Total colectivos: ';
+  }
+
+  donas.value = nuevasDonas;
+}
+} */
+
+function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
+  const nuevasDonas: {
+    tipo: LlavesCaracterizacion;
+    valores: IDona[];
+  }[][] = [];
+  if (!datos) return;
+  datos.forEach((encuentro) => {
+    console.log(encuentro);
+  });
+}
 
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'encuentros';
   await cerebroDatos.cargarListasCaracterizacion();
   await cerebroDatos.cargarDatosCaracterizacion();
-  console.log(encuentroCaracterizacion.value);
+  crearDonas(encuentrosCaracterizacionConteo.value);
 });
 
 onUnmounted(() => {
   cerebroFicha.fichaVisible = false;
 });
+
+function mostrarInfo(trozo: DonaProcesada) {
+  info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
+}
+function esconderInfo() {
+  info.value = null;
+}
+
+const donasPrueba: {
+  tipo: LlavesCaracterizacion;
+  valores: IDona[];
+}[][] = [
+  [
+    {
+      tipo: 'sedes',
+      valores: [
+        { nombre: 'Bogotá', valor: 4, porcentaje: (4 * 100) / 9 },
+        { nombre: 'Manizales', valor: 3, porcentaje: (3 * 100) / 9 },
+        { nombre: 'Palmira', valor: 1, porcentaje: (1 * 100) / 9 },
+        { nombre: 'Tumaco', valor: 1, porcentaje: (1 * 100) / 9 },
+      ],
+    },
+    {
+      tipo: 'roles',
+      valores: [
+        { nombre: 'docente', valor: 7, porcentaje: (7 * 100) / 9 },
+        { nombre: 'egresado', valor: 1, porcentaje: (1 * 100) / 9 },
+        { nombre: 'administrativo', valor: 1, porcentaje: (1 * 100) / 9 },
+      ],
+    },
+  ],
+];
 </script>
 
 <template>
   <main>
-    <diV id="contenedorEncuentros">
+    <div id="contenedorEncuentros">
       <h1>Encuentros</h1>
 
       <div>
         <h2>Caracterización por encuentro</h2>
-        <h3></h3>
-        <li v-for="encuentro in encuentroCaracterizacion">
+
+        <li v-for="encuentro in encuentrosCaracterizacionConteo">
           {{ encuentro?.numero }}:
-          <p v-for="sede in encuentro?.sedes">{{ sede.slug }}: {{ sede.conteo }}</p>
+
+          <section class="contenedorDona" v-for="dona in donasPrueba[0]" :key="`dona-${dona.tipo}`">
+            <h3>{{ nombresListasCaracterizacion[dona.tipo] }}</h3>
+
+            <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" />
+          </section>
+
+          <ul v-for="sede in encuentro?.sedes">
+            {{
+              sede.slug
+            }}:
+            {{
+              sede.conteo
+            }}
+          </ul>
         </li>
+        */
       </div>
       <div>
         <h2>Caracterización total</h2>
@@ -47,7 +142,7 @@ onUnmounted(() => {
         <h3>Asistencia total por cargo:</h3>
         <li v-for="lista in listasCaracterizacion?.cargos">{{ lista.nombre }}: {{ lista.conteo }}</li>
       </div>
-    </diV>
+    </div>
   </main>
 </template>
 

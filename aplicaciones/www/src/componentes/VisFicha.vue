@@ -44,6 +44,8 @@ function crearDonas(datos: DatosFicha) {
       }
     });
 
+    console.log(nuevasDonas);
+
     if (datos.tipo === 'colectivos') {
     } else {
       total.value = datos.colectivos ? datos.colectivos.length : 0;

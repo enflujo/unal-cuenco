@@ -1,5 +1,5 @@
 import { TiposNodo, TiposNodoSinRelaciones } from '@/tipos';
-import { LlavesColectivos, LlavesPublicaciones } from '@/tipos/compartidos';
+import { LlavesCaracterizacion, LlavesColectivos, LlavesEncuentro, LlavesPublicaciones } from '@/tipos/compartidos';
 
 export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: string } = {
   publicaciones: 'Publicaciones',
@@ -19,6 +19,13 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   contacto: 'Contacto',
 };
 
+export const nombresListasCaracterizacion: { [llave in LlavesCaracterizacion]: string } = {
+  roles: 'Roles',
+  tipos: 'Tipos',
+  sedes: 'Sedes',
+  cargos: 'Cargos',
+};
+
 export const llavesRelacionesPublicaciones: LlavesPublicaciones[] = [
   'autores',
   'años',
@@ -35,6 +42,8 @@ export const llavesRelacionesColectivos: LlavesColectivos[] = [
   'modalidades',
   'indicadores',
 ];
+
+export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'personas', 'tiposSede', 'sedes', 'roles'];
 
 export const coloresFiltros: string[] = [
   '#3949a4',

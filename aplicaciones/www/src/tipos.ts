@@ -1,15 +1,15 @@
 import type {
   Colectivo,
-  EncuentroCaracterizacion,
   Indicador,
   ListasColectivos,
   ListasPublicaciones,
   LlavesColectivos,
   LlavesPublicaciones,
   Publicacion,
+  ListasCaracterizacion,
+  EncuentroCaracterizacionConteo,
 } from '@/tipos/compartidos';
 import type { FeatureCollection, Point } from 'geojson';
-import { ListasCaracterizacion } from '../../../tipos/compartidos';
 
 export type TiposDePagina = 'inicio' | 'colectivos' | 'publicaciones' | 'encuentros' | 'creditos';
 export type TMinMax = { min: number; max: number; total: number };
@@ -49,7 +49,7 @@ export interface CerebroDatos {
   cargandoListasPublicaciones: boolean;
 
   // ENCUENTROS
-  encuentroCaracterizacion: EncuentroCaracterizacion | null;
+  encuentrosCaracterizacionConteo: EncuentroCaracterizacionConteo[] | null;
   cargandoEncuentroCaracterizacion: boolean;
   listasCaracterizacion: ListasCaracterizacion | null;
   cargandoCaracterizacionConteo: boolean;

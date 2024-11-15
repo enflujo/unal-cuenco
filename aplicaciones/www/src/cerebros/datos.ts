@@ -11,7 +11,7 @@ import type {
   Publicacion,
   ListasCaracterizacion,
   LlavesCaracterizacion,
-  EncuentroCaracterizacion,
+  EncuentroCaracterizacionConteo,
 } from '@/tipos/compartidos';
 
 export const usarCerebroDatos = defineStore('cerebroDatos', {
@@ -41,7 +41,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       cargandoListasPublicaciones: false,
 
       // CARACTERIZACIÓN ENCUENTROS
-      encuentroCaracterizacion: null,
+      encuentrosCaracterizacionConteo: null,
       cargandoEncuentroCaracterizacion: false,
 
       listasCaracterizacion: null,
@@ -177,11 +177,12 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
 
     // CARACTERIZACIÓN DE ENCUENTROS
     async cargarDatosCaracterizacion() {
-      if (this.encuentroCaracterizacion || this.cargandoEncuentroCaracterizacion) return;
+      if (this.encuentrosCaracterizacionConteo || this.cargandoEncuentroCaracterizacion) return;
       this.cargandoEncuentroCaracterizacion = true;
 
       try {
-        this.encuentroCaracterizacion = await pedirDatos<EncuentroCaracterizacion>('datos/encuentros.json');
+        this.encuentrosCaracterizacionConteo =
+          await pedirDatos<EncuentroCaracterizacionConteo[]>('datos/encuentros.json');
         this.cargandoEncuentroCaracterizacion = false;
       } catch (error) {
         console.error('Problema cargando datos de encuentros', JSON.stringify(error));
