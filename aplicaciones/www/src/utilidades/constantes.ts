@@ -19,7 +19,6 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   contacto: 'Contacto',
 };
 
-
 export const llavesRelacionesPublicaciones: LlavesPublicaciones[] = [
   'autores',
   'años',
