@@ -14,6 +14,7 @@ import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { nombresListas } from '@/utilidades/constantes';
 import { coloresFiltros } from '@/utilidades/constantes';
+import { TiposNodo } from '@/tipos';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
 const cerebroDatos = usarCerebroDatos();
@@ -33,7 +34,7 @@ const listaFiltros = computed<{ llave: LlavesColectivos | LlavesPublicaciones; n
   return null;
 });
 
-let filtrados: Relacion[][] = [];
+const filtrados: Ref<Relacion[][]> = ref([]);
 
 const filtroElegido: Ref<string> = ref('sedes');
 let posicionIzq = 0;
@@ -56,7 +57,7 @@ watch(listaElegida, (llaveLista) => {
   }
 
   filtroElegido.value = '';
-  filtrados = [];
+  filtrados.value = [];
 });
 
 onMounted(async () => {
@@ -64,10 +65,12 @@ onMounted(async () => {
     if (!cerebroDatos.listasColectivosOrdenadas) return;
     listas.value = cerebroDatos.listasColectivosOrdenadas;
     listaElegida.value = Object.keys(cerebroDatos.listasColectivosOrdenadas)[0] as LlavesColectivos;
+    filtroElegido.value = listaElegida.value;
   } else if (paginaActual === 'publicaciones') {
     if (!cerebroDatos.listasPublicacionesOrdenadas) return;
     listas.value = cerebroDatos.listasPublicacionesOrdenadas;
     listaElegida.value = Object.keys(cerebroDatos.listasPublicacionesOrdenadas)[0] as LlavesPublicaciones;
+    filtroElegido.value = listaElegida.value;
   }
 });
 
@@ -78,17 +81,23 @@ onUnmounted(() => {
 
 function elegirFiltro(filtro: string) {
   filtroElegido.value = filtro;
-  if (listaActual.value === filtro || !listaVisible.value) return;
-  filtrados = [];
+
+  if (!listaVisible.value) return;
+  filtrados.value = [];
+
+  if (listaActual.value === filtro) {
+    return;
+  }
+
   listaVisible.value.forEach((elementoElegido) => {
     const filtrado = elementoElegido.relaciones.filter((relacion) => relacion.tipo === `${filtroElegido.value}`);
     filtrado.sort((a, b) => b.conteo - a.conteo);
 
-    filtrados.push(filtrado);
+    filtrados.value.push(filtrado);
   });
 }
 
-function ratonEntra({ target, clientX, clientY }: MouseEvent) {
+function ratonEntra({ target }: MouseEvent) {
   const elemento = target as HTMLElement;
   let resaltado;
 
@@ -107,8 +116,8 @@ function ratonEntra({ target, clientX, clientY }: MouseEvent) {
   if (!etiquetaCortada.value || !elemento.dataset.conteo) return;
 
   etiquetaCortada.value.innerText = resaltado?.nombre ? `${resaltado.nombre}: ${elemento.dataset.conteo}` : '';
-  etiquetaCortada.value.style.left = `${clientX + 10}px`;
-  etiquetaCortada.value.style.top = `${clientY - 20}px`;
+  // etiquetaCortada.value.style.left = `${clientX + 10}px`;
+  // etiquetaCortada.value.style.top = `${clientY - 20}px`;
   etiquetaCortada.value.style.display = 'block';
 }
 
@@ -117,11 +126,28 @@ function ratonFuera() {
   etiquetaCortada.value.innerText = '';
   etiquetaCortada.value.style.display = 'none';
 }
+
+function actualizarPosRaton({ clientX, clientY }: MouseEvent) {
+  if (!etiquetaCortada.value) return;
+  etiquetaCortada.value.style.left = `${clientX + 10}px`;
+  etiquetaCortada.value.style.top = `${clientY - 20}px`;
+}
+
+const titulo = computed(() => {
+  if (!listaActual.value) return;
+  if (listaActual.value === filtroElegido.value || !filtroElegido.value.length) {
+    return nombresListas[listaActual.value];
+  }
+
+  if (!listaActual.value || !filtroElegido.value) return;
+
+  return `Relaciones entre "${nombresListas[filtroElegido.value as TiposNodo]}" y "${nombresListas[listaActual.value]}"`;
+});
 </script>
 
 <template>
   <div id="contenedorVistaGraficas">
-    <h2 v-if="listaActual">{{ nombresListas[listaActual] }}</h2>
+    <h2 v-if="listaActual">{{ titulo }}</h2>
 
     <div id="filtros">
       Filtrar:
@@ -147,7 +173,7 @@ function ratonFuera() {
       >
         <p class="leyenda">{{ listaVisible[j].nombre }}</p>
 
-        <div class="contenedorLineaCortada">
+        <div class="contenedorLineaCortada" @mousemove="actualizarPosRaton">
           <div
             v-for="(e, i) in elementos"
             @mouseenter="ratonEntra"
@@ -251,7 +277,8 @@ function ratonFuera() {
 .etiquetaCortada {
   display: none;
   position: fixed;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid black;
   padding: 0.2em 0.5em;
 }
 

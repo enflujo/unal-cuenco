@@ -110,7 +110,7 @@ function actualizarPosInfo(evento: MouseEvent) {
   width: 200px;
   top: 0;
   left: 0;
-  transform: translate(-100%, -50%);
+  transform: translate(-150%, -100%);
   pointer-events: none;
   padding: 0.6em;
 }

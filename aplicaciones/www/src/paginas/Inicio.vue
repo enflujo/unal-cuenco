@@ -15,7 +15,10 @@ onMounted(async () => {
 <template>
   <main>
     <div id="presentacion">
-      <h1>Proyecto UNAL - CUENCO</h1>
+      <!-- <h1>Proyecto UNAL - CUENCO</h1> -->
+
+      <img class="logo" src="/logo_cuenco.png" alt="Logo CUENCO: culturas en comunicación" />
+      <img class="icono" src="/icono_cuenco.webp" alt="Icono CUENCO" />
 
       <p>
         Un instituto nacional de investigación, innovación y política educativa siendo un espacio colaborativo inter y
@@ -53,6 +56,27 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @use '@/scss/constantes' as *;
+
+.icono,
+.logo {
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+.logo {
+  width: 60%;
+}
+
+.icono {
+  margin-top: -20px;
+  margin-bottom: 2em;
+  // width: ;
+}
+
+h1 {
+  text-align: center;
+}
 
 #presentacion {
   overflow: auto;
