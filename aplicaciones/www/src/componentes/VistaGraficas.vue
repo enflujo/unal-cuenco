@@ -3,7 +3,6 @@ import { computed, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import { convertirEscala } from '@enflujo/alquimia';
 import type {
   ElementoLista,
-  ListasColectivos,
   ListasPublicaciones,
   LlavesColectivos,
   LlavesPublicaciones,
@@ -118,8 +117,23 @@ function elegirFiltro(filtro: string) {
 
 function ratonEntra({ target, clientX, clientY }: MouseEvent) {
   const elemento = target as HTMLElement;
+  let resaltado;
+
+  if (paginaActual === 'colectivos') {
+    if (!cerebroDatos.listasColectivos) return;
+    resaltado = cerebroDatos.listasColectivos[`${filtroElegido.value as LlavesColectivos}`].find(
+      (e) => e.id === elemento.dataset.id
+    );
+  } else if (paginaActual === 'publicaciones') {
+    if (!cerebroDatos.listasPublicaciones) return;
+    resaltado = cerebroDatos.listasPublicaciones[`${filtroElegido.value as LlavesPublicaciones}`].find(
+      (e) => e.id === elemento.dataset.id
+    );
+  }
+
   if (!etiquetaCortada.value || !elemento.dataset.conteo) return;
-  etiquetaCortada.value.innerText = elemento.dataset.conteo;
+
+  etiquetaCortada.value.innerText = resaltado?.nombre ? resaltado.nombre : '';
   etiquetaCortada.value.style.left = `${clientX - 310}px`;
   etiquetaCortada.value.style.top = `${clientY - 270}px`;
   etiquetaCortada.value.style.display = 'block';
@@ -267,8 +281,6 @@ function ratonFuera() {
   position: absolute;
   background-color: white;
   padding: 0.2em 0.5em;
-  border-radius: 50%;
-  color: var(--azulOscuroCuenco);
 }
 
 .colombino {
