@@ -2,11 +2,12 @@
 // import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import { usarCerebroGeneral } from '@/cerebros/general';
-import { llavesRelacionesColectivos, nombresListas } from '@/utilidades/constantes';
+import { llavesRelacionesColectivos, llavesRelacionesPublicaciones, nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
 import { type Ref, ref, watch } from 'vue';
 import Dona from './Dona.vue';
-import type { DonaProcesada, IDona, TiposNodo } from '@/tipos';
+import type { DatosFicha, DonaProcesada, IDona, TiposNodo } from '@/tipos';
+import { redondearDecimal } from '@/utilidades/ayudas';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
@@ -15,7 +16,6 @@ const total = ref(0);
 const tituloTotal: Ref<string | null> = ref(null);
 const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
 const info: Ref<string | null> = ref(null);
-
 const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
 
 watch(datosFicha, (datos) => {
@@ -24,18 +24,23 @@ watch(datosFicha, (datos) => {
   tituloTotal.value = null;
   donas.value = [];
 
+  crearDonas(datos);
+});
+
+function crearDonas(datos: DatosFicha) {
+  const nuevasDonas: { tipo: TiposNodo; valores: IDona[] }[] = [];
+
   if (cerebroGeneral.paginaActual === 'colectivos') {
     llavesRelacionesColectivos.forEach((llave) => {
       const datosSeccion = datos[llave];
+
       if (datosSeccion) {
-        const total = datosSeccion.reduce((acumulado, actual) => {
-          return acumulado + actual.conteo;
-        }, 0);
+        const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
         const datosDona = datosSeccion.map((obj) => {
           return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
         });
 
-        donas.value.push({ tipo: llave, valores: datosDona });
+        nuevasDonas.push({ tipo: llave, valores: datosDona });
       }
     });
 
@@ -45,22 +50,37 @@ watch(datosFicha, (datos) => {
       tituloTotal.value = 'Total colectivos: ';
     }
   } else if (cerebroGeneral.paginaActual === 'publicaciones') {
+    llavesRelacionesPublicaciones.forEach((llave) => {
+      const datosSeccion = datos[llave];
+
+      if (datosSeccion) {
+        const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
+        const datosDona = datosSeccion.map((obj) => {
+          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
+        });
+
+        nuevasDonas.push({ tipo: llave, valores: datosDona });
+      }
+    });
+
     if (datos.tipo === 'publicaciones') {
     } else {
       total.value = datos.publicaciones ? datos.publicaciones.length : 0;
       tituloTotal.value = 'Total publicaciones: ';
     }
   }
-});
+  donas.value = nuevasDonas;
+}
 
 function mostrarInfo(trozo: DonaProcesada) {
-  info.value = `${trozo.nombre} (${trozo.porcentaje}%)`;
-  console.log(trozo);
+  info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
+}
+function esconderInfo() {
+  info.value = null;
 }
 
 function actualizarPosInfo(evento: MouseEvent) {
   if (!contenedorInfo.value) return;
-  console.log(evento);
   Object.assign(contenedorInfo.value.style, {
     top: `${evento.clientY}px`,
     left: `${evento.clientX}px`,
@@ -74,29 +94,42 @@ function actualizarPosInfo(evento: MouseEvent) {
       <p class="valorConteo">{{ tituloTotal }} {{ total }}</p>
     </div>
 
-    <section v-for="dona in donas" :key="`dona-${dona.tipo}`">
+    <section class="contenedorDona" v-for="dona in donas" :key="`dona-${dona.tipo}`">
       <h3>{{ nombresListas[dona.tipo] }}</h3>
 
-      <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" />
+      <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" />
     </section>
-    <div id="contenedorInfo" ref="contenedorInfo" v-html="info"></div>
   </div>
+  <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
 </template>
 
 <style lang="scss" scoped>
 #contenedorInfo {
-  position: absolute;
-  background-color: white;
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.8);
   width: 200px;
+  top: 0;
+  left: 0;
+  transform: translate(-100%, -50%);
+  pointer-events: none;
+  padding: 0.6em;
+}
+
+.contenedorDona {
+  padding: 0.6em;
+  text-align: center;
+  display: inline-block;
+  vertical-align: top;
+
+  h3 {
+    margin-bottom: 0;
+  }
 }
 
 .contenedorVisFicha {
   color: white;
   width: 50%;
   overflow: auto;
-  display: flex;
-  flex-wrap: wrap;
-  position: relative;
 }
 
 .fichaConteo {

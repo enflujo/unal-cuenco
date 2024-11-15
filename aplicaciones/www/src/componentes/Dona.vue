@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { DonaProcesada, IDona } from '@/tipos';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, toRefs, watch } from 'vue';
 
 interface Esquema {
   secciones: IDona[];
   mostrarInfo: (trozo: DonaProcesada) => void;
+  esconderInfo: () => void;
 }
 
 const props = defineProps<Esquema>();
+const { secciones } = toRefs(props);
 const valoresDona = ref<DonaProcesada[]>([]);
 const colores = [
   '#ff9999',
@@ -42,12 +44,17 @@ const colores = [
   '#cccccc',
 ];
 
-onMounted(() => {
+onMounted(actualizarDonas);
+watch(secciones, actualizarDonas);
+
+function actualizarDonas() {
   let ajusteAngulo = 0;
-  valoresDona.value = props.secciones.map((seccion) => {
-    return { ...seccion, ajuste: ajusteAngulo };
+  valoresDona.value = secciones.value.map((seccion) => {
+    const obj = { ...seccion, ajuste: ajusteAngulo };
+    ajusteAngulo -= seccion.porcentaje;
+    return obj;
   });
-});
+}
 </script>
 
 <template>
@@ -62,6 +69,7 @@ onMounted(() => {
         :stroke-dashoffset="trozo.ajuste"
         :stroke="colores[i]"
         @mouseenter="mostrarInfo(trozo)"
+        @mouseleave="esconderInfo"
       ></circle>
     </g>
   </svg>
@@ -69,7 +77,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .dona {
-  width: 100px;
+  width: 200px;
 }
 
 circle {
