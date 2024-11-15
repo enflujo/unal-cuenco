@@ -2,25 +2,41 @@
 // import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import { usarCerebroGeneral } from '@/cerebros/general';
-import { llavesRelacionesColectivos } from '@/utilidades/constantes';
+import { llavesRelacionesColectivos, nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
 import { type Ref, ref, watch } from 'vue';
 import Dona from './Dona.vue';
+import type { DonaProcesada, IDona, TiposNodo } from '@/tipos';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const { datosFicha } = storeToRefs(cerebroFicha);
 const total = ref(0);
 const tituloTotal: Ref<string | null> = ref(null);
+const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
+const info: Ref<string | null> = ref(null);
+
+const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
 
 watch(datosFicha, (datos) => {
   if (!datos) return;
 
   tituloTotal.value = null;
+  donas.value = [];
 
   if (cerebroGeneral.paginaActual === 'colectivos') {
     llavesRelacionesColectivos.forEach((llave) => {
-      console.log(llave, datos[llave]);
+      const datosSeccion = datos[llave];
+      if (datosSeccion) {
+        const total = datosSeccion.reduce((acumulado, actual) => {
+          return acumulado + actual.conteo;
+        }, 0);
+        const datosDona = datosSeccion.map((obj) => {
+          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
+        });
+
+        donas.value.push({ tipo: llave, valores: datosDona });
+      }
     });
 
     if (datos.tipo === 'colectivos') {
@@ -35,24 +51,52 @@ watch(datosFicha, (datos) => {
       tituloTotal.value = 'Total publicaciones: ';
     }
   }
-  console.log(datos);
 });
+
+function mostrarInfo(trozo: DonaProcesada) {
+  info.value = `${trozo.nombre} (${trozo.porcentaje}%)`;
+  console.log(trozo);
+}
+
+function actualizarPosInfo(evento: MouseEvent) {
+  if (!contenedorInfo.value) return;
+  console.log(evento);
+  Object.assign(contenedorInfo.value.style, {
+    top: `${evento.clientY}px`,
+    left: `${evento.clientX}px`,
+  });
+}
 </script>
 
 <template>
-  <div class="contenedorVisFicha">
+  <div class="contenedorVisFicha" @mousemove="actualizarPosInfo">
     <div class="fichaConteo" v-if="tituloTotal">
       <p class="valorConteo">{{ tituloTotal }} {{ total }}</p>
     </div>
 
-    <Dona :grosor="3" :secciones="[80, 10, 10]" />
+    <section v-for="dona in donas" :key="`dona-${dona.tipo}`">
+      <h3>{{ nombresListas[dona.tipo] }}</h3>
+
+      <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" />
+    </section>
+    <div id="contenedorInfo" ref="contenedorInfo" v-html="info"></div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+#contenedorInfo {
+  position: absolute;
+  background-color: white;
+  width: 200px;
+}
+
 .contenedorVisFicha {
   color: white;
   width: 50%;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
 }
 
 .fichaConteo {

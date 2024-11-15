@@ -82,3 +82,13 @@ export interface DatosFicha {
   colectivos?: ELementoFicha[];
   publicaciones?: ELementoFicha[];
 }
+
+export interface IDona {
+  nombre: string;
+  valor: number;
+  porcentaje: number;
+}
+
+export interface DonaProcesada extends IDona {
+  ajuste: number;
+}
