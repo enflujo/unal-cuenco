@@ -7,7 +7,7 @@ const cerebroGeneral = usarCerebroGeneral();
 const cerebroDatos = usarCerebroDatos();
 
 onMounted(async () => {
-  cerebroGeneral.paginaActual = 'inicio';
+  cerebroGeneral.paginaActual = 'colectivos';
   await cerebroDatos.cargarDatosColectivos();
 });
 </script>
