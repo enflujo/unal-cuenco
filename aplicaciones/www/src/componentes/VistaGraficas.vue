@@ -82,6 +82,9 @@ watch(listaElegida, (llaveLista) => {
   if (listaVisible.value) {
     valorMaximo.value = Math.max(...listaVisible.value.map((o) => o.conteo));
   }
+
+  filtroElegido.value = '';
+  filtrados = [];
 });
 
 onMounted(async () => {
@@ -113,13 +116,19 @@ function elegirFiltro(filtro: string) {
   });
 }
 
-function mouseEnter({ target, clientX, clientY }: MouseEvent) {
+function ratonEntra({ target, clientX, clientY }: MouseEvent) {
   const elemento = target as HTMLElement;
   if (!etiquetaCortada.value || !elemento.dataset.conteo) return;
   etiquetaCortada.value.innerText = elemento.dataset.conteo;
-  etiquetaCortada.value.style.left = `${clientX - 390}px`;
-  etiquetaCortada.value.style.top = `${clientY - 210}px`;
+  etiquetaCortada.value.style.left = `${clientX - 310}px`;
+  etiquetaCortada.value.style.top = `${clientY - 270}px`;
   etiquetaCortada.value.style.display = 'block';
+}
+
+function ratonFuera() {
+  if (!etiquetaCortada.value) return;
+  etiquetaCortada.value.innerText = '';
+  etiquetaCortada.value.style.display = 'none';
 }
 </script>
 
@@ -143,12 +152,19 @@ function mouseEnter({ target, clientX, clientY }: MouseEvent) {
 
     <div id="contenedorGrafica" v-if="listaVisible">
       <!-- Mostrar filtrados -->
-      <div v-if="listaVisible" v-for="(elementos, j) in filtrados" :v-on="(posicionIzq = 0)">
-        <p class="etiquetaFiltro" :style="`top: ${j * 4}%;`">{{ listaVisible[j].nombre }}</p>
+      <div
+        class="contenedorElemFiltrados"
+        v-if="listaVisible"
+        v-for="(elementos, j) in filtrados"
+        :v-on="(posicionIzq = 0)"
+      >
+        <p class="leyenda">{{ listaVisible[j].nombre }}</p>
 
-        <div v-for="(e, i) in elementos" class="contenedorElementos">
+        <div class="contenedorLineaCortada">
           <div
-            @mouseenter="mouseEnter"
+            v-for="(e, i) in elementos"
+            @mouseenter="ratonEntra"
+            @mouseleave="ratonFuera"
             class="lineaCortada"
             :v-on="
               i === 0
@@ -204,31 +220,24 @@ function mouseEnter({ target, clientX, clientY }: MouseEvent) {
 }
 
 #contenedorGrafica {
-  background-color: rgb(255, 255, 255);
-  width: 100%;
-  content-visibility: auto;
-  height: fit-content;
-  padding-bottom: 25em;
-  margin-bottom: 100px;
+  padding: 1em;
+  position: relative;
+  min-height: 700px;
+}
 
-  .contenedorElementos {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 0.5em;
-  }
-  .etiquetaCortada {
-    display: none;
-    position: absolute;
-    background-color: white;
-    padding: 0.2em;
-  }
+.contenedorElementos {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 0.5em;
 }
 
 .leyenda {
   margin: 0 1em 0 0;
   font-size: 0.7em;
   width: 5vw;
+  line-height: 0.8em;
+  height: fit-content;
 }
 
 .linea {
@@ -236,15 +245,30 @@ function mouseEnter({ target, clientX, clientY }: MouseEvent) {
   background-color: var(--azulOscuroCuenco);
 }
 
-.etiquetaFiltro {
-  position: absolute;
-  left: 0%;
+.contenedorElemFiltrados {
+  display: flex;
+  flex-direction: row;
+  height: fit-content;
+  margin-bottom: 0.7em;
+  align-items: center;
 }
 
+.contenedorLineaCortada {
+  display: flex;
+  width: 50vw;
+  margin-bottom: 0.5em;
+}
 .lineaCortada {
-  position: absolute;
   height: 8px;
-  margin-top: 2em;
+}
+
+.etiquetaCortada {
+  display: none;
+  position: absolute;
+  background-color: white;
+  padding: 0.2em 0.5em;
+  border-radius: 50%;
+  color: var(--azulOscuroCuenco);
 }
 
 .colombino {
