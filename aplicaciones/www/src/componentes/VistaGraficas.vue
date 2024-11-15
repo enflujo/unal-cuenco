@@ -209,7 +209,6 @@ function ratonFuera() {
 #contenedorGrafica {
   padding: 1em;
   position: relative;
-  min-height: 700px;
 }
 
 .contenedorElementos {
