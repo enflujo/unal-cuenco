@@ -34,6 +34,8 @@ export const crearUrlsEnTexto = (texto?: string) => {
   return textoProcesado;
 };
 
+export const redondearDecimal = (num: number): number => +(Math.round(+(num + 'e+2')) + 'e-2');
+
 export function ordenarRapido(lista: ElementoLista[], posIzq: number, posDer: number, largoLista: number) {
   let posicionIzqInicial = posIzq;
   let posicionDerInicial = posDer;

@@ -1,21 +1,143 @@
 <script setup lang="ts">
 // import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
+import { usarCerebroGeneral } from '@/cerebros/general';
+import { llavesRelacionesColectivos, llavesRelacionesPublicaciones, nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
-import { watch } from 'vue';
+import { type Ref, ref, watch } from 'vue';
+import Dona from './Dona.vue';
+import type { DatosFicha, DonaProcesada, IDona, TiposNodo } from '@/tipos';
+import { redondearDecimal } from '@/utilidades/ayudas';
 
-// const cerebroDatos = usarCerebroDatos();
+const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const { datosFicha } = storeToRefs(cerebroFicha);
+const total = ref(0);
+const tituloTotal: Ref<string | null> = ref(null);
+const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
+const info: Ref<string | null> = ref(null);
+const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
 
 watch(datosFicha, (datos) => {
   if (!datos) return;
-  if (datos.tipo) {
-  }
-  console.log(datos);
+
+  tituloTotal.value = null;
+  donas.value = [];
+
+  crearDonas(datos);
 });
+
+function crearDonas(datos: DatosFicha) {
+  const nuevasDonas: { tipo: TiposNodo; valores: IDona[] }[] = [];
+
+  if (cerebroGeneral.paginaActual === 'colectivos') {
+    llavesRelacionesColectivos.forEach((llave) => {
+      const datosSeccion = datos[llave];
+
+      if (datosSeccion) {
+        const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
+        const datosDona = datosSeccion.map((obj) => {
+          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
+        });
+
+        nuevasDonas.push({ tipo: llave, valores: datosDona });
+      }
+    });
+
+    if (datos.tipo === 'colectivos') {
+    } else {
+      total.value = datos.colectivos ? datos.colectivos.length : 0;
+      tituloTotal.value = 'Total colectivos: ';
+    }
+  } else if (cerebroGeneral.paginaActual === 'publicaciones') {
+    llavesRelacionesPublicaciones.forEach((llave) => {
+      const datosSeccion = datos[llave];
+
+      if (datosSeccion) {
+        const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
+        const datosDona = datosSeccion.map((obj) => {
+          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
+        });
+
+        nuevasDonas.push({ tipo: llave, valores: datosDona });
+      }
+    });
+
+    if (datos.tipo === 'publicaciones') {
+    } else {
+      total.value = datos.publicaciones ? datos.publicaciones.length : 0;
+      tituloTotal.value = 'Total publicaciones: ';
+    }
+  }
+  donas.value = nuevasDonas;
+}
+
+function mostrarInfo(trozo: DonaProcesada) {
+  info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
+}
+function esconderInfo() {
+  info.value = null;
+}
+
+function actualizarPosInfo(evento: MouseEvent) {
+  if (!contenedorInfo.value) return;
+  Object.assign(contenedorInfo.value.style, {
+    top: `${evento.clientY}px`,
+    left: `${evento.clientX}px`,
+  });
+}
 </script>
+
 <template>
-  <div></div>
+  <div class="contenedorVisFicha" @mousemove="actualizarPosInfo">
+    <div class="fichaConteo" v-if="tituloTotal">
+      <p class="valorConteo">{{ tituloTotal }} {{ total }}</p>
+    </div>
+
+    <section class="contenedorDona" v-for="dona in donas" :key="`dona-${dona.tipo}`">
+      <h3>{{ nombresListas[dona.tipo] }}</h3>
+
+      <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" />
+    </section>
+  </div>
+  <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
 </template>
-<style lang="scss" scoped></style>
+
+<style lang="scss" scoped>
+#contenedorInfo {
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 200px;
+  top: 0;
+  left: 0;
+  transform: translate(-100%, -50%);
+  pointer-events: none;
+  padding: 0.6em;
+}
+
+.contenedorDona {
+  padding: 0.6em;
+  text-align: center;
+  display: inline-block;
+  vertical-align: top;
+
+  h3 {
+    margin-bottom: 0;
+  }
+}
+
+.contenedorVisFicha {
+  color: white;
+  width: 50%;
+  overflow: auto;
+}
+
+.fichaConteo {
+  padding: 1rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  margin: 0.5rem;
+  font-weight: bold;
+  display: inline-block;
+}
+</style>
