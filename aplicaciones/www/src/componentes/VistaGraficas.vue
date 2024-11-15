@@ -13,6 +13,7 @@ import { storeToRefs } from 'pinia';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { nombresListas } from '@/utilidades/constantes';
+import { coloresFiltros } from '@/utilidades/constantes';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
 const cerebroDatos = usarCerebroDatos();
@@ -22,6 +23,7 @@ const listaVisible: Ref<ElementoLista[] | null> = ref(null);
 const valorMaximo = ref(0);
 const listas: Ref<ListasColectivos | ListasPublicaciones | null> = ref(null);
 const listaActual: Ref<LlavesColectivos | LlavesPublicaciones | null> = ref(null);
+const etiquetaCortada: Ref<HTMLDivElement | null> = ref(null);
 const listaFiltros = computed<{ llave: LlavesColectivos | LlavesPublicaciones; nombre: string }[] | null>(() => {
   if (listas.value) {
     return (Object.keys(listas.value) as (LlavesColectivos | LlavesPublicaciones)[])
@@ -34,6 +36,7 @@ const listaFiltros = computed<{ llave: LlavesColectivos | LlavesPublicaciones; n
 let filtrados: Relacion[][] = [];
 
 const filtroElegido: Ref<string> = ref('sedes');
+let posicionIzq = 0;
 
 watch(listaElegida, (llaveLista) => {
   if (!llaveLista || llaveLista === listaActual.value) return;
@@ -51,6 +54,9 @@ watch(listaElegida, (llaveLista) => {
   if (listaVisible.value) {
     valorMaximo.value = Math.max(...listaVisible.value.map((o) => o.conteo));
   }
+
+  filtroElegido.value = '';
+  filtrados = [];
 });
 
 onMounted(async () => {
@@ -71,16 +77,45 @@ onUnmounted(() => {
 });
 
 function elegirFiltro(filtro: string) {
+  filtroElegido.value = filtro;
   if (listaActual.value === filtro || !listaVisible.value) return;
   filtrados = [];
   listaVisible.value.forEach((elementoElegido) => {
     const filtrado = elementoElegido.relaciones.filter((relacion) => relacion.tipo === `${filtroElegido.value}`);
-
     filtrado.sort((a, b) => b.conteo - a.conteo);
+
     filtrados.push(filtrado);
   });
+}
 
-  filtroElegido.value = filtro;
+function ratonEntra({ target, clientX, clientY }: MouseEvent) {
+  const elemento = target as HTMLElement;
+  let resaltado;
+
+  if (paginaActual === 'colectivos') {
+    if (!cerebroDatos.listasColectivos) return;
+    resaltado = cerebroDatos.listasColectivos[`${filtroElegido.value as LlavesColectivos}`].find(
+      (e) => e.id === elemento.dataset.id
+    );
+  } else if (paginaActual === 'publicaciones') {
+    if (!cerebroDatos.listasPublicaciones) return;
+    resaltado = cerebroDatos.listasPublicaciones[`${filtroElegido.value as LlavesPublicaciones}`].find(
+      (e) => e.id === elemento.dataset.id
+    );
+  }
+
+  if (!etiquetaCortada.value || !elemento.dataset.conteo) return;
+
+  etiquetaCortada.value.innerText = resaltado?.nombre ? `${resaltado.nombre}: ${elemento.dataset.conteo}` : '';
+  etiquetaCortada.value.style.left = `${clientX + 10}px`;
+  etiquetaCortada.value.style.top = `${clientY - 20}px`;
+  etiquetaCortada.value.style.display = 'block';
+}
+
+function ratonFuera() {
+  if (!etiquetaCortada.value) return;
+  etiquetaCortada.value.innerText = '';
+  etiquetaCortada.value.style.display = 'none';
 }
 </script>
 
@@ -95,21 +130,39 @@ function elegirFiltro(filtro: string) {
         v-if="listas"
         v-for="obj in listaFiltros"
         class="botonFiltro"
-        :class="filtroElegido === obj.llave ? 'seleccionado' : ''"
+        :class="filtroElegido === obj.llave ? 'seleccionado' : listaActual === obj.llave ? 'inactivo' : ''"
         @click="elegirFiltro(obj.llave)"
       >
         {{ obj.nombre }}
       </div>
     </div>
 
-    <!-- Mostrar filtrados -->
-    <div v-if="listaVisible" v-for="(elementos, i) in filtrados">
-      {{ listaVisible[i].nombre }}
-      <div v-for="e in elementos">{{ e.id }}: {{ e.conteo }}</div>
-    </div>
-
     <div id="contenedorGrafica" v-if="listaVisible">
-      <div class="contenedorElementos" v-for="(elem, i) in listaVisible">
+      <!-- Mostrar filtrados -->
+      <div
+        class="contenedorElemFiltrados"
+        v-if="listaVisible"
+        v-for="(elementos, j) in filtrados"
+        :v-on="(posicionIzq = 0)"
+      >
+        <p class="leyenda">{{ listaVisible[j].nombre }}</p>
+
+        <div class="contenedorLineaCortada">
+          <div
+            v-for="(e, i) in elementos"
+            @mouseenter="ratonEntra"
+            @mouseout="ratonFuera"
+            class="lineaCortada"
+            :style="`width:${convertirEscala(e.conteo, 0, valorMaximo, 0, 70)}%; top: ${j * 4}%; left: ${i === 0 ? 0 : posicionIzq}%; background-color:${coloresFiltros[+e.id] ? coloresFiltros[+e.id] : 'pink'}`"
+            :data-conteo="`${e.conteo}`"
+            :data-id="`${e.id}`"
+          ></div>
+        </div>
+      </div>
+      <div class="etiquetaCortada" ref="etiquetaCortada"></div>
+
+      <!--Líneas no filtradas-->
+      <div v-if="!filtrados.length" class="contenedorElementos" v-for="(elem, i) in listaVisible">
         <p class="leyenda" :style="`top:${convertirEscala(i, 0, listaVisible.length, 0, 70)}%`">
           {{ elem.nombre }}
         </p>
@@ -132,6 +185,7 @@ function elegirFiltro(filtro: string) {
 #filtros {
   display: flex;
   align-items: center;
+  opacity: 1;
 
   .botonFiltro {
     margin: 0.5em;
@@ -141,6 +195,10 @@ function elegirFiltro(filtro: string) {
     &.seleccionado {
       border: 1px black solid;
     }
+
+    &.inactivo {
+      opacity: 0.2;
+    }
   }
 }
 
@@ -149,27 +207,52 @@ function elegirFiltro(filtro: string) {
 }
 
 #contenedorGrafica {
-  background-color: rgb(255, 255, 255);
-  width: 100%;
-  content-visibility: auto;
+  padding: 1em;
+  position: relative;
+}
 
-  .contenedorElementos {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 0.5em;
-  }
+.contenedorElementos {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 0.5em;
 }
 
 .leyenda {
   margin: 0 1em 0 0;
   font-size: 0.7em;
   width: 5vw;
+  line-height: 0.8em;
+  height: fit-content;
 }
 
 .linea {
   height: 1px;
   background-color: var(--azulOscuroCuenco);
+}
+
+.contenedorElemFiltrados {
+  display: flex;
+  flex-direction: row;
+  height: fit-content;
+  margin-bottom: 0.7em;
+  align-items: center;
+}
+
+.contenedorLineaCortada {
+  display: flex;
+  width: 50vw;
+  margin-bottom: 0.5em;
+}
+.lineaCortada {
+  height: 8px;
+}
+
+.etiquetaCortada {
+  display: none;
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 0.2em 0.5em;
 }
 
 .colombino {

@@ -39,7 +39,7 @@ function abrirElemento(evento: MouseEvent, i: string, id: TiposNodo) {
   </section>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" global>
 .lista {
   .titulo {
     cursor: pointer;
