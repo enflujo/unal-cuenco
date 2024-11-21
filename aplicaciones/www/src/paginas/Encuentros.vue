@@ -4,7 +4,7 @@ import { usarCerebroGeneral } from '@/cerebros/general';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { onMounted, onUnmounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { EncuentroCaracterizacionConteo, LlavesCaracterizacion } from '@/tipos/compartidos';
+import { EncuentroCaracterizacionConteo, LlavesCaracterizacion, LlavesEncuentro } from '@/tipos/compartidos';
 import { DonaProcesada, IDona, TiposNodo } from '@/tipos';
 import { nombresListasCaracterizacion } from '@/utilidades/constantes';
 import Dona from '@/componentes/Dona.vue';
@@ -19,7 +19,7 @@ const { listasCaracterizacion, encuentrosCaracterizacionConteo } = storeToRefs(c
 
 const info: Ref<string | null> = ref(null);
 
-/* 
+/*
 function crearDonas(datos: EncuentroCaracterizacionConteo) {
   const nuevasDonas: { tipo: TiposNodo; valores: IDona[] }[] = [];
   let datosSeccion: {sedes:{ slug: string; conteo: number }[] | PersonaCaracterizacion[] | undefined = [];
@@ -48,22 +48,45 @@ function crearDonas(datos: EncuentroCaracterizacionConteo) {
 }
 } */
 
-function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
+async function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
   const nuevasDonas: {
-    tipo: LlavesCaracterizacion;
+    tipo: LlavesEncuentro;
     valores: IDona[];
   }[][] = [];
+
   if (!datos) return;
-  datos.forEach((encuentro) => {
+
+  datos.forEach((encuentro, i) => {
+    let total = 0;
+    let valores: IDona[] = [];
+
+    if (!encuentro.sedes) return;
+
+    // calcular el total para sacar el porcentaje de cada elemento
+    encuentro.sedes.forEach((sede) => {
+      let valorTotal = total + sede.conteo;
+      total = valorTotal;
+    });
+
+    encuentro.sedes.forEach((sede) => {
+      const valor = {
+        nombre: sede.slug ? sede.slug : 'no slug',
+        valor: sede.conteo,
+        porcentaje: (sede.conteo * 100) / total,
+      };
+      valores.push(valor);
+    });
     console.log(encuentro);
+    nuevasDonas.push([{ tipo: 'sedes', valores: valores }]);
   });
+  // console.log(nuevasDonas);
 }
 
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'encuentros';
   await cerebroDatos.cargarListasCaracterizacion();
   await cerebroDatos.cargarDatosCaracterizacion();
-  crearDonas(encuentrosCaracterizacionConteo.value);
+  await crearDonas(encuentrosCaracterizacionConteo.value);
 });
 
 onUnmounted(() => {
