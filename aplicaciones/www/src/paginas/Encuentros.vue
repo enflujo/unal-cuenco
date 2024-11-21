@@ -10,7 +10,7 @@ import { nombresListasCaracterizacion } from '@/utilidades/constantes';
 import Dona from '@/componentes/Dona.vue';
 import { redondearDecimal } from '@/utilidades/ayudas';
 import { llavesEncuentro } from '../utilidades/constantes';
-const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
+//const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
@@ -48,6 +48,8 @@ function crearDonas(datos: EncuentroCaracterizacionConteo) {
   donas.value = nuevasDonas;
 }
 } */
+
+let donas: { tipo: LlavesEncuentro; valores: IDona[] }[][] = [];
 
 async function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
   const nuevasDonas: {
@@ -88,6 +90,7 @@ async function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
       }
     });
     //  console.log(nuevasDonas);
+    donas = nuevasDonas;
   });
 }
 
@@ -108,31 +111,6 @@ function mostrarInfo(trozo: DonaProcesada) {
 function esconderInfo() {
   info.value = null;
 }
-
-const donasPrueba: {
-  tipo: LlavesCaracterizacion;
-  valores: IDona[];
-}[][] = [
-  [
-    {
-      tipo: 'sedes',
-      valores: [
-        { nombre: 'Bogotá', valor: 4, porcentaje: (4 * 100) / 9 },
-        { nombre: 'Manizales', valor: 3, porcentaje: (3 * 100) / 9 },
-        { nombre: 'Palmira', valor: 1, porcentaje: (1 * 100) / 9 },
-        { nombre: 'Tumaco', valor: 1, porcentaje: (1 * 100) / 9 },
-      ],
-    },
-    {
-      tipo: 'roles',
-      valores: [
-        { nombre: 'docente', valor: 7, porcentaje: (7 * 100) / 9 },
-        { nombre: 'egresado', valor: 1, porcentaje: (1 * 100) / 9 },
-        { nombre: 'administrativo', valor: 1, porcentaje: (1 * 100) / 9 },
-      ],
-    },
-  ],
-];
 </script>
 
 <template>
@@ -143,25 +121,23 @@ const donasPrueba: {
       <div>
         <h2>Caracterización por encuentro</h2>
 
-        <li v-for="encuentro in encuentrosCaracterizacionConteo">
+        <li v-for="(encuentro, i) in encuentrosCaracterizacionConteo">
           {{ encuentro?.numero }}:
 
-          <section class="contenedorDona" v-for="dona in donasPrueba[0]" :key="`dona-${dona.tipo}`">
-            <h3>{{ nombresListasCaracterizacion[dona.tipo] }}</h3>
+          <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
+            <h3>{{ dona.tipo }}</h3>
 
             <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" />
+            <ul v-for="valor in dona.valores">
+              {{
+                valor.nombre
+              }}:
+              {{
+                Math.ceil(valor.porcentaje)
+              }}
+            </ul>
           </section>
-
-          <ul v-for="sede in encuentro?.sedes">
-            {{
-              sede.slug
-            }}:
-            {{
-              sede.conteo
-            }}
-          </ul>
         </li>
-        */
       </div>
       <div>
         <h2>Caracterización total</h2>
