@@ -9,6 +9,7 @@ import { DonaProcesada, IDona, TiposNodo } from '@/tipos';
 import { nombresListasCaracterizacion } from '@/utilidades/constantes';
 import Dona from '@/componentes/Dona.vue';
 import { redondearDecimal } from '@/utilidades/ayudas';
+import { llavesEncuentro } from '../utilidades/constantes';
 const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
 
 const cerebroGeneral = usarCerebroGeneral();
@@ -56,30 +57,38 @@ async function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
 
   if (!datos) return;
 
-  datos.forEach((encuentro, i) => {
-    let total = 0;
-    let valores: IDona[] = [];
-
+  datos.forEach((encuentro) => {
     if (!encuentro.sedes) return;
 
-    // calcular el total para sacar el porcentaje de cada elemento
-    encuentro.sedes.forEach((sede) => {
-      let valorTotal = total + sede.conteo;
-      total = valorTotal;
-    });
+    let datosSeccion: { slug: string; conteo: number }[] | undefined = [];
 
-    encuentro.sedes.forEach((sede) => {
-      const valor = {
-        nombre: sede.slug ? sede.slug : 'no slug',
-        valor: sede.conteo,
-        porcentaje: (sede.conteo * 100) / total,
-      };
-      valores.push(valor);
+    // Crear array de datos para donas por cada llave
+    llavesEncuentro.forEach((llave: LlavesEncuentro) => {
+      let total = 0;
+      let valores: IDona[] = [];
+      if (llave !== 'id' && llave !== 'numero') {
+        datosSeccion = encuentro[llave];
+
+        if (datosSeccion) {
+          datosSeccion.forEach((elemento) => {
+            let valorTotal = total + elemento.conteo;
+            total = valorTotal;
+          });
+
+          datosSeccion.forEach((elemento) => {
+            const valor = {
+              nombre: elemento.slug ? elemento.slug : 'no slug',
+              valor: elemento.conteo,
+              porcentaje: (elemento.conteo * 100) / total,
+            };
+            valores.push(valor);
+          });
+        }
+        nuevasDonas.push([{ tipo: llave, valores: valores }]);
+      }
     });
-    console.log(encuentro);
-    nuevasDonas.push([{ tipo: 'sedes', valores: valores }]);
+    //  console.log(nuevasDonas);
   });
-  // console.log(nuevasDonas);
 }
 
 onMounted(async () => {

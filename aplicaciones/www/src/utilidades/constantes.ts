@@ -43,7 +43,7 @@ export const llavesRelacionesColectivos: LlavesColectivos[] = [
   'indicadores',
 ];
 
-export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'personas', 'tiposSede', 'sedes', 'roles'];
+export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'cargos', 'tiposSede', 'sedes', 'roles'];
 
 export const coloresFiltros: string[] = [
   '#3949a4',
