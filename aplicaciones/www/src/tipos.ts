@@ -95,6 +95,7 @@ export interface IDona {
   nombre: string;
   valor: number;
   porcentaje: number;
+  color: string;
 }
 
 export interface DonaProcesada extends IDona {

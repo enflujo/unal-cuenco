@@ -2,7 +2,12 @@
 // import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import { usarCerebroGeneral } from '@/cerebros/general';
-import { llavesRelacionesColectivos, llavesRelacionesPublicaciones, nombresListas } from '@/utilidades/constantes';
+import {
+  colores,
+  llavesRelacionesColectivos,
+  llavesRelacionesPublicaciones,
+  nombresListas,
+} from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
 import { type Ref, ref, watch } from 'vue';
 import Dona from './Dona.vue';
@@ -36,15 +41,13 @@ function crearDonas(datos: DatosFicha) {
 
       if (datosSeccion) {
         const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
-        const datosDona = datosSeccion.map((obj) => {
-          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
+        const datosDona = datosSeccion.map((obj, i) => {
+          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100, color: colores[i] };
         });
 
         nuevasDonas.push({ tipo: llave, valores: datosDona });
       }
     });
-
-    console.log(nuevasDonas);
 
     if (datos.tipo === 'colectivos') {
     } else {
@@ -57,8 +60,8 @@ function crearDonas(datos: DatosFicha) {
 
       if (datosSeccion) {
         const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
-        const datosDona = datosSeccion.map((obj) => {
-          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
+        const datosDona = datosSeccion.map((obj, i) => {
+          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100, color: colores[i] };
         });
 
         nuevasDonas.push({ tipo: llave, valores: datosDona });

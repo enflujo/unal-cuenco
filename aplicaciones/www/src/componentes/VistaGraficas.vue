@@ -13,7 +13,7 @@ import { storeToRefs } from 'pinia';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { nombresListas } from '@/utilidades/constantes';
-import { coloresFiltros } from '@/utilidades/constantes';
+import { colores } from '@/utilidades/constantes';
 import { TiposNodo } from '@/tipos';
 
 // Pasarle como prop en qué página estamos (colectivos o publicaciones) para que cargue los datos de las listas correspondientes
@@ -179,7 +179,7 @@ const titulo = computed(() => {
             @mouseenter="ratonEntra"
             @mouseout="ratonFuera"
             class="lineaCortada"
-            :style="`width:${convertirEscala(e.conteo, 0, valorMaximo, 0, 70)}%; top: ${j * 4}%; left: ${i === 0 ? 0 : posicionIzq}%; background-color:${coloresFiltros[+e.id] ? coloresFiltros[+e.id] : 'pink'}`"
+            :style="`width:${convertirEscala(e.conteo, 0, valorMaximo, 0, 70)}%; top: ${j * 4}%; left: ${i === 0 ? 0 : posicionIzq}%; background-color:${colores[+e.id] ? colores[+e.id] : 'pink'}`"
             :data-conteo="`${e.conteo}`"
             :data-id="`${e.id}`"
           ></div>

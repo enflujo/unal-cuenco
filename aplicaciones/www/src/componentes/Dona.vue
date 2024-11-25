@@ -11,47 +11,17 @@ interface Esquema {
 const props = defineProps<Esquema>();
 const { secciones } = toRefs(props);
 const valoresDona = ref<DonaProcesada[]>([]);
-const colores = [
-  '#ff9999',
-  '#99ff99',
-  '#9999ff',
-  '#cc99ff',
-  '#ff99cc',
-  '#9999cc',
-  '#ff9999',
-  '#99ffcc',
-  '#99ccff',
-  '#cc99cc',
-  '#ffccff',
-  '#ccccff',
-  '#ffcccc',
-  '#ccffcc',
-  '#ccccff',
-  '#e6ccff',
-  '#ffccf2',
-  '#cccccc',
-  '#ffcccc',
-  '#ccffcc',
-  '#99ccff',
-  '#cc99ff',
-  '#ffccff',
-  '#ffcc99',
-  '#ffcc66',
-  '#ccffcc',
-  '#ccccff',
-  '#e6ccff',
-  '#ffccf2',
-  '#cccccc',
-];
+import { colores } from '@/utilidades/constantes';
 
 onMounted(actualizarDonas);
 watch(secciones, actualizarDonas);
 
 function actualizarDonas() {
   let ajusteAngulo = 0;
-  valoresDona.value = secciones.value.map((seccion) => {
-    const obj = { ...seccion, ajuste: ajusteAngulo };
+  valoresDona.value = secciones.value.map((seccion, i) => {
+    const obj = { ...seccion, ajuste: ajusteAngulo, color: colores[i] };
     ajusteAngulo -= seccion.porcentaje;
+
     return obj;
   });
 }
@@ -67,10 +37,12 @@ function actualizarDonas() {
         r="16"
         :stroke-dasharray="`${trozo.porcentaje} 100`"
         :stroke-dashoffset="trozo.ajuste"
-        :stroke="colores[i]"
+        :stroke="trozo.color"
+        :data-color="colores[i]"
         @mouseenter="mostrarInfo(trozo)"
         @mouseleave="esconderInfo"
       ></circle>
+      <circle cx="25" cy="25" r="14" fill="#000000"></circle>
     </g>
   </svg>
 </template>

@@ -8,7 +8,7 @@ import { EncuentroCaracterizacionConteo, LlavesCaracterizacion, LlavesEncuentro 
 import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { redondearDecimal } from '@/utilidades/ayudas';
-import { llavesEncuentro } from '../utilidades/constantes';
+import { colores, llavesEncuentro } from '../utilidades/constantes';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
@@ -17,6 +17,7 @@ const cerebroDatos = usarCerebroDatos();
 const { encuentrosCaracterizacionConteo } = storeToRefs(cerebroDatos);
 
 const info: Ref<string | null> = ref(null);
+const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
 
 let donas: { tipo?: LlavesEncuentro; valores?: IDona[] }[][] = [];
 
@@ -48,11 +49,12 @@ function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
             total = valorTotal;
           });
 
-          datosSeccion.forEach((elemento) => {
+          datosSeccion.forEach((elemento, i) => {
             const valor = {
               nombre: elemento.nombre,
               valor: elemento.conteo,
               porcentaje: Math.ceil((elemento.conteo * 100) / total),
+              color: colores[i],
             };
             valores.push(valor);
           });
@@ -95,31 +97,34 @@ function primeraMayuscula(texto: string | undefined) {
 <template>
   <main>
     <div id="contenedorEncuentros">
-      <h1>Encuentros</h1>
+      <h1>Caracterización por encuentro</h1>
 
       <div>
-        <h2>Caracterización por encuentro</h2>
-
         <li class="encuentro" v-for="(encuentro, i) in encuentrosCaracterizacionConteo">
-          <h3>{{ encuentro?.numero }}:</h3>
+          <h2>{{ encuentro?.numero }}:</h2>
 
-          <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
-            <h3>{{ dona.tipo !== 'tiposSede' ? primeraMayuscula(dona.tipo) : 'Tipos de sede' }}</h3>
-            <Dona
-              :mostrarInfo="mostrarInfo"
-              :secciones="dona.valores ? dona.valores : []"
-              :esconderInfo="esconderInfo"
-            />
-            <ul v-for="valor in dona.valores">
-              {{
-                valor.nombre
-              }}:
-              {{
-                Math.ceil(valor.porcentaje)
-              }}
-            </ul>
-          </section>
+          <div class="donas">
+            <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
+              <h3>{{ dona.tipo !== 'tiposSede' ? primeraMayuscula(dona.tipo) : 'Tipos de sede' }}</h3>
+              <div class="contenidoDona">
+                <Dona
+                  :mostrarInfo="mostrarInfo"
+                  :secciones="dona.valores ? dona.valores : []"
+                  :esconderInfo="esconderInfo"
+                />
+                <div class="contenedorLeyendas">
+                  <ul class="leyendaDona" v-for="valor in dona.valores">
+                    <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
+                    <p class="textoLeyenda">
+                      {{ valor.nombre }}: {{ Math.ceil(valor.porcentaje) }}% ({{ valor.valor }})
+                    </p>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
         </li>
+        <!--    <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div> -->
       </div>
       <div>
         <!-- <h2>Caracterización total</h2>
@@ -137,8 +142,59 @@ function primeraMayuscula(texto: string | undefined) {
 </template>
 
 <style lang="scss" scoped>
+#contenedorInfo {
+  position: fixed;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 200px;
+  top: 0;
+  left: 0;
+  //transform: translate(-150%, -100%);
+  pointer-events: none;
+  padding: 0.6em;
+}
+
+.donas {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.contenedorDona {
+  flex-basis: 50%;
+}
+
+.contenidoDona {
+  display: flex;
+  align-items: center;
+
+  .dona {
+    width: 250px;
+  }
+
+  .contenedorLeyendas {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8em;
+  }
+  .leyendaDona {
+    display: flex;
+    align-items: baseline;
+
+    .textoLeyenda {
+      max-width: 15vw;
+      margin: 0;
+    }
+  }
+  .codigoColor {
+    width: 10px;
+    height: 10px;
+    display: block;
+    border-radius: 50%;
+    margin-right: 0.5em;
+  }
+}
+
 #contenedorEncuentros {
-  width: 70vw;
+  width: 80vw;
   margin-left: 10vw;
   margin-top: 5vw;
 }
