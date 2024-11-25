@@ -13,7 +13,7 @@ export interface ElementoLista {
 }
 
 export interface Relacion {
-  tipo: keyof ListasPublicaciones | keyof ListasColectivos;
+  tipo: keyof ListasPublicaciones | keyof ListasColectivos | keyof ListasCaracterizacion;
   conteo: number;
   id: string;
 }
@@ -100,10 +100,10 @@ export interface EncuentroCaracterizacionConteo {
   id: string;
   numero?: string;
   personas?: PersonaCaracterizacion[];
-  sedes?: { slug: string; conteo: number }[];
-  tiposSede?: { slug: string; conteo: number }[];
-  roles?: { slug: string; conteo: number }[];
-  cargos?: { slug: string; conteo: number }[];
+  sedes?: { slug: string; conteo: number; nombre: string }[];
+  tiposSede?: { slug: string; conteo: number; nombre: string }[];
+  roles?: { slug: string; conteo: number; nombre: string }[];
+  cargos?: { slug: string; conteo: number; nombre: string }[];
 }
 
 export interface OpcionBuscadorDatos {

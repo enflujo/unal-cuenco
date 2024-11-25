@@ -32,7 +32,7 @@ function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
     if (!encuentro.sedes) return;
     let numeroEncuentro = encuentro.id;
 
-    let datosSeccion: { slug: string; conteo: number }[] | undefined = [];
+    let datosSeccion: { slug: string; conteo: number; nombre: string }[] | undefined = [];
     nuevasDonas.push([]);
 
     // Crear array de datos para donas por cada llave
@@ -50,7 +50,7 @@ function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
 
           datosSeccion.forEach((elemento) => {
             const valor = {
-              nombre: elemento.slug ? elemento.slug : 'no slug',
+              nombre: elemento.nombre,
               valor: elemento.conteo,
               porcentaje: Math.ceil((elemento.conteo * 100) / total),
             };
@@ -86,6 +86,10 @@ function mostrarInfo(trozo: DonaProcesada) {
 function esconderInfo() {
   info.value = null;
 }
+
+function primeraMayuscula(texto: string | undefined) {
+  return String(texto).charAt(0).toUpperCase() + String(texto).slice(1);
+}
 </script>
 
 <template>
@@ -100,7 +104,7 @@ function esconderInfo() {
           <h3>{{ encuentro?.numero }}:</h3>
 
           <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
-            <h3>{{ dona.tipo }}</h3>
+            <h3>{{ dona.tipo !== 'tiposSede' ? primeraMayuscula(dona.tipo) : 'Tipos de sede' }}</h3>
             <Dona
               :mostrarInfo="mostrarInfo"
               :secciones="dona.valores ? dona.valores : []"
