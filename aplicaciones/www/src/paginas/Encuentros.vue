@@ -5,64 +5,35 @@ import { usarCerebroDatos } from '@/cerebros/datos';
 import { onMounted, onUnmounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { EncuentroCaracterizacionConteo, LlavesCaracterizacion, LlavesEncuentro } from '@/tipos/compartidos';
-import { DonaProcesada, IDona, TiposNodo } from '@/tipos';
-import { nombresListasCaracterizacion } from '@/utilidades/constantes';
+import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { redondearDecimal } from '@/utilidades/ayudas';
 import { llavesEncuentro } from '../utilidades/constantes';
-//const donas: Ref<{ tipo: TiposNodo; valores: IDona[] }[]> = ref([]);
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const cerebroDatos = usarCerebroDatos();
 
-const { listasCaracterizacion, encuentrosCaracterizacionConteo } = storeToRefs(cerebroDatos);
+const { encuentrosCaracterizacionConteo } = storeToRefs(cerebroDatos);
 
 const info: Ref<string | null> = ref(null);
 
-/*
-function crearDonas(datos: EncuentroCaracterizacionConteo) {
-  const nuevasDonas: { tipo: TiposNodo; valores: IDona[] }[] = [];
-  let datosSeccion: {sedes:{ slug: string; conteo: number }[] | PersonaCaracterizacion[] | undefined = [];
-  llavesEncuentro.forEach((llave: LlavesEncuentro) => {
-    if (llave !== 'id' && llave !== 'numero') {
-      datosSeccion = datos[llave];
-    }
+let donas: { tipo?: LlavesEncuentro; valores?: IDona[] }[][] = [];
 
-    if (datosSeccion) {
-      const total = datosSeccion.sedes?.reduce((acumulado: number, actual) => acumulado + actual.conteo, 0);
-      const datosDona = datosSeccion.sedes?.map((obj, i) => {
-        return { nombre: obj.slug, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100 };
-      });
-
-      nuevasDonas.push({ tipo: llave, valores: datosDona });
-    }
-  });
-
-  if (datos.tipo === 'colectivos') {
-  } else {
-    total.value = datos.colectivos ? datos.colectivos.length : 0;
-    tituloTotal.value = 'Total colectivos: ';
-  }
-
-  donas.value = nuevasDonas;
-}
-} */
-
-let donas: { tipo: LlavesEncuentro; valores: IDona[] }[][] = [];
-
-async function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
+function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
   const nuevasDonas: {
-    tipo: LlavesEncuentro;
-    valores: IDona[];
+    tipo?: LlavesEncuentro;
+    valores?: IDona[];
   }[][] = [];
 
   if (!datos) return;
 
   datos.forEach((encuentro) => {
     if (!encuentro.sedes) return;
+    let numeroEncuentro = encuentro.id;
 
     let datosSeccion: { slug: string; conteo: number }[] | undefined = [];
+    nuevasDonas.push([]);
 
     // Crear array de datos para donas por cada llave
     llavesEncuentro.forEach((llave: LlavesEncuentro) => {
@@ -81,24 +52,28 @@ async function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
             const valor = {
               nombre: elemento.slug ? elemento.slug : 'no slug',
               valor: elemento.conteo,
-              porcentaje: (elemento.conteo * 100) / total,
+              porcentaje: Math.ceil((elemento.conteo * 100) / total),
             };
             valores.push(valor);
           });
         }
-        nuevasDonas.push([{ tipo: llave, valores: valores }]);
+        nuevasDonas[+numeroEncuentro - 1].push({ tipo: llave, valores: valores });
       }
     });
-    //  console.log(nuevasDonas);
+
     donas = nuevasDonas;
   });
 }
+
+// Observar los datos para pintar las donas
+watch(encuentrosCaracterizacionConteo, (datos) => {
+  crearDonas(datos);
+});
 
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'encuentros';
   await cerebroDatos.cargarListasCaracterizacion();
   await cerebroDatos.cargarDatosCaracterizacion();
-  await crearDonas(encuentrosCaracterizacionConteo.value);
 });
 
 onUnmounted(() => {
@@ -121,13 +96,16 @@ function esconderInfo() {
       <div>
         <h2>Caracterización por encuentro</h2>
 
-        <li v-for="(encuentro, i) in encuentrosCaracterizacionConteo">
-          {{ encuentro?.numero }}:
+        <li class="encuentro" v-for="(encuentro, i) in encuentrosCaracterizacionConteo">
+          <h3>{{ encuentro?.numero }}:</h3>
 
           <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
             <h3>{{ dona.tipo }}</h3>
-
-            <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" />
+            <Dona
+              :mostrarInfo="mostrarInfo"
+              :secciones="dona.valores ? dona.valores : []"
+              :esconderInfo="esconderInfo"
+            />
             <ul v-for="valor in dona.valores">
               {{
                 valor.nombre
@@ -140,7 +118,7 @@ function esconderInfo() {
         </li>
       </div>
       <div>
-        <h2>Caracterización total</h2>
+        <!-- <h2>Caracterización total</h2>
         <h3>Asistencia total por sede:</h3>
         <li v-for="lista in listasCaracterizacion?.sedes">{{ lista.nombre }}: {{ lista.conteo }}</li>
 
@@ -148,7 +126,7 @@ function esconderInfo() {
         <li v-for="lista in listasCaracterizacion?.roles">{{ lista.nombre }}: {{ lista.conteo }}</li>
 
         <h3>Asistencia total por cargo:</h3>
-        <li v-for="lista in listasCaracterizacion?.cargos">{{ lista.nombre }}: {{ lista.conteo }}</li>
+        <li v-for="lista in listasCaracterizacion?.cargos">{{ lista.nombre }}: {{ lista.conteo }}</li> -->
       </div>
     </div>
   </main>
@@ -159,5 +137,9 @@ function esconderInfo() {
   width: 70vw;
   margin-left: 10vw;
   margin-top: 5vw;
+}
+
+.encuentro {
+  list-style: none;
 }
 </style>
