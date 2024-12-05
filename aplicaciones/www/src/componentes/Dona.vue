@@ -42,7 +42,7 @@ function actualizarDonas() {
         @mouseenter="mostrarInfo(trozo)"
         @mouseleave="esconderInfo"
       ></circle>
-      <circle cx="25" cy="25" r="14" fill="#000000"></circle>
+      <circle cx="25" cy="25" r="16" fill="#000000"></circle>
     </g>
   </svg>
 </template>
@@ -53,7 +53,7 @@ function actualizarDonas() {
 }
 
 circle {
-  fill: transparent;
+  fill: var(--azulOscuroCuenco);
 }
 
 .text {
