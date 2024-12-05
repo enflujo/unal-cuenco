@@ -193,6 +193,10 @@ function primeraMayuscula(texto: string | undefined) {
   }
 }
 
+.donaCentro {
+  fill: white;
+}
+
 #contenedorEncuentros {
   width: 80vw;
   margin-left: 10vw;

@@ -12,6 +12,9 @@ const props = defineProps<Esquema>();
 const { secciones } = toRefs(props);
 const valoresDona = ref<DonaProcesada[]>([]);
 import { colores } from '@/utilidades/constantes';
+import { usarCerebroGeneral } from '@/cerebros/general';
+
+const cerebroGeneral = usarCerebroGeneral();
 
 onMounted(actualizarDonas);
 watch(secciones, actualizarDonas);
@@ -42,7 +45,13 @@ function actualizarDonas() {
         @mouseenter="mostrarInfo(trozo)"
         @mouseleave="esconderInfo"
       ></circle>
-      <circle cx="25" cy="25" r="16" fill="#000000"></circle>
+      <circle
+        class="donaCentro"
+        cx="25"
+        cy="25"
+        r="16"
+        :fill="`${cerebroGeneral.paginaActual === 'encuentros' ? '#ffffff' : 'rgb(57, 73, 164)'}`"
+      ></circle>
     </g>
   </svg>
 </template>
@@ -52,8 +61,13 @@ function actualizarDonas() {
   width: 200px;
 }
 
+// Esto si quisiéramos adelgazar la línea del círculo para que coincida con el hover
+.donaCentro {
+  //fill: var(--azulOscuroCuenco);
+}
+
 circle {
-  fill: var(--azulOscuroCuenco);
+  fill: transparent;
 }
 
 .text {
