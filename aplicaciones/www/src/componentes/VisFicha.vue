@@ -42,7 +42,13 @@ function crearDonas(datos: DatosFicha) {
       if (datosSeccion) {
         const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
         const datosDona = datosSeccion.map((obj, i) => {
-          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100, color: colores[i] };
+          console.log;
+          return {
+            nombre: obj.nombre,
+            valor: obj.conteo,
+            porcentaje: Math.ceil((obj.conteo / total) * 100),
+            color: colores[i],
+          };
         });
 
         nuevasDonas.push({ tipo: llave, valores: datosDona });

@@ -24,7 +24,6 @@ function actualizarDonas() {
   valoresDona.value = secciones.value.map((seccion, i) => {
     const obj = { ...seccion, ajuste: ajusteAngulo, color: colores[i] };
     ajusteAngulo -= seccion.porcentaje;
-
     return obj;
   });
 }
@@ -38,10 +37,11 @@ function actualizarDonas() {
         cx="25"
         cy="25"
         r="16"
-        :stroke-dasharray="`${trozo.porcentaje} 100`"
+        :stroke-dasharray="`${trozo.porcentaje + 1} 100`"
         :stroke-dashoffset="trozo.ajuste"
         :stroke="trozo.color"
         :data-color="colores[i]"
+        :class="cerebroGeneral.fragmentoDonaElegido === trozo.nombre ? 'elegido' : ''"
         @mouseenter="mostrarInfo(trozo)"
         @mouseleave="esconderInfo"
       ></circle>
@@ -68,6 +68,10 @@ function actualizarDonas() {
 
 circle {
   fill: transparent;
+
+  &.elegido {
+    filter: drop-shadow(1px 1px 1px rgba(255, 255, 0, 0.7)) drop-shadow(-1px -1px 1px rgba(255, 255, 0, 0.7));
+  }
 }
 
 .text {

@@ -18,6 +18,7 @@ const { encuentrosCaracterizacionConteo } = storeToRefs(cerebroDatos);
 
 const info: Ref<string | null> = ref(null);
 const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
+const fragmentoElegido: Ref<string> = ref('');
 
 let donas: { tipo?: LlavesEncuentro; valores?: IDona[] }[][] = [];
 
@@ -83,6 +84,7 @@ onUnmounted(() => {
 });
 
 function mostrarInfo(trozo: DonaProcesada) {
+  console.log(trozo);
   info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
 }
 function esconderInfo() {
@@ -91,6 +93,16 @@ function esconderInfo() {
 
 function primeraMayuscula(texto: string | undefined) {
   return String(texto).charAt(0).toUpperCase() + String(texto).slice(1);
+}
+
+function elegirFragmento(fragmento: string) {
+  if (fragmentoElegido.value === '') {
+    fragmentoElegido.value = fragmento;
+  } else {
+    fragmentoElegido.value = '';
+  }
+
+  console.log(fragmentoElegido.value);
 }
 </script>
 
@@ -115,7 +127,7 @@ function primeraMayuscula(texto: string | undefined) {
                 <div class="contenedorLeyendas">
                   <ul class="leyendaDona" v-for="valor in dona.valores">
                     <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
-                    <p class="textoLeyenda">
+                    <p @click="elegirFragmento(valor.nombre)" class="textoLeyenda">
                       {{ valor.nombre }}: {{ Math.ceil(valor.porcentaje) }}% ({{ valor.valor }})
                     </p>
                   </ul>
@@ -124,7 +136,7 @@ function primeraMayuscula(texto: string | undefined) {
             </section>
           </div>
         </li>
-        <!--    <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div> -->
+        <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
       </div>
       <div>
         <!-- <h2>Caracterización total</h2>

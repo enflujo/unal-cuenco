@@ -16,6 +16,7 @@ export type TMinMax = { min: number; max: number; total: number };
 export interface CerebroGeneral {
   paginaActual: TiposDePagina;
   vistaColectivos: TiposDeVistas;
+  fragmentoDonaElegido: string;
 }
 
 export type PropiedadesGeoColectivos = {
