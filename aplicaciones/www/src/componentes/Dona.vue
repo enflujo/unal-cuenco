@@ -11,46 +11,18 @@ interface Esquema {
 const props = defineProps<Esquema>();
 const { secciones } = toRefs(props);
 const valoresDona = ref<DonaProcesada[]>([]);
-const colores = [
-  '#ff9999',
-  '#99ff99',
-  '#9999ff',
-  '#cc99ff',
-  '#ff99cc',
-  '#9999cc',
-  '#ff9999',
-  '#99ffcc',
-  '#99ccff',
-  '#cc99cc',
-  '#ffccff',
-  '#ccccff',
-  '#ffcccc',
-  '#ccffcc',
-  '#ccccff',
-  '#e6ccff',
-  '#ffccf2',
-  '#cccccc',
-  '#ffcccc',
-  '#ccffcc',
-  '#99ccff',
-  '#cc99ff',
-  '#ffccff',
-  '#ffcc99',
-  '#ffcc66',
-  '#ccffcc',
-  '#ccccff',
-  '#e6ccff',
-  '#ffccf2',
-  '#cccccc',
-];
+import { colores } from '@/utilidades/constantes';
+import { usarCerebroGeneral } from '@/cerebros/general';
+
+const cerebroGeneral = usarCerebroGeneral();
 
 onMounted(actualizarDonas);
 watch(secciones, actualizarDonas);
 
 function actualizarDonas() {
   let ajusteAngulo = 0;
-  valoresDona.value = secciones.value.map((seccion) => {
-    const obj = { ...seccion, ajuste: ajusteAngulo };
+  valoresDona.value = secciones.value.map((seccion, i) => {
+    const obj = { ...seccion, ajuste: ajusteAngulo, color: colores[i] };
     ajusteAngulo -= seccion.porcentaje;
     return obj;
   });
@@ -65,11 +37,20 @@ function actualizarDonas() {
         cx="25"
         cy="25"
         r="16"
-        :stroke-dasharray="`${trozo.porcentaje} 100`"
+        :stroke-dasharray="`${trozo.porcentaje + 1} 100`"
         :stroke-dashoffset="trozo.ajuste"
-        :stroke="colores[i]"
+        :stroke="trozo.color"
+        :data-color="colores[i]"
+        :class="cerebroGeneral.fragmentoDonaElegido === trozo.nombre ? 'elegido' : ''"
         @mouseenter="mostrarInfo(trozo)"
         @mouseleave="esconderInfo"
+      ></circle>
+      <circle
+        class="donaCentro"
+        cx="25"
+        cy="25"
+        r="16"
+        :fill="`${cerebroGeneral.paginaActual === 'encuentros' ? '#ffffff' : 'rgb(57, 73, 164)'}`"
       ></circle>
     </g>
   </svg>
@@ -80,8 +61,17 @@ function actualizarDonas() {
   width: 200px;
 }
 
+// Esto si quisiéramos adelgazar la línea del círculo para que coincida con el hover
+.donaCentro {
+  //fill: var(--azulOscuroCuenco);
+}
+
 circle {
   fill: transparent;
+
+  &.elegido {
+    filter: drop-shadow(1px 1px 1px rgba(255, 255, 0, 0.7)) drop-shadow(-1px -1px 1px rgba(255, 255, 0, 0.7));
+  }
 }
 
 .text {

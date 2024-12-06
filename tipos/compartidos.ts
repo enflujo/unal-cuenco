@@ -13,7 +13,7 @@ export interface ElementoLista {
 }
 
 export interface Relacion {
-  tipo: keyof ListasPublicaciones | keyof ListasColectivos;
+  tipo: keyof ListasPublicaciones | keyof ListasColectivos | keyof ListasCaracterizacion;
   conteo: number;
   id: string;
 }
@@ -37,6 +37,7 @@ export type DefinicionSimple = { nombre: string; slug: string };
 export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
 export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 export type LlavesCaracterizacion = 'sedes' | 'tipos' | 'roles' | 'cargos';
+export type LlavesEncuentro = 'id' | 'numero' | 'cargos' | 'sedes' | 'tiposSede' | 'roles' | 'sedes';
 
 export type ListasPublicaciones = {
   [llave in LlavesPublicaciones]: ElementoLista[];
@@ -99,10 +100,10 @@ export interface EncuentroCaracterizacionConteo {
   id: string;
   numero?: string;
   personas?: PersonaCaracterizacion[];
-  sedes?: { slug: string; conteo: number }[];
-  tiposSede?: { slug: string; conteo: number }[];
-  roles?: { slug: string; conteo: number }[];
-  cargos?: { slug: string; conteo: number }[];
+  sedes?: { slug: string; conteo: number; nombre: string }[];
+  tiposSede?: { slug: string; conteo: number; nombre: string }[];
+  roles?: { slug: string; conteo: number; nombre: string }[];
+  cargos?: { slug: string; conteo: number; nombre: string }[];
 }
 
 export interface OpcionBuscadorDatos {

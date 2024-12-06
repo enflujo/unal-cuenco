@@ -6,6 +6,8 @@ import type {
   LlavesColectivos,
   LlavesPublicaciones,
   Publicacion,
+  ListasCaracterizacion,
+  EncuentroCaracterizacionConteo,
 } from '@/tipos/compartidos';
 import type { FeatureCollection, Point } from 'geojson';
 
@@ -14,6 +16,7 @@ export type TMinMax = { min: number; max: number; total: number };
 export interface CerebroGeneral {
   paginaActual: TiposDePagina;
   vistaColectivos: TiposDeVistas;
+  fragmentoDonaElegido: string;
 }
 
 export type PropiedadesGeoColectivos = {
@@ -45,6 +48,12 @@ export interface CerebroDatos {
   listasPublicaciones: ListasPublicaciones | null;
   listasPublicacionesOrdenadas: ListasPublicaciones | null;
   cargandoListasPublicaciones: boolean;
+
+  // ENCUENTROS
+  encuentrosCaracterizacionConteo: EncuentroCaracterizacionConteo[] | null;
+  cargandoEncuentroCaracterizacion: boolean;
+  listasCaracterizacion: ListasCaracterizacion | null;
+  cargandoCaracterizacionConteo: boolean;
 }
 
 export interface CerebroFicha {
@@ -87,6 +96,7 @@ export interface IDona {
   nombre: string;
   valor: number;
   porcentaje: number;
+  color: string;
 }
 
 export interface DonaProcesada extends IDona {
