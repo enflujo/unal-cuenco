@@ -4,10 +4,11 @@ import { usarCerebroGeneral } from '@/cerebros/general';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { onMounted, onUnmounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { EncuentroCaracterizacionConteo, LlavesCaracterizacion, LlavesEncuentro } from '@/tipos/compartidos';
+import { EncuentroCaracterizacionConteo, LlavesEncuentro } from '@/tipos/compartidos';
 import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { colores, llavesEncuentro } from '../utilidades/constantes';
+import { primeraMayuscula } from '@/utilidades/ayudas';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
@@ -88,11 +89,8 @@ function mostrarInfo(trozo: DonaProcesada) {
   //info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
 }
 function esconderInfo() {
+  cerebroGeneral.fragmentoDonaElegido = '';
   info.value = null;
-}
-
-function primeraMayuscula(texto: string | undefined) {
-  return String(texto).charAt(0).toUpperCase() + String(texto).slice(1);
 }
 
 function elegirFragmento(fragmento: string) {

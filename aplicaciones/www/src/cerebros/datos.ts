@@ -197,12 +197,13 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
 
       try {
         const listas = await pedirDatos<ListasCaracterizacion>('datos/listasEncuentros.json');
-        this.listasCaracterizacion = { sedes: [], tipos: [], roles: [], cargos: [] };
+        this.listasCaracterizacion = { sedes: [], tiposSede: [], roles: [], cargos: [] };
 
         for (const tipo in listas) {
           const lista = [...listas[tipo as LlavesCaracterizacion]];
           const largo = lista.length;
           ordenarRapido(lista, 0, largo - 1, largo);
+          if (!this.listasCaracterizacion) return;
           this.listasCaracterizacion[tipo as LlavesCaracterizacion] = lista;
         }
         this.listasCaracterizacion = listas;

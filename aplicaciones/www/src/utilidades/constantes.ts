@@ -21,7 +21,7 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
 
 export const nombresListasCaracterizacion: { [llave in LlavesCaracterizacion]: string } = {
   roles: 'Roles',
-  tipos: 'Tipos',
+  tiposSede: 'Tipos de Sede',
   sedes: 'Sedes',
   cargos: 'Cargos',
 };
@@ -44,6 +44,7 @@ export const llavesRelacionesColectivos: LlavesColectivos[] = [
 ];
 
 export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'cargos', 'tiposSede', 'sedes', 'roles'];
+export const llavesCaracterizacion: LlavesCaracterizacion[] = ['cargos', 'tiposSede', 'sedes', 'roles'];
 
 export const coloresFiltros: string[] = [
   '#3949a4',

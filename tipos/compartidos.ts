@@ -36,7 +36,7 @@ export type DefinicionSimple = { nombre: string; slug: string };
 
 export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
 export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
-export type LlavesCaracterizacion = 'sedes' | 'tipos' | 'roles' | 'cargos';
+export type LlavesCaracterizacion = 'sedes' | 'tiposSede' | 'roles' | 'cargos';
 export type LlavesEncuentro = 'id' | 'numero' | 'cargos' | 'sedes' | 'tiposSede' | 'roles' | 'sedes';
 
 export type ListasPublicaciones = {

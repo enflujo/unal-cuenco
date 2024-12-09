@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DonaProcesada, IDona } from '@/tipos';
-import { onMounted, ref, toRefs, watch } from 'vue';
+import { onMounted, Ref, ref, toRefs, watch } from 'vue';
 
 interface Esquema {
   secciones: IDona[];
@@ -18,8 +18,10 @@ import { storeToRefs } from 'pinia';
 
 const cerebroGeneral = usarCerebroGeneral();
 const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
+const fragmentoElegido: Ref<string> = ref('');
 
 onMounted(actualizarDonas);
+
 watch(secciones, actualizarDonas);
 watch(fragmentoDonaElegido, actualizarDonas);
 
@@ -31,6 +33,16 @@ function actualizarDonas() {
     return obj;
   });
 }
+
+// Si se quiere elegir el fragmento haciendo click y no con el hover
+/* function elegirFragmento(fragmento: string) {
+  if (fragmentoElegido.value === '' || fragmento !== cerebroGeneral.fragmentoDonaElegido) {
+    fragmentoElegido.value = fragmento;
+  } else {
+    fragmentoElegido.value = '';
+  }
+  cerebroGeneral.fragmentoDonaElegido = fragmentoElegido.value;
+} */
 </script>
 
 <template>
@@ -46,10 +58,9 @@ function actualizarDonas() {
         :stroke="trozo.color"
         :data-color="colores[i]"
         class="fragmento"
-        :class="fragmentoDonaElegido === trozo.nombre ? 'elegido' : ''"
+        :class="trozo.nombre === fragmentoDonaElegido ? 'elegido' : ''"
         @mouseenter="mostrarInfo(trozo)"
         @mouseleave="esconderInfo"
-        @click="fragmentoDonaElegido = trozo.nombre"
       ></circle>
       <circle
         class="donaCentro"
@@ -79,7 +90,8 @@ circle {
   }
 
   &.elegido {
-    filter: drop-shadow(1px 1px 1px rgba(255, 255, 0, 0.7)) drop-shadow(-1px -1px 1px rgba(255, 255, 0, 0.7));
+    //    filter: drop-shadow(1px 1px 1px #3949a4) drop-shadow(-1px -1px 1px #3949a4);
+    stroke-width: 7;
   }
 }
 
