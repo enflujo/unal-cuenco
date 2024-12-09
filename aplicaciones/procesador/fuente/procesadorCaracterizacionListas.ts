@@ -25,7 +25,7 @@ import type { Errata, FilaCaracterizacion, FilaColectivos } from './tipos';
 const encuentrosCaracterizacion: EncuentroCaracterizacion[] = [];
 const listas: ListasCaracterizacion = {
   sedes: [],
-  tiposSede: [],
+  tipos: [],
   roles: [],
   cargos: [],
 };
@@ -100,7 +100,7 @@ export default async (
           const { nombre, slug } = procesarLista('sedes', valorTipoSede);
           tiposSede.push({ nombre, slug });
 
-          encuentro.tiposSede = tiposSede;
+          encuentro.tipos = tiposSede;
         } else {
           errata.push({ fila: numeroFila, error: `No tiene SEDE.` });
         }
@@ -130,7 +130,6 @@ export default async (
         }
 
         encuentrosCaracterizacion.push(encuentro);
-        console.log(encuentro);
       }
 
       numeroFila++;
@@ -161,7 +160,7 @@ export default async (
 
   function construirRelacionesEncuentros() {
     // Estos campos son los que se usan para crear relaciones
-    const campos: LlavesCaracterizacion[] = ['sedes', 'tiposSede', 'roles', 'cargos'];
+    const campos: LlavesCaracterizacion[] = ['sedes', 'tipos', 'roles', 'cargos'];
 
     encuentrosCaracterizacion.forEach((encuentro) => {
       // Pasar por cada campo sobre los que queremos construir relaciones
@@ -210,6 +209,32 @@ export default async (
   }
 
   function llenarRelacion(
+    slugsHacia: string[],
+    lista: ElementoLista[],
+    idDesde: string,
+    tipoRelacion: LlavesCaracterizacion,
+    idCaracterizacion: string
+  ) {
+    slugsHacia.forEach((slugHacia) => {
+      const elementoALlenar = lista.find((obj) => obj.slug === slugHacia);
+
+      if (elementoALlenar) {
+        const existe = elementoALlenar.relaciones.find((obj) => obj.id === idDesde && obj.tipo === tipoRelacion);
+
+        if (!existe) {
+          elementoALlenar.relaciones.push({ conteo: 1, id: idDesde, tipo: tipoRelacion });
+        } else {
+          existe.conteo++;
+        }
+
+        if (!elementoALlenar.encuentrosCaracterizacion?.includes(idCaracterizacion)) {
+          elementoALlenar.encuentrosCaracterizacion?.push(idCaracterizacion);
+        }
+      }
+    });
+  }
+
+  /* function llenarRelacion(
     elementosDondeConectar: string[],
     elementoLista: ElementoLista[],
     indice: string,
@@ -224,7 +249,7 @@ export default async (
         const existe = elementoALlenar.relaciones.find((obj) => obj.id === indice);
 
         if (!existe) {
-          elementoALlenar.relaciones.push({ conteo: 1, id: indice, nombre: nombre, tipo: campoRelacion });
+          elementoALlenar.relaciones.push({ conteo: 1, id: indice, tipo: campoRelacion });
         } else {
           existe.conteo++;
         }
@@ -236,5 +261,5 @@ export default async (
 
       // console.log('poner', campoRelacion, 'como relacion en lista', elementoConector);
     });
-  }
+  } */
 };

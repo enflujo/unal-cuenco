@@ -72,3 +72,7 @@ ordenarRapido.intercambiar = (lista: ElementoLista[], el1: number, el2: number) 
   lista[el1] = lista[el2];
   lista[el2] = elemCambiado;
 };
+
+export function primeraMayuscula(texto: string | undefined) {
+  return String(texto).charAt(0).toUpperCase() + String(texto).slice(1);
+}
