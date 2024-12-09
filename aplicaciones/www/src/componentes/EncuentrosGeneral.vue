@@ -142,18 +142,19 @@ function elegirFragmento(fragmento: string) {
 
 .contenidoDona {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 
   .dona {
-    width: 250px;
+    width: 30vw;
   }
 
   .contenedorLeyendas {
     display: flex;
     flex-direction: column;
     font-size: 0.8em;
-    max-height: 25em;
+    width: 25vw;
     overflow: auto;
+    max-height: 45em;
   }
   .leyendaDona {
     display: flex;
