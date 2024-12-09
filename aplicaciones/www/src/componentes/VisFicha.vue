@@ -42,7 +42,6 @@ function crearDonas(datos: DatosFicha) {
       if (datosSeccion) {
         const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
         const datosDona = datosSeccion.map((obj, i) => {
-          console.log;
           return {
             nombre: obj.nombre,
             valor: obj.conteo,

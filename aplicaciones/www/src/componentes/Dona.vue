@@ -10,14 +10,18 @@ interface Esquema {
 
 const props = defineProps<Esquema>();
 const { secciones } = toRefs(props);
+
 const valoresDona = ref<DonaProcesada[]>([]);
 import { colores } from '@/utilidades/constantes';
 import { usarCerebroGeneral } from '@/cerebros/general';
+import { storeToRefs } from 'pinia';
 
 const cerebroGeneral = usarCerebroGeneral();
+const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
 
 onMounted(actualizarDonas);
 watch(secciones, actualizarDonas);
+watch(fragmentoDonaElegido, actualizarDonas);
 
 function actualizarDonas() {
   let ajusteAngulo = 0;
@@ -41,9 +45,11 @@ function actualizarDonas() {
         :stroke-dashoffset="trozo.ajuste"
         :stroke="trozo.color"
         :data-color="colores[i]"
-        :class="cerebroGeneral.fragmentoDonaElegido === trozo.nombre ? 'elegido' : ''"
+        class="fragmento"
+        :class="fragmentoDonaElegido === trozo.nombre ? 'elegido' : ''"
         @mouseenter="mostrarInfo(trozo)"
         @mouseleave="esconderInfo"
+        @click="fragmentoDonaElegido = trozo.nombre"
       ></circle>
       <circle
         class="donaCentro"
@@ -68,6 +74,9 @@ function actualizarDonas() {
 
 circle {
   fill: transparent;
+  &.fragmento {
+    cursor: pointer;
+  }
 
   &.elegido {
     filter: drop-shadow(1px 1px 1px rgba(255, 255, 0, 0.7)) drop-shadow(-1px -1px 1px rgba(255, 255, 0, 0.7));

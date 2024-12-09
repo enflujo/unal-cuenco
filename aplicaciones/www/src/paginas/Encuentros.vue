@@ -7,7 +7,6 @@ import { storeToRefs } from 'pinia';
 import { EncuentroCaracterizacionConteo, LlavesCaracterizacion, LlavesEncuentro } from '@/tipos/compartidos';
 import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
-import { redondearDecimal } from '@/utilidades/ayudas';
 import { colores, llavesEncuentro } from '../utilidades/constantes';
 
 const cerebroGeneral = usarCerebroGeneral();
@@ -15,6 +14,7 @@ const cerebroFicha = usarCerebroFicha();
 const cerebroDatos = usarCerebroDatos();
 
 const { encuentrosCaracterizacionConteo } = storeToRefs(cerebroDatos);
+const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
 
 const info: Ref<string | null> = ref(null);
 const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
@@ -84,8 +84,8 @@ onUnmounted(() => {
 });
 
 function mostrarInfo(trozo: DonaProcesada) {
-  console.log(trozo);
-  info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
+  cerebroGeneral.fragmentoDonaElegido = trozo.nombre;
+  //info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
 }
 function esconderInfo() {
   info.value = null;
@@ -96,13 +96,12 @@ function primeraMayuscula(texto: string | undefined) {
 }
 
 function elegirFragmento(fragmento: string) {
-  if (fragmentoElegido.value === '') {
+  if (fragmentoElegido.value === '' || fragmento !== cerebroGeneral.fragmentoDonaElegido) {
     fragmentoElegido.value = fragmento;
   } else {
     fragmentoElegido.value = '';
   }
-
-  console.log(fragmentoElegido.value);
+  cerebroGeneral.fragmentoDonaElegido = fragmentoElegido.value;
 }
 </script>
 
@@ -127,7 +126,11 @@ function elegirFragmento(fragmento: string) {
                 <div class="contenedorLeyendas">
                   <ul class="leyendaDona" v-for="valor in dona.valores">
                     <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
-                    <p @click="elegirFragmento(valor.nombre)" class="textoLeyenda">
+                    <p
+                      @click="elegirFragmento(valor.nombre)"
+                      class="textoLeyenda"
+                      :class="valor.nombre === fragmentoDonaElegido ? 'elegido' : ''"
+                    >
                       {{ valor.nombre }}: {{ Math.ceil(valor.porcentaje) }}% ({{ valor.valor }})
                     </p>
                   </ul>
@@ -194,6 +197,11 @@ function elegirFragmento(fragmento: string) {
     .textoLeyenda {
       max-width: 15vw;
       margin: 0;
+      cursor: pointer;
+
+      &.elegido {
+        font-weight: bold;
+      }
     }
   }
   .codigoColor {
