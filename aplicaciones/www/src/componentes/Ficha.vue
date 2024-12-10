@@ -137,8 +137,8 @@ $margenY: 10px;
 
 #contenedorFicha {
   z-index: 99;
-  width: 80vw;
-  height: calc(100vh - $altoMenuPantalla - $altoLinea);
+  width: 90vw;
+  height: calc(95vh - $altoMenuCelular);
   @include gradienteAzulCircular;
   position: fixed;
   left: 50%;
@@ -151,6 +151,7 @@ $margenY: 10px;
 
   &.visible {
     display: flex;
+    flex-direction: column;
   }
 }
 
@@ -163,7 +164,7 @@ $margenY: 10px;
   overflow: auto;
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 100%;
 
   h2 {
     margin: 0;
@@ -244,6 +245,19 @@ $margenY: 10px;
     #año {
       margin-right: 1em;
     }
+  }
+}
+
+@media screen and (min-width: $minTablet) {
+  #contenedorFicha {
+    width: 80vw;
+    height: calc(100vh - $altoMenuPantalla - $altoLinea);
+    &.visible {
+      flex-direction: row;
+    }
+  }
+  .ficha {
+    width: 50%;
   }
 }
 </style>

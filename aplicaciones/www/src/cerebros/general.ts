@@ -6,6 +6,7 @@ export const usarCerebroGeneral = defineStore('cerebroGeneral', {
     return {
       paginaActual: 'inicio',
       vistaColectivos: 'mapa',
+      fragmentoDonaElegido: '',
     };
   },
 });

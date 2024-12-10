@@ -9,6 +9,9 @@ import type {
   LlavesColectivos,
   LlavesPublicaciones,
   Publicacion,
+  ListasCaracterizacion,
+  LlavesCaracterizacion,
+  EncuentroCaracterizacionConteo,
 } from '@/tipos/compartidos';
 
 export const usarCerebroDatos = defineStore('cerebroDatos', {
@@ -36,6 +39,13 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       listasPublicaciones: null,
       listasPublicacionesOrdenadas: null,
       cargandoListasPublicaciones: false,
+
+      // CARACTERIZACIÓN ENCUENTROS
+      encuentrosCaracterizacionConteo: null,
+      cargandoEncuentroCaracterizacion: false,
+
+      listasCaracterizacion: null,
+      cargandoCaracterizacionConteo: false,
     };
   },
 
@@ -162,6 +172,44 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
         this.cargandoListasColectivos = false;
       } catch (error) {
         console.error('Problema cargando datos de listasColectivos', JSON.stringify(error));
+      }
+    },
+
+    // CARACTERIZACIÓN DE ENCUENTROS
+    async cargarDatosCaracterizacion() {
+      if (this.encuentrosCaracterizacionConteo || this.cargandoEncuentroCaracterizacion) return;
+      this.cargandoEncuentroCaracterizacion = true;
+
+      try {
+        this.encuentrosCaracterizacionConteo =
+          await pedirDatos<EncuentroCaracterizacionConteo[]>('datos/encuentros.json');
+        this.cargandoEncuentroCaracterizacion = false;
+      } catch (error) {
+        console.error('Problema cargando datos de encuentros', JSON.stringify(error));
+      }
+
+      await this.cargarListasCaracterizacion();
+    },
+
+    async cargarListasCaracterizacion() {
+      if (this.listasCaracterizacion || this.cargandoCaracterizacionConteo) return;
+      this.cargandoCaracterizacionConteo = true;
+
+      try {
+        const listas = await pedirDatos<ListasCaracterizacion>('datos/listasEncuentros.json');
+        this.listasCaracterizacion = { sedes: [], tiposSede: [], roles: [], cargos: [] };
+
+        for (const tipo in listas) {
+          const lista = [...listas[tipo as LlavesCaracterizacion]];
+          const largo = lista.length;
+          ordenarRapido(lista, 0, largo - 1, largo);
+          if (!this.listasCaracterizacion) return;
+          this.listasCaracterizacion[tipo as LlavesCaracterizacion] = lista;
+        }
+        this.listasCaracterizacion = listas;
+        this.cargandoListasColectivos = false;
+      } catch (error) {
+        console.error('Problema cargando datos de caracterizacionConteo', JSON.stringify(error));
       }
     },
   },

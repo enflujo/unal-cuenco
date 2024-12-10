@@ -164,6 +164,9 @@ async function abrirElemento(evento: MouseEvent, resultado: OpcionBuscadorDatos)
   height: $altoMenuPantalla - 30px;
   margin: 10px 0 0 0;
   z-index: 9;
+  border-radius: 50%;
+  width: 30px;
+  padding-left: 1px;
 }
 
 #botonBuscador {
@@ -172,6 +175,7 @@ async function abrirElemento(evento: MouseEvent, resultado: OpcionBuscadorDatos)
   filter: invert(1);
   z-index: 2;
   padding: 0 0.3em;
+  margin-right: 7px;
 }
 
 #buscador {

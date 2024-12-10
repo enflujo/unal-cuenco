@@ -41,9 +41,7 @@ onUnmounted(() => {
     <div :onclick="abrirCerrarMenu" class="icono"><img src="/icono_cuenco.webp" /></div>
     <nav id="menu" ref="menu" :class="abierto ? 'abierto' : ''">
       <RouterLink class="elementoMenu" to="/">Inicio</RouterLink>
-      <RouterLink class="elementoMenu" :class="paginaActual === 'colectivos' ? 'activo' : ''" to="/colectivos/mapa">
-        Colectivos y Ámbitos
-      </RouterLink>
+      <RouterLink class="elementoMenu" to="/colectivos/mapa"> Colectivos y Ámbitos </RouterLink>
       <RouterLink class="elementoMenu" to="/publicaciones">Producción Académica</RouterLink>
       <RouterLink class="elementoMenu" to="/encuentros">Encuentros</RouterLink>
       <RouterLink class="elementoMenu" to="/creditos">Créditos</RouterLink>
@@ -68,7 +66,8 @@ onUnmounted(() => {
   position: fixed;
   top: 0;
   z-index: 9;
-  width: 100vw;
+  width: 90vw;
+  background-color: var(--blanco);
 }
 
 .icono {

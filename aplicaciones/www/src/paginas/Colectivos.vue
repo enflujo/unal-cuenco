@@ -33,7 +33,7 @@ onUnmounted(() => {
 <template>
   <main>
     <nav class="columna columna1 contenedorListas" v-if="listasColectivos">
-      <ListaNodos v-for="(lista, llave) in listasColectivos" :tipo="llave" :lista="lista">
+      <ListaNodos v-for="(lista, llave) in listasColectivos" :tipo="llave" :lista="lista" tipoLista="menu">
         <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
       </ListaNodos>
     </nav>
@@ -56,7 +56,7 @@ onUnmounted(() => {
     </div>
 
     <div class="columna columna3 contenedorListas" v-if="colectivos">
-      <ListaNodos tipo="colectivos" :lista="colectivos">
+      <ListaNodos tipo="colectivos" :lista="colectivos" tipoLista="lista">
         <h1 class="titulo">Colectivos y Ámbitos</h1>
       </ListaNodos>
     </div>
@@ -65,13 +65,6 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @use '@/scss/constantes' as *;
-
-.botonesVista {
-  display: flex;
-  justify-content: flex-start;
-  width: 20vw;
-}
-
 .tituloSeccion {
   text-align: center;
 }

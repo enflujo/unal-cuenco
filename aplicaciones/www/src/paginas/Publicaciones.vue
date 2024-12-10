@@ -29,7 +29,7 @@ onUnmounted(() => {
 <template>
   <main>
     <nav class="columna columna1 contenedorListas" v-if="listasPublicaciones">
-      <ListaNodos v-for="(lista, llave) in listasPublicaciones" :tipo="llave" :lista="lista">
+      <ListaNodos v-for="(lista, llave) in listasPublicaciones" :tipo="llave" :lista="lista" tipoLista="menu">
         <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
       </ListaNodos>
     </nav>
@@ -39,7 +39,7 @@ onUnmounted(() => {
     </div>
 
     <div class="columna columna3 contenedorListas" v-if="publicaciones">
-      <ListaNodos tipo="publicaciones" :lista="publicaciones">
+      <ListaNodos tipo="publicaciones" :lista="publicaciones" tipoLista="lista">
         <h1 class="titulo">Producción Académica</h1>
       </ListaNodos>
     </div>
@@ -52,15 +52,7 @@ onUnmounted(() => {
 @use '@/scss/constantes' as *;
 
 .columna {
-  height: calc(100vh - $altoMenuPantalla - $altoLinea);
-}
-
-.botonesVista {
-  position: relative;
-  left: 20vw;
-  display: flex;
-  justify-content: flex-start;
-  width: 20vw;
+  // height: calc(100vh - $altoMenuPantalla - $altoLinea);
 }
 .tituloSeccion {
   text-align: center;

@@ -199,15 +199,13 @@ function crearTextoSede(datos: PropiedadesGeoColectivos) {
 
 @media screen and (min-width: $minTablet) {
   #contenedorMapa {
-    width: 45vw;
+    width: 51vw;
     margin: 7em 0;
   }
 }
 
 @media screen and (min-width: $minPantalla) {
   #contenedorMapa {
-    width: 55vw;
-    margin: 7em 0;
   }
 }
 </style>
