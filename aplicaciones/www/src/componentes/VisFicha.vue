@@ -114,6 +114,7 @@ function actualizarPosInfo(evento: MouseEvent) {
 </template>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
 #contenedorInfo {
   position: fixed;
   background-color: rgba(255, 255, 255, 0.8);
@@ -138,16 +139,26 @@ function actualizarPosInfo(evento: MouseEvent) {
 
 .contenedorVisFicha {
   color: white;
-  width: 50%;
+  width: 100%;
   overflow: auto;
 }
 
 .fichaConteo {
-  padding: 1rem;
+  padding: 0 1rem;
   border: 1px solid;
   border-radius: 0.5rem;
-  margin: 0.5rem;
+  margin: 0.5rem 0;
   font-weight: bold;
   display: inline-block;
+}
+@media screen and (min-width: $minTablet) {
+  .contenedorVisFicha {
+    width: 50%;
+  }
+
+  .fichaConteo {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
 }
 </style>

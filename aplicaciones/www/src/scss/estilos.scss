@@ -78,25 +78,14 @@ ul {
 }
 
 .columna {
-  height: calc(100vh - $altoMenuPantalla);
+  //height: calc(100vh - $altoMenuPantalla);
+  height: fit-content;
   overflow: auto;
+  width: 90vw;
 }
-
-.columna1 {
-  width: 20vw;
-}
-
-.columna2 {
-  width: 55vw;
-}
-
-.columna3 {
-  width: 25vw;
-}
-
 // Nodos listas
 .contenedorListas {
-  padding: 0 2em 4em 2em;
+  padding: 0 2em 1em 2em;
 }
 
 .contenedorElementos {
@@ -124,9 +113,37 @@ ul {
   }
 }
 
+// comunes
+.botonesVista {
+  display: flex;
+  justify-content: flex-start;
+  width: 20vw;
+  margin-left: 1em;
+}
+
 @media screen and (min-width: $minTablet) {
   main {
     margin-top: $altoMenuPantalla;
     flex-direction: row;
+  }
+  .columna1 {
+    width: 20vw;
+  }
+
+  .columna2 {
+    width: 55vw;
+    height: calc(90vh - $altoMenuPantalla);
+  }
+
+  .columna3 {
+    width: 25vw;
+  }
+  // Nodos listas
+  .contenedorListas {
+    padding: 0 2em 4em 2em;
+  }
+
+  .botonesVista {
+    margin-left: 0;
   }
 }

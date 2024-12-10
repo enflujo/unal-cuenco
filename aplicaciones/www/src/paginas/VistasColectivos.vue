@@ -29,12 +29,6 @@ watch(
 <style lang="scss" scoped>
 @use '@/scss/constantes' as *;
 
-.botonesVista {
-  display: flex;
-  justify-content: flex-start;
-  width: 20vw;
-}
-
 .tituloSeccion {
   text-align: center;
 }

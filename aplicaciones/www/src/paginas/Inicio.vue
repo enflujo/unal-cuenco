@@ -87,7 +87,7 @@ onMounted(async () => {
 .icono {
   margin-top: -20px;
   margin-bottom: 2em;
-  // width: ;
+  display: none;
 }
 
 h1 {
@@ -102,13 +102,12 @@ h1 {
 }
 
 .contenedorCentral {
-  width: 65vw;
+  width: 80vw;
+  margin: 0 auto;
+  padding-bottom: 7em;
 }
 
 .botonesVista {
-  display: flex;
-  justify-content: flex-start;
-  width: 20vw;
   margin-top: 2em;
 }
 
@@ -139,6 +138,14 @@ h1 {
     margin: 0 2em;
     padding-right: 1em;
     width: 40vw;
+  }
+  .contenedorCentral {
+    width: 65vw;
+    padding-bottom: 0;
+  }
+
+  .icono {
+    display: block;
   }
 }
 

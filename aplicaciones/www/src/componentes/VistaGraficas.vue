@@ -147,7 +147,7 @@ const titulo = computed(() => {
 
 <template>
   <div id="contenedorVistaGraficas">
-    <h2 v-if="listaActual">{{ titulo }}</h2>
+    <h2 v-if="listaActual">Vista por {{ titulo }}</h2>
 
     <div id="filtros">
       Filtrar:
@@ -192,14 +192,16 @@ const titulo = computed(() => {
         <p class="leyenda" :style="`top:${convertirEscala(i, 0, listaVisible.length, 0, 70)}%`">
           {{ elem.nombre }}
         </p>
-        <div
-          class="linea"
-          :style="`width:${convertirEscala(+elem.conteo, 0, valorMaximo + 10, 0, 65)}%; top: ${convertirEscala(i, 0, listaVisible.length, 0, 70)}%`"
-        ></div>
-        <div class="colombino"></div>
-        <p class="leyenda conteo">
-          {{ elem.conteo }}
-        </p>
+        <div class="contenedorColombina">
+          <div
+            class="linea"
+            :style="`width:${convertirEscala(+elem.conteo, 0, valorMaximo + 10, 0, 65)}%; top: ${convertirEscala(i, 0, listaVisible.length, 0, 70)}%`"
+          ></div>
+          <div class="colombino"></div>
+          <p class="leyenda conteo">
+            {{ elem.conteo }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -242,6 +244,14 @@ const titulo = computed(() => {
   justify-content: flex-start;
   align-items: center;
   margin-bottom: 0.5em;
+}
+
+.contenedorColombina {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 0.5em;
+  width: 80%;
 }
 
 .leyenda {

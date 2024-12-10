@@ -120,6 +120,7 @@ function elegirFragmento(fragmento: string) {
 </template>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
 #contenedorInfo {
   position: fixed;
   background-color: rgba(255, 255, 255, 0.8);
@@ -142,26 +143,26 @@ function elegirFragmento(fragmento: string) {
 
 .contenidoDona {
   display: flex;
-  align-items: center;
+  flex-direction: column;
 
   .dona {
-    width: 30vw;
+    width: 80vw;
   }
 
   .contenedorLeyendas {
     display: flex;
     flex-direction: column;
     font-size: 0.8em;
-    width: 25vw;
+    width: 75vw;
     overflow: auto;
-    max-height: 45em;
+    max-height: 15em;
   }
   .leyendaDona {
     display: flex;
     align-items: baseline;
 
     .textoLeyenda {
-      max-width: 15vw;
+      max-width: 75vw;
       margin: 0;
       cursor: pointer;
 
@@ -171,7 +172,7 @@ function elegirFragmento(fragmento: string) {
     }
   }
   .codigoColor {
-    width: 10px;
+    min-width: 10px;
     height: 10px;
     display: block;
     border-radius: 50%;
@@ -191,5 +192,31 @@ function elegirFragmento(fragmento: string) {
 
 .encuentro {
   list-style: none;
+}
+
+@media screen and (min-width: $minTablet) {
+  .contenidoDona {
+    align-items: center;
+    flex-direction: row;
+
+    .dona {
+      width: 30vw;
+    }
+
+    .contenedorLeyendas {
+      width: 25vw;
+    }
+    .leyendaDona {
+      display: flex;
+      align-items: baseline;
+
+      .textoLeyenda {
+        max-width: 15vw;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $minPantalla) {
 }
 </style>

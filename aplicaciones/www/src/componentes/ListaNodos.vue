@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import type { TiposNodo } from '@/tipos';
 import type { Colectivo, ElementoLista, Publicacion } from '@/tipos/compartidos';
+import { storeToRefs } from 'pinia';
 
 interface Esquema {
   tipo: TiposNodo;
   lista: ElementoLista[] | Colectivo[] | Publicacion[];
+  tipoLista: 'menu' | 'lista';
 }
+
+const cerebroDatos = usarCerebroDatos();
+const { publicaciones } = storeToRefs(cerebroDatos);
 
 defineProps<Esquema>();
 const cerebroFicha = usarCerebroFicha();
@@ -18,10 +24,10 @@ function abrirElemento(evento: MouseEvent, i: string, id: TiposNodo) {
 </script>
 
 <template>
-  <section :id="tipo" class="lista">
+  <section :id="tipo" class="lista" :class="`${tipoLista === 'menu' ? 'menu' : 'listaProyectos'}`">
     <slot />
 
-    <ul class="contenedorElementos" :class="tipo">
+    <ul v-if="cerebroDatos.listaElegida === tipo || tipoLista === 'lista'" class="contenedorElementos" :class="tipo">
       <li
         v-for="elemento in lista"
         :key="`${tipo}-${elemento.id}`"
@@ -40,9 +46,19 @@ function abrirElemento(evento: MouseEvent, i: string, id: TiposNodo) {
 </template>
 
 <style lang="scss" global>
+@use '@/scss/constantes' as *;
 .lista {
+  &.menu {
+    max-height: 35vh;
+  }
+  &.listaProyectos {
+    max-height: 70vh;
+    padding-bottom: 2em;
+  }
+  overflow: auto;
   .titulo {
     cursor: pointer;
+    margin: 0.5em 0 0em 0em;
   }
 
   .nodo {
@@ -59,6 +75,18 @@ function abrirElemento(evento: MouseEvent, i: string, id: TiposNodo) {
     &.actual {
       background-color: var(--magentaCuenco);
       color: var(--blanco);
+    }
+  }
+}
+@media screen and (min-width: $minTablet) {
+  .lista {
+    &.menu {
+      max-height: 55vh;
+    }
+    &.listaProyectos {
+      max-height: calc(90vh - $altoMenuPantalla);
+      padding-bottom: 0;
+      padding-right: 2em;
     }
   }
 }
