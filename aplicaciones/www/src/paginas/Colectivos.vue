@@ -52,7 +52,7 @@ onUnmounted(() => {
       </div>
 
       <VistaGraficas v-if="vistaColectivos === 'graficas'" />
-      <Mapa v-else="vistaActual === 'mapa'" />
+      <Mapa v-else="vistaActual === 'mapa'" pagina="colectivos" />
     </div>
 
     <div class="columna columna3 contenedorListas" v-if="colectivos">

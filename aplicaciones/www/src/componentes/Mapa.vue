@@ -15,6 +15,8 @@ const contenedorMapa: Ref<HTMLDivElement | null> = ref(null);
 const infoMapa: Ref<HTMLDivElement | null> = ref(null);
 let mapa: Map | undefined;
 
+const props = defineProps<{ pagina: string }>();
+
 // Crear mapa si no existe y si hay datos.
 watch(geoColectivos, (geo) => {
   if (!geo || mapa) return;
@@ -58,50 +60,41 @@ function crearMapa() {
       type: 'circle',
       source: 'colectivos',
       paint: {
-        'circle-radius': ['step', ['get', 'conteo'], 12, 20, 25, 100, 35],
+        'circle-radius': props.pagina === 'inicio' ? 7 : ['step', ['get', 'conteo'], 12, 20, 25, 100, 35],
         'circle-stroke-width': 2,
         'circle-color': ['case', ['boolean', ['feature-state', 'hover'], false], '#c30a93', '#00bc96'],
         'circle-stroke-color': 'white',
       },
     });
 
-    mapa.addLayer({
-      id: 'conteos',
-      type: 'symbol',
-      source: 'colectivos',
-      filter: ['has', 'conteo'],
-      paint: {
-        'text-color': '#000',
-      },
-      layout: {
-        'text-field': ['get', 'conteo'],
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-        'text-size': 12,
-      },
-    });
+    // Mostrar cantidad de colectivos si es el mapa de la página de colectivos
+    if (props.pagina === 'colectivos') {
+      mapa.addLayer({
+        id: 'conteos',
+        type: 'symbol',
+        source: 'colectivos',
+        filter: ['has', 'conteo'],
+        paint: {
+          'text-color': '#000',
+        },
+        layout: {
+          'text-field': ['get', 'conteo'],
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 12,
+        },
+      });
 
-    mapa.on('click', 'sedes', (evento) => {
-      evento.originalEvent.stopPropagation();
-      if (!evento.features || evento.features.length === 0) return;
-      const propiedades = evento.features[0].properties;
+      mapa.on('click', 'sedes', (evento) => {
+        evento.originalEvent.stopPropagation();
+        if (!evento.features || evento.features.length === 0) return;
+        const propiedades = evento.features[0].properties;
 
-      if (propiedades && propiedades.id) {
-        cerebroDatos.cambiarLista('sedes');
-        cerebroFicha.seleccionarNodo(propiedades.id, 'sedes');
-      }
-    });
-
-    mapa.on('mouseenter', 'sedes', () => {
-      if (!infoMapa.value || !mapa) return;
-      mapa.getCanvas().style.cursor = 'pointer';
-      infoMapa.value.classList.add('activo');
-    });
-
-    mapa.on('mouseleave', 'sedes', () => {
-      if (!infoMapa.value || !mapa) return;
-      mapa.getCanvas().style.cursor = '';
-      infoMapa.value.classList.remove('activo');
-    });
+        if (propiedades && propiedades.id) {
+          cerebroDatos.cambiarLista('sedes');
+          cerebroFicha.seleccionarNodo(propiedades.id, 'sedes');
+        }
+      });
+    }
 
     mapa.on('mousemove', (evento) => {
       if (!infoMapa.value || !mapa) return;
@@ -133,6 +126,19 @@ function crearMapa() {
         }
       }
     });
+
+    // mostrar información sobre los puntos cuando el ratón entre
+    mapa.on('mouseenter', 'sedes', () => {
+      if (!infoMapa.value || !mapa) return;
+      mapa.getCanvas().style.cursor = 'pointer';
+      infoMapa.value.classList.add('activo');
+    });
+
+    mapa.on('mouseleave', 'sedes', () => {
+      if (!infoMapa.value || !mapa) return;
+      mapa.getCanvas().style.cursor = '';
+      infoMapa.value.classList.remove('activo');
+    });
   });
 }
 
@@ -142,13 +148,17 @@ function crearTextoSede(datos: PropiedadesGeoColectivos) {
   if (datos.nombre === 'Nivel Internacional' || datos.nombre === 'Nivel Nacional') {
     nombre = datos.nombre;
   }
-
-  return `<p class="nombre">${nombre}</p>
+  if (props.pagina === 'colectivos') {
+    return `<p class="nombre">${nombre}</p>
     <p class="conteo">${datos.conteo} colectivo${datos.conteo > 1 ? 's' : ''}</p>`;
+  } else if (props.pagina === 'inicio') {
+    return `<p class="nombre">${nombre}</p>`;
+  }
 }
 </script>
 
 <template>
+  <h2 v-if="props.pagina === 'inicio'">Sedes de la Universidad Nacional de Colombia</h2>
   <div id="contenedorMapa" ref="contenedorMapa"></div>
   <div id="infoMapa" ref="infoMapa"></div>
 </template>
@@ -200,7 +210,7 @@ function crearTextoSede(datos: PropiedadesGeoColectivos) {
 @media screen and (min-width: $minTablet) {
   #contenedorMapa {
     width: 51vw;
-    margin: 7em 0;
+    margin: 2em 0;
   }
 }
 

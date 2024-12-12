@@ -65,7 +65,7 @@ onMounted(async () => {
       </div>
 
       <EncuentrosGeneral v-if="vistaElegida === 'graficas'" />
-      <Mapa v-if="vistaElegida === 'mapa'" />
+      <Mapa v-if="vistaElegida === 'mapa'" pagina="inicio" />
     </div>
   </main>
 </template>
