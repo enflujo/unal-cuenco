@@ -18,7 +18,7 @@ import { storeToRefs } from 'pinia';
 
 const cerebroGeneral = usarCerebroGeneral();
 const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
-const fragmentoElegido: Ref<string> = ref('');
+//const fragmentoElegido: Ref<string> = ref('');
 
 onMounted(actualizarDonas);
 

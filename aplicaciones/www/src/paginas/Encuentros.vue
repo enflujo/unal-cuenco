@@ -21,7 +21,7 @@ const info: Ref<string | null> = ref(null);
 const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
 const fragmentoElegido: Ref<string> = ref('');
 
-let donas: { tipo?: LlavesEncuentro; valores?: IDona[] }[][] = [];
+let donas: Ref<{ tipo?: LlavesEncuentro; valores?: IDona[] }[][]> = ref([]);
 
 function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
   const nuevasDonas: {
@@ -64,8 +64,7 @@ function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
         nuevasDonas[+numeroEncuentro - 1].push({ tipo: llave, valores: valores });
       }
     });
-
-    donas = nuevasDonas;
+    donas.value = nuevasDonas;
   });
 }
 
@@ -78,6 +77,8 @@ onMounted(async () => {
   cerebroGeneral.paginaActual = 'encuentros';
   await cerebroDatos.cargarListasCaracterizacion();
   await cerebroDatos.cargarDatosCaracterizacion();
+
+  crearDonas(encuentrosCaracterizacionConteo.value);
 });
 
 onUnmounted(() => {

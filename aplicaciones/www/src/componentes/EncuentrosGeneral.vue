@@ -30,8 +30,6 @@ watch(fragmentoDonaElegido, (fragmento) => (fragmentoElegido.value = fragmento))
 
 onMounted(async () => {
   await cerebroDatos.cargarListasCaracterizacion();
-  //if (!listasCaracterizacion.value) return;
-
   crearDonas(listasCaracterizacion.value);
 });
 
