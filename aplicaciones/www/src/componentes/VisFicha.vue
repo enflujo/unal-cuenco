@@ -106,7 +106,6 @@ function actualizarPosInfo(evento: MouseEvent) {
 
     <section class="contenedorDona" v-for="dona in donas" :key="`dona-${dona.tipo}`">
       <h3>{{ nombresListas[dona.tipo] }}</h3>
-
       <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" />
     </section>
   </div>

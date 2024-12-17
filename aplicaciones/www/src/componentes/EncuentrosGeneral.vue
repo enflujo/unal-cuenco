@@ -70,6 +70,7 @@ function mostrarInfo(trozo: DonaProcesada) {
   cerebroGeneral.fragmentoDonaElegido = trozo.nombre;
   //info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
 }
+
 function esconderInfo() {
   cerebroGeneral.fragmentoDonaElegido = '';
   info.value = null;
@@ -100,7 +101,7 @@ function elegirFragmento(fragmento: string) {
             <ul class="leyendaDona" v-for="valor in dona.valores">
               <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
               <p
-                @click="elegirFragmento(valor.nombre)"
+                @mouseenter="elegirFragmento(valor.nombre)"
                 class="textoLeyenda"
                 :class="valor.nombre === fragmentoElegido ? 'elegido' : ''"
               >

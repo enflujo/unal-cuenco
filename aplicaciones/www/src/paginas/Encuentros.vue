@@ -21,7 +21,7 @@ const info: Ref<string | null> = ref(null);
 const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
 const fragmentoElegido: Ref<string> = ref('');
 
-let donas: Ref<{ tipo?: LlavesEncuentro; valores?: IDona[] }[][]> = ref([]);
+const donas: Ref<{ tipo?: LlavesEncuentro; valores?: IDona[] }[][]> = ref([]);
 
 function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
   const nuevasDonas: {
@@ -126,7 +126,7 @@ function elegirFragmento(fragmento: string) {
                   <ul class="leyendaDona" v-for="valor in dona.valores">
                     <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
                     <p
-                      @click="elegirFragmento(valor.nombre)"
+                      @mouseenter="elegirFragmento(valor.nombre)"
                       class="textoLeyenda"
                       :class="valor.nombre === fragmentoDonaElegido ? 'elegido' : ''"
                     >

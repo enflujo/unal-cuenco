@@ -13,14 +13,21 @@ interface Esquema {
 
 const props = defineProps<Esquema>();
 const { secciones } = toRefs(props);
-
+const trozosDona = ref<SVGPathElement[]>([]);
 const valoresDona = ref<DonaProcesada[]>([]);
 const cerebroGeneral = usarCerebroGeneral();
 const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
 
 onMounted(actualizarDonas);
 watch(secciones, actualizarDonas);
-watch(fragmentoDonaElegido, actualizarDonas);
+watch(fragmentoDonaElegido, () => {
+  if (!fragmentoDonaElegido.value) return;
+  const indiceTrozo = valoresDona.value.findIndex((trozo) => trozo.nombre === fragmentoDonaElegido.value);
+
+  if (indiceTrozo >= 0) {
+    traerAlFrente(indiceTrozo);
+  }
+});
 
 function actualizarDonas() {
   let anguloActual = 0; // Empezamos en 0 grados
@@ -42,8 +49,8 @@ function actualizarDonas() {
 }
 
 // Reordenar el elemento seleccionado al final del contenedor
-function traerAlFrente(evento: Event) {
-  const elemento = evento.target as SVGElement;
+function traerAlFrente(indice: number) {
+  const elemento = trozosDona.value[indice];
   const contenedor = elemento.parentNode;
   if (contenedor) {
     contenedor.appendChild(elemento); // Mueve el elemento al final
@@ -95,13 +102,14 @@ function polarACartesiano(centroX: number, centroY: number, radio: number, angul
       <path
         v-for="(trozo, i) in valoresDona"
         :key="i"
+        ref="trozosDona"
         :d="generarArcoDona(25, 25, 20, 10, trozo.ajuste, trozo.anguloFinal)"
         :fill="trozo.color"
         :class="{ elegido: trozo.nombre === fragmentoDonaElegido }"
         @mouseenter="
-          (e) => {
+          () => {
             mostrarInfo(trozo);
-            traerAlFrente(e);
+            traerAlFrente(i);
           }
         "
         @mouseleave="esconderInfo"
@@ -122,7 +130,8 @@ path {
   transform-origin: center;
   transition: transform 0.2s ease;
 
-  &.elegido {
+  &.elegido,
+  &:hover {
     transform: scale(1.05);
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
   }
