@@ -154,6 +154,8 @@ function crearTextoSede(datos: PropiedadesGeoColectivos) {
   } else if (props.pagina === 'inicio') {
     return `<p class="nombre">${nombre}</p>`;
   }
+
+  return nombre;
 }
 </script>
 
@@ -215,7 +217,7 @@ function crearTextoSede(datos: PropiedadesGeoColectivos) {
 }
 
 @media screen and (min-width: $minPantalla) {
-  #contenedorMapa {
-  }
+  // #contenedorMapa {
+  // }
 }
 </style>

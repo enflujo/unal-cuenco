@@ -86,6 +86,9 @@ export interface DatosFicha {
   indicadores?: ELementoFicha[];
   sedes?: ELementoFicha[];
   tipos?: ELementoFicha[];
+  tiposSede?: ELementoFicha[];
+  roles?: ELementoFicha[];
+  cargos?: ELementoFicha[];
   autores?: ELementoFicha[];
   años?: ELementoFicha[];
   colectivos?: ELementoFicha[];

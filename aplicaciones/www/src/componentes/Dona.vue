@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DonaProcesada, IDona } from '@/tipos';
-import { onMounted, Ref, ref, toRefs, watch } from 'vue';
+import { onMounted, ref, toRefs, watch } from 'vue';
 
 interface Esquema {
   secciones: IDona[];
@@ -79,9 +79,9 @@ function actualizarDonas() {
 }
 
 // Esto si quisiéramos adelgazar la línea del círculo para que coincida con el hover
-.donaCentro {
-  //fill: var(--azulOscuroCuenco);
-}
+// .donaCentro {
+//   //fill: var(--azulOscuroCuenco);
+// }
 
 circle {
   fill: transparent;
