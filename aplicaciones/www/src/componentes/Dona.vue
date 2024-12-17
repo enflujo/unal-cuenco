@@ -30,11 +30,13 @@ watch(fragmentoDonaElegido, () => {
 });
 
 function actualizarDonas() {
+  console.log(props);
   let anguloActual = 0; // Empezamos en 0 grados
 
   valoresDona.value = secciones.value.map((seccion, i) => {
     const anguloInicial = anguloActual;
-    const anguloFinal = anguloActual + (seccion.porcentaje / 100) * 360;
+    const anguloFinal = anguloActual + (seccion.porcentaje / 100) * 359.9;
+    console.log(anguloFinal);
 
     const obj = {
       ...seccion,
