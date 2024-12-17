@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
 import Ficha from './componentes/Ficha.vue';
-import { usarCerebroGeneral } from './cerebros/general';
-import { storeToRefs } from 'pinia';
+// import { usarCerebroGeneral } from './cerebros/general';
+// import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, Ref, ref } from 'vue';
 import Buscador from './componentes/Buscador.vue';
-const cerebroGeneral = usarCerebroGeneral();
-const { paginaActual } = storeToRefs(cerebroGeneral);
+// const cerebroGeneral = usarCerebroGeneral();
+// const { paginaActual } = storeToRefs(cerebroGeneral);
 
 const abierto = ref(false);
 const menu: Ref<HTMLDivElement | null> = ref(null);
