@@ -29,7 +29,7 @@ function procesarLista(llaveLista: LlavesCaracterizacion, valor: string) {
     existe.conteo++;
   }
 
-  return { nombre, slug };
+  return { nombre, slug, conteo: existe?.conteo || 1 };
 }
 
 export default async (
@@ -65,16 +65,14 @@ export default async (
            * Sedes: cantidad de participantes por sede por encuentro
            */
           if (fila[3]) {
-            const nombreSede = slugificar(limpiarTextoSimple(fila[3]));
+            const { nombre, slug, conteo } = procesarLista('sedes', fila[3]);
 
-            const existeSede: { slug: string; conteo: number } | undefined = encuentro.sedes?.find((sede) => {
-              return sede.slug === nombreSede;
-            });
+            const existeSede = encuentro.sedes?.find((sede) => sede.slug === slug);
 
             if (!existeSede) {
-              encuentro.sedes?.push({ slug: nombreSede, conteo: 1 });
+              encuentro.sedes?.push({ nombre, slug, conteo });
             } else {
-              existeSede.conteo++;
+              existeSede.conteo = conteo;
             }
           }
 
@@ -82,16 +80,13 @@ export default async (
            * Tipos Sedes: cantidad de participantes por tipo de sede por encuentro
            */
           if (fila[4]) {
-            const tipoSede = slugificar(limpiarTextoSimple(fila[4]));
-
-            const existeTipo: { slug: string; conteo: number } | undefined = encuentro.tiposSede?.find((tipo) => {
-              return tipo.slug === tipoSede;
-            });
+            const { nombre, slug, conteo } = procesarLista('tipos', fila[4]);
+            const existeTipo = encuentro.tiposSede?.find((tipo) => tipo.slug === slug);
 
             if (!existeTipo) {
-              encuentro.tiposSede?.push({ slug: tipoSede, conteo: 1 });
+              encuentro.tiposSede?.push({ nombre, slug, conteo });
             } else {
-              existeTipo.conteo++;
+              existeTipo.conteo = conteo;
             }
           }
 
@@ -99,16 +94,13 @@ export default async (
            * Roles: cantidad de participantes por rol por encuentro
            */
           if (fila[5]) {
-            const nombreRol = slugificar(limpiarTextoSimple(fila[5]));
-
-            const existeRol: { slug: string; conteo: number } | undefined = encuentro.roles?.find((rol) => {
-              return rol.slug === nombreRol;
-            });
+            const { nombre, slug, conteo } = procesarLista('roles', fila[5]);
+            const existeRol = encuentro.roles?.find((rol) => rol.slug === slug);
 
             if (!existeRol) {
-              encuentro.roles?.push({ slug: nombreRol, conteo: 1 });
+              encuentro.roles?.push({ nombre, slug, conteo });
             } else {
-              existeRol.conteo++;
+              existeRol.conteo = conteo;
             }
           }
 
@@ -116,16 +108,13 @@ export default async (
            * Cargos/Áreas: cantidad de participantes por cargo o área por encuentro
            */
           if (fila[6]) {
-            const nombreCargo = slugificar(limpiarTextoSimple(fila[6]));
-
-            const existeCargo: { slug: string; conteo: number } | undefined = encuentro.cargos?.find((cargo) => {
-              return cargo.slug === nombreCargo;
-            });
+            const { nombre, slug, conteo } = procesarLista('cargos', fila[6]);
+            const existeCargo = encuentro.cargos?.find((cargo) => cargo.slug === slug);
 
             if (!existeCargo) {
-              encuentro.cargos?.push({ slug: nombreCargo, conteo: 1 });
+              encuentro.cargos?.push({ nombre, slug, conteo });
             } else {
-              existeCargo.conteo++;
+              existeCargo.conteo = conteo;
             }
           }
         }

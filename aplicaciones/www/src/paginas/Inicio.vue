@@ -2,9 +2,17 @@
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import Mapa from '@/componentes/Mapa.vue';
-import { onMounted } from 'vue';
+import EncuentrosGeneral from '@/componentes/EncuentrosGeneral.vue';
+import { onMounted, ref, Ref } from 'vue';
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroDatos = usarCerebroDatos();
+
+const vistas = [
+  { llave: 'mapa', nombre: 'Mapa' },
+  { llave: 'graficas', nombre: 'Gráficas' },
+];
+
+let vistaElegida: Ref<string> = ref('graficas');
 
 onMounted(async () => {
   cerebroGeneral.paginaActual = 'colectivos';
@@ -49,8 +57,16 @@ onMounted(async () => {
         ella, más allá de los intereses de usufructo.
       </p>
     </div>
+    <div class="contenedorCentral">
+      <div class="botonesVista">
+        <div v-for="vista in vistas" class="botonVista" @click="vistaElegida = vista.llave">
+          {{ vista.nombre }}
+        </div>
+      </div>
 
-    <Mapa />
+      <EncuentrosGeneral v-if="vistaElegida === 'graficas'" />
+      <Mapa v-if="vistaElegida === 'mapa'" pagina="inicio" />
+    </div>
   </main>
 </template>
 
@@ -71,7 +87,7 @@ onMounted(async () => {
 .icono {
   margin-top: -20px;
   margin-bottom: 2em;
-  // width: ;
+  display: none;
 }
 
 h1 {
@@ -85,11 +101,51 @@ h1 {
   width: 80vw;
 }
 
+.contenedorCentral {
+  width: 80vw;
+  margin: 0 auto;
+  padding-bottom: 7em;
+}
+
+.botonesVista {
+  margin-top: 2em;
+}
+
+.tituloSeccion {
+  text-align: center;
+}
+
+.botonVista {
+  color: var(--magentaCuenco);
+  margin: 1em;
+  cursor: pointer;
+  border: 1px solid var(--azulClaroCuenco);
+  border-radius: 5px;
+  padding: 0.3em;
+
+  &:hover {
+    color: var(--azulClaroCuenco);
+  }
+
+  &.activo {
+    background-color: var(--azulClaroCuenco);
+    color: var(--blanco);
+  }
+}
+
 @media screen and (min-width: $minTablet) {
   #presentacion {
     margin: 0 2em;
     padding-right: 1em;
     width: 40vw;
+  }
+  .contenedorCentral {
+    width: 65vw;
+    padding-bottom: 0;
+  }
+
+  .icono {
+    display: block;
   }
 }
 
@@ -98,7 +154,7 @@ h1 {
     overflow: auto;
     margin-left: 4em;
     padding-right: 1em;
-    width: 30vw;
+    width: 28vw;
   }
 }
 </style>
