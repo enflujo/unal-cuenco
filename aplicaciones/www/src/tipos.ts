@@ -104,4 +104,5 @@ export interface IDona {
 
 export interface DonaProcesada extends IDona {
   ajuste: number;
+  anguloFinal: number;
 }
