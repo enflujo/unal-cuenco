@@ -102,6 +102,7 @@ function elegirFragmento(fragmento: string) {
               <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
               <p
                 @mouseenter="elegirFragmento(valor.nombre)"
+                @mouseleave="elegirFragmento('')"
                 class="textoLeyenda"
                 :class="valor.nombre === fragmentoElegido ? 'elegido' : ''"
               >
