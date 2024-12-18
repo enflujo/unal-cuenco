@@ -45,6 +45,7 @@ function crearDonas(datos: ListasCaracterizacion | null) {
     let total = 0;
     let valores: IDona[] = [];
     if (!datos) return;
+
     datos[llave].forEach((elemento) => {
       datosSeccion.push({ slug: elemento.slug, conteo: elemento.conteo, nombre: elemento.nombre });
       total += elemento.conteo;
@@ -52,11 +53,12 @@ function crearDonas(datos: ListasCaracterizacion | null) {
 
     datos[llave].forEach((elemento, i) => {
       datosSeccion.push({ slug: elemento.slug, conteo: elemento.conteo, nombre: elemento.nombre });
+
       const valor = {
         nombre: elemento.nombre,
         valor: elemento.conteo,
         porcentaje: (elemento.conteo * 100) / total,
-        color: colores[i],
+        color: elemento.color || colores[i],
       };
       valores.push(valor);
     });

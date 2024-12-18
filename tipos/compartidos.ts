@@ -11,6 +11,7 @@ export interface ElementoLista {
   colectivos?: string[];
   encuentrosCaracterizacion?: string[];
   encuentros?: string[];
+  color?: string;
 }
 
 export interface Relacion {

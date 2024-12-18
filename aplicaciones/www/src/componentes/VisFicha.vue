@@ -46,7 +46,7 @@ function crearDonas(datos: DatosFicha) {
             nombre: obj.nombre,
             valor: obj.conteo,
             porcentaje: Math.ceil((obj.conteo / total) * 100),
-            color: colores[i],
+            color: obj.color || colores[i],
           };
         });
 
@@ -66,7 +66,12 @@ function crearDonas(datos: DatosFicha) {
       if (datosSeccion) {
         const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
         const datosDona = datosSeccion.map((obj, i) => {
-          return { nombre: obj.nombre, valor: obj.conteo, porcentaje: (obj.conteo / total) * 100, color: colores[i] };
+          return {
+            nombre: obj.nombre,
+            valor: obj.conteo,
+            porcentaje: (obj.conteo / total) * 100,
+            color: obj.color || colores[i],
+          };
         });
 
         nuevasDonas.push({ tipo: llave, valores: datosDona });

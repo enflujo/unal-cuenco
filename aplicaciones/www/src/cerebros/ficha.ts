@@ -139,7 +139,12 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           datos.dependencias.forEach((obj) => {
             const existe = lista?.dependencias.find((dep) => dep.slug === obj.slug);
             if (existe) {
-              datosFicha.dependencias?.push({ nombre: obj.nombre, conteo: 1, id: existe.id });
+              datosFicha.dependencias?.push({
+                nombre: obj.nombre,
+                conteo: 1,
+                id: existe.id,
+                color: existe.color || '#CCC',
+              });
             }
           });
         }
@@ -155,7 +160,12 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             datosFicha.indicadores = [];
             const existe = lista.indicadores.find((obj) => obj.slug === datos.indicadores?.slug);
             if (existe) {
-              datosFicha.indicadores.push({ nombre: datos.indicadores.nombre, conteo: 1, id: existe.id });
+              datosFicha.indicadores.push({
+                nombre: datos.indicadores.nombre,
+                conteo: 1,
+                id: existe.id,
+                color: existe.color || '#CCC',
+              });
             }
           }
         }
@@ -167,7 +177,12 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             datosFicha.tipos = [];
             const existe = lista.tipos.find((obj) => obj.slug === datos.tipos?.slug);
             if (existe) {
-              datosFicha.tipos.push({ nombre: datos.tipos.nombre, conteo: 1, id: existe.id });
+              datosFicha.tipos.push({
+                nombre: datos.tipos.nombre,
+                conteo: 1,
+                id: existe.id,
+                color: existe.color || '#CCC',
+              });
             }
           }
         }
@@ -190,7 +205,10 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
         if (datos.estados) {
           const estado = listasColectivos?.estados.find((obj) => obj.slug === datos.estados?.slug);
-          if (estado) datosFicha.estados = [{ nombre: datos.estados.nombre, id: estado.id, conteo: 1 }];
+          if (estado)
+            datosFicha.estados = [
+              { nombre: datos.estados.nombre, id: estado.id, conteo: 1, color: estado.color || '#CCC' },
+            ];
         }
 
         if (datos.sedes) {
@@ -198,13 +216,17 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
           datos.sedes.forEach((obj) => {
             const sede = listasColectivos?.sedes.find((s) => s.slug === obj.slug);
-            if (sede) datosFicha.sedes?.push({ nombre: obj.nombre, conteo: 1, id: sede.id });
+            if (sede)
+              datosFicha.sedes?.push({ nombre: obj.nombre, conteo: 1, id: sede.id, color: sede.color || '#CCC' });
           });
         }
 
         if (datos.modalidades) {
           const modalidad = listasColectivos?.modalidades.find((obj) => obj.slug === datos.modalidades?.slug);
-          if (modalidad) datosFicha.modalidades = [{ nombre: datos.modalidades.nombre, id: modalidad.id, conteo: 1 }];
+          if (modalidad)
+            datosFicha.modalidades = [
+              { nombre: datos.modalidades.nombre, id: modalidad.id, conteo: 1, color: modalidad.color || '#CCC' },
+            ];
         }
       }
 
@@ -216,13 +238,14 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
           datos.autores.forEach((obj) => {
             const autor = listasPublicaciones?.autores.find((a) => a.slug === obj.slug);
-            if (autor) datosFicha.autores?.push({ nombre: obj.nombre, conteo: 1, id: autor.id });
+            if (autor)
+              datosFicha.autores?.push({ nombre: obj.nombre, conteo: 1, id: autor.id, color: autor.color || '#CCC' });
           });
         }
 
         if (datos.años) {
           const año = listasPublicaciones?.años.find((a) => a.slug === datos.años?.slug);
-          if (año) datosFicha.años = [{ nombre: datos.años.nombre, conteo: 1, id: año.id }];
+          if (año) datosFicha.años = [{ nombre: datos.años.nombre, conteo: 1, id: año.id, color: año.color || '#CCC' }];
         }
 
         if (datos.referencia) {
@@ -240,7 +263,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             const colectivo = colectivos.find((obj) => obj.id === id);
 
             if (colectivo && datosFicha.colectivos) {
-              datosFicha.colectivos.push({ nombre: colectivo.titulo.nombre, conteo: 1, id });
+              datosFicha.colectivos.push({ nombre: colectivo.titulo.nombre, conteo: 1, id, color: '' });
             }
           });
         }
@@ -252,7 +275,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             const publicacion = publicaciones.find((obj) => obj.id === id);
 
             if (publicacion && datosFicha.publicaciones) {
-              datosFicha.publicaciones.push({ nombre: publicacion.titulo.nombre, conteo: 1, id });
+              datosFicha.publicaciones.push({ nombre: publicacion.titulo.nombre, conteo: 1, id, color: '' });
             }
           });
         }
@@ -275,20 +298,27 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
         datos.relaciones.forEach((obj) => {
           let nombre = '';
+          let color = '#CCC';
 
           if (paginaActual === 'colectivos' && listasColectivos) {
             const datos = listasColectivos[obj.tipo as LlavesColectivos].find((c) => c.id === obj.id);
-            if (datos) nombre = datos.nombre;
+            if (datos) {
+              nombre = datos.nombre;
+              color = datos.color || '#CCC';
+            }
           } else if (paginaActual === 'publicaciones' && listasPublicaciones) {
             const datos = listasPublicaciones[obj.tipo as LlavesPublicaciones].find((p) => p.id === obj.id);
-            if (datos) nombre = datos.nombre;
+            if (datos) {
+              nombre = datos.nombre;
+              color = datos.color || '#CCC';
+            }
           }
 
           if (!datosFicha[obj.tipo]) {
             datosFicha[obj.tipo] = [];
           }
 
-          datosFicha[obj.tipo]?.push({ nombre, conteo: obj.conteo, id: obj.id });
+          datosFicha[obj.tipo]?.push({ nombre, conteo: obj.conteo, id: obj.id, color });
         });
       }
     },

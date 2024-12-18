@@ -67,7 +67,7 @@ export interface CerebroFicha {
 export type TiposDeVistas = 'mapa' | 'graficas';
 export type TiposNodo = LlavesColectivos | LlavesPublicaciones | 'publicaciones' | 'colectivos';
 export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto';
-export type ELementoFicha = { nombre: string; conteo: number; id: string };
+export type ELementoFicha = { nombre: string; conteo: number; id: string; color: string };
 
 export interface DatosFicha {
   id: string;

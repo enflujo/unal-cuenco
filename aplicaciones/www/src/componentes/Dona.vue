@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { DonaProcesada, IDona } from '@/tipos';
 import { onMounted, ref, toRefs, watch } from 'vue';
-import { colores } from '@/utilidades/constantes';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { storeToRefs } from 'pinia';
 
@@ -32,15 +31,13 @@ watch(fragmentoDonaElegido, () => {
 function actualizarDonas() {
   let anguloActual = 0; // Empezamos en 0 grados
 
-  valoresDona.value = secciones.value.map((seccion, i) => {
+  valoresDona.value = secciones.value.map((seccion) => {
     const anguloInicial = anguloActual;
     const anguloFinal = anguloActual + (seccion.porcentaje / 100) * 359.9;
-
     const obj = {
       ...seccion,
       ajuste: anguloInicial,
       anguloFinal,
-      color: colores[i],
     };
 
     anguloActual = anguloFinal;

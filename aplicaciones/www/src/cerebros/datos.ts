@@ -12,7 +12,16 @@ import type {
   ListasCaracterizacion,
   LlavesCaracterizacion,
   EncuentroCaracterizacionConteo,
+  ElementoLista,
 } from '@/tipos/compartidos';
+import { colores } from '@/utilidades/constantes';
+
+function asignarColor(lista: ElementoLista[]) {
+  lista.forEach((elemento, i) => {
+    const color = colores[i % colores.length];
+    elemento.color = color;
+  });
+}
 
 export const usarCerebroDatos = defineStore('cerebroDatos', {
   state: (): CerebroDatos => {
@@ -98,6 +107,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
           const lista = [...listas[tipo as LlavesPublicaciones]];
           const largo = lista.length;
           ordenarRapido(lista, 0, largo - 1, largo);
+          asignarColor(lista);
           this.listasPublicacionesOrdenadas[tipo as LlavesPublicaciones] = lista;
         }
         this.listasPublicaciones = listas;
@@ -166,6 +176,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
           const lista = [...listas[tipo as LlavesColectivos]];
           const largo = lista.length;
           ordenarRapido(lista, 0, largo - 1, largo);
+          asignarColor(lista);
           this.listasColectivosOrdenadas[tipo as LlavesColectivos] = lista;
         }
         this.listasColectivos = listas;
@@ -203,6 +214,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
           const lista = [...listas[tipo as LlavesCaracterizacion]];
           const largo = lista.length;
           ordenarRapido(lista, 0, largo - 1, largo);
+          asignarColor(lista);
           if (!this.listasCaracterizacion) return;
           this.listasCaracterizacion[tipo as LlavesCaracterizacion] = lista;
         }
