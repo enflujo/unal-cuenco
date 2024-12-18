@@ -10,7 +10,6 @@ import { ListasCaracterizacion, LlavesCaracterizacion } from '@/tipos/compartido
 import { colores, llavesCaracterizacion } from '../utilidades/constantes';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { primeraMayuscula } from '@/utilidades/ayudas';
-import { ordenarListaObjetos } from '@/utilidades/ayudas';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroDatos = usarCerebroDatos();
