@@ -76,3 +76,11 @@ ordenarRapido.intercambiar = (lista: ElementoLista[], el1: number, el2: number) 
 export function primeraMayuscula(texto: string | undefined) {
   return String(texto).charAt(0).toUpperCase() + String(texto).slice(1);
 }
+
+export function ordenarListaObjetos(lista: any[], llave: string, descendente = false) {
+  lista.sort((a, b) => {
+    if (a[llave] < b[llave]) return descendente ? -1 : 1;
+    else if (a[llave] > b[llave]) return descendente ? 1 : -1;
+    return 0;
+  });
+}
