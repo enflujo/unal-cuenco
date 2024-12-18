@@ -7,7 +7,7 @@ import type { Errata, FilaCaracterizacion } from './tipos';
 const encuentrosCaracterizacion: EncuentroCaracterizacionConteo[] = [];
 const listas: ListasCaracterizacion = {
   sedes: [],
-  tipos: [],
+  tiposSede: [],
   roles: [],
   cargos: [],
 };
@@ -80,7 +80,7 @@ export default async (
            * Tipos Sedes: cantidad de participantes por tipo de sede por encuentro
            */
           if (fila[4]) {
-            const { nombre, slug, conteo } = procesarLista('tipos', fila[4]);
+            const { nombre, slug, conteo } = procesarLista('tiposSede', fila[4]);
             const existeTipo = encuentro.tiposSede?.find((tipo) => tipo.slug === slug);
 
             if (!existeTipo) {

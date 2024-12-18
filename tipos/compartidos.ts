@@ -10,10 +10,11 @@ export interface ElementoLista {
   publicaciones?: string[];
   colectivos?: string[];
   encuentrosCaracterizacion?: string[];
+  encuentros?: string[];
 }
 
 export interface Relacion {
-  tipo: keyof ListasPublicaciones | keyof ListasColectivos | keyof ListasCaracterizacion;
+  tipo: keyof ListasPublicaciones | keyof ListasColectivos | keyof ListasCaracterizacion | keyof ListasEncuentros;
   conteo: number;
   id: string;
 }
@@ -38,12 +39,17 @@ export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias'
 export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 export type LlavesCaracterizacion = 'sedes' | 'tiposSede' | 'roles' | 'cargos';
 export type LlavesEncuentro = 'id' | 'numero' | 'cargos' | 'sedes' | 'tiposSede' | 'roles' | 'sedes';
+export type LlavesEncuentros = 'sedes' | 'tecnicas' | 'categorias' | 'tematicas' | 'participantes';
 
 export type ListasPublicaciones = {
   [llave in LlavesPublicaciones]: ElementoLista[];
 };
 export type ListasColectivos = {
   [llave in LlavesColectivos]: ElementoLista[];
+};
+
+export type ListasEncuentros = {
+  [llave in LlavesEncuentros]: ElementoLista[];
 };
 
 export type ListasCaracterizacion = {
@@ -91,7 +97,7 @@ export interface EncuentroCaracterizacion {
   numero?: string;
   personas?: PersonaCaracterizacion[];
   sedes?: DefinicionSimple[];
-  tipos?: DefinicionSimple[];
+  tiposSede?: DefinicionSimple[];
   roles?: DefinicionSimple[];
   cargos?: DefinicionSimple[];
 }
@@ -111,4 +117,14 @@ export interface OpcionBuscadorDatos {
   tipo: string;
   id: string;
   vista: 'publicaciones' | 'colectivos' | 'encuentros';
+}
+
+export interface Encuentro {
+  id: string;
+  sedes?: DefinicionSimple;
+  tecnicas?: DefinicionSimple;
+  categorias?: DefinicionSimple;
+  tematicas?: DefinicionSimple;
+  fragmento?: string;
+  participantes?: DefinicionSimple[];
 }

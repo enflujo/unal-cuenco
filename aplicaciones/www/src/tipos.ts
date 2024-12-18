@@ -93,6 +93,11 @@ export interface DatosFicha {
   años?: ELementoFicha[];
   colectivos?: ELementoFicha[];
   publicaciones?: ELementoFicha[];
+  tecnicas?: ELementoFicha[];
+  categorias?: ELementoFicha[];
+  tematicas?: ELementoFicha[];
+  fragmento?: string;
+  participantes?: ELementoFicha[];
 }
 
 export interface IDona {

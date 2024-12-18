@@ -25,7 +25,7 @@ import type { Errata, FilaCaracterizacion, FilaColectivos } from './tipos';
 const encuentrosCaracterizacion: EncuentroCaracterizacion[] = [];
 const listas: ListasCaracterizacion = {
   sedes: [],
-  tipos: [],
+  tiposSede: [],
   roles: [],
   cargos: [],
 };
@@ -100,7 +100,7 @@ export default async (
           const { nombre, slug } = procesarLista('sedes', valorTipoSede);
           tiposSede.push({ nombre, slug });
 
-          encuentro.tipos = tiposSede;
+          encuentro.tiposSede = tiposSede;
         } else {
           errata.push({ fila: numeroFila, error: `No tiene SEDE.` });
         }
@@ -160,7 +160,7 @@ export default async (
 
   function construirRelacionesEncuentros() {
     // Estos campos son los que se usan para crear relaciones
-    const campos: LlavesCaracterizacion[] = ['sedes', 'tipos', 'roles', 'cargos'];
+    const campos: LlavesCaracterizacion[] = ['sedes', 'tiposSede', 'roles', 'cargos'];
 
     encuentrosCaracterizacion.forEach((encuentro) => {
       // Pasar por cada campo sobre los que queremos construir relaciones
@@ -188,14 +188,7 @@ export default async (
 
                   const elementosDondeConectar = aplanarDefinicionesASlugs(datos);
 
-                  llenarRelacion(
-                    elementosDondeConectar,
-                    listas[campo],
-                    existe.id,
-                    campoRelacion,
-                    `${id}`,
-                    existe.nombre
-                  );
+                  llenarRelacion(elementosDondeConectar, listas[campo], existe.id, campoRelacion, `${id}`);
                 } else {
                   console.log('Esto no puede pasar');
                 }

@@ -2,7 +2,6 @@ import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 import {
   ordenarListaObjetos,
-  guardarJSON,
   limpiarTextoSimple,
   esUrl,
   extraerUrls,
@@ -19,7 +18,6 @@ import type {
 } from '@/tipos/compartidos';
 import type { Errata, FilaColectivos } from './tipos';
 import { datosGeo } from '../datos/datosGeo';
-import type { Feature, Geometry, Point, Position } from 'geojson';
 
 const colectivos: Colectivo[] = [];
 const listas: ListasColectivos = {

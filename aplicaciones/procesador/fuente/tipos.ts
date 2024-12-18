@@ -20,6 +20,8 @@ export type FilaProduccionAcademica = [
   subindicador: string,
 ];
 
+export type FilaCategoriasEncuentro = [categoria: string, conteo: number, definicion: string];
+
 export type FilaColectivos = [
   nombre: string,
   tipos: string,
@@ -49,4 +51,16 @@ export type FilaCaracterizacion = [
   rol: string,
   cargoArea: string,
   codigo: string,
+];
+
+export type FilaEncuentro = [
+  codigo: number,
+  numeroEncuentro: number,
+  sede: string,
+  dia: number,
+  tecnica: string,
+  tematica: string,
+  categoria: string,
+  fragmento: string,
+  participantes: string,
 ];
