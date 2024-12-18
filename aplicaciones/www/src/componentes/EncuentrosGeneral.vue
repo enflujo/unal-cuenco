@@ -10,6 +10,7 @@ import { ListasCaracterizacion, LlavesCaracterizacion } from '@/tipos/compartido
 import { colores, llavesCaracterizacion } from '../utilidades/constantes';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { primeraMayuscula } from '@/utilidades/ayudas';
+import { ordenarListaObjetos } from '@/utilidades/ayudas';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroDatos = usarCerebroDatos();
@@ -61,6 +62,11 @@ function crearDonas(datos: ListasCaracterizacion | null) {
         color: elemento.color || colores[i],
       };
       valores.push(valor);
+      valores = valores.sort((a, b) => {
+        if (a.valor < b.valor) return 1;
+        else if (a.valor > b.valor) return -1;
+        return 0;
+      });
     });
 
     nuevasDonas.push({ tipo: llave, valores: valores });
