@@ -5,10 +5,12 @@ import type { CerebroFicha, DatosFicha, TiposNodo } from '@/tipos';
 import type {
   Colectivo,
   ElementoLista,
+  Encuentro,
   Indicador,
   ListasColectivos,
   ListasPublicaciones,
   LlavesColectivos,
+  LlavesEncuentros,
   LlavesPublicaciones,
   Publicacion,
 } from '@/tipos/compartidos';
@@ -33,9 +35,10 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
     },
 
     cambiarFicha(id: string, tipo: TiposNodo, direccion: 'adelante' | 'atras' = 'adelante') {
-      const { colectivos, listasColectivos, publicaciones, listasPublicaciones } = usarCerebroDatos();
+      const { colectivos, listasColectivos, publicaciones, listasPublicaciones, encuentros, listasEncuentros } =
+        usarCerebroDatos();
       const { paginaActual } = usarCerebroGeneral();
-      let lista: ElementoLista[] | Colectivo[] | Publicacion[] | null = null;
+      let lista: ElementoLista[] | Colectivo[] | Publicacion[] | Encuentro[] | null = null;
 
       if (paginaActual === 'colectivos') {
         if (tipo === 'colectivos') {
@@ -48,6 +51,12 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           lista = publicaciones;
         } else {
           lista = listasPublicaciones ? listasPublicaciones[tipo as LlavesPublicaciones] : null;
+        }
+      } else if (paginaActual === 'encuentros') {
+        if (tipo === 'encuentros') {
+          lista = encuentros;
+        } else {
+          lista = listasEncuentros ? listasEncuentros[tipo as LlavesEncuentros] : null;
         }
       }
 
@@ -81,8 +90,11 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         listasPublicaciones,
         indicadoresColectivos,
         indicadoresPublicaciones,
+        indicadoresEncuentros,
         colectivos,
         publicaciones,
+        encuentros,
+        listasEncuentros,
       } = usarCerebroDatos();
       const { paginaActual } = usarCerebroGeneral();
 
@@ -114,6 +126,17 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           if (datos) llenarDatosFicha(datos);
           this.totalNodos = listasPublicaciones[tipo as LlavesPublicaciones].length;
         }
+      } else if (paginaActual === 'encuentros') {
+        if (tipo === 'encuentros' && encuentros) {
+          const encuentro = encuentros.find((obj) => obj.id === id);
+          if (encuentro) llenarDatosFicha(encuentro);
+          this.totalNodos = encuentros.length;
+        } else if (listasEncuentros) {
+          const datos = listasEncuentros[tipo as LlavesEncuentros].find((obj) => obj.id === id);
+          console.log('listasEncuentros', datos);
+          if (datos) llenarDatosFicha(datos);
+          this.totalNodos = listasEncuentros[tipo as LlavesEncuentros].length;
+        }
       }
 
       this.idActual = id;
@@ -124,6 +147,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
       function listaActual() {
         if (paginaActual === 'colectivos' && listasColectivos) return listasColectivos;
         else if (paginaActual === 'publicaciones') return listasPublicaciones;
+        else if (paginaActual === 'encuentros') return listasEncuentros;
         return null;
       }
 
@@ -135,7 +159,9 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           let lista: ListasColectivos | ListasPublicaciones | null = null;
           if (paginaActual === 'colectivos') lista = listasColectivos;
           else if (paginaActual === 'publicaciones') lista = listasPublicaciones;
+
           datosFicha.dependencias = [];
+
           datos.dependencias.forEach((obj) => {
             const existe = lista?.dependencias.find((dep) => dep.slug === obj.slug);
             if (existe) {
@@ -159,6 +185,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           if (lista) {
             datosFicha.indicadores = [];
             const existe = lista.indicadores.find((obj) => obj.slug === datos.indicadores?.slug);
+
             if (existe) {
               datosFicha.indicadores.push({
                 nombre: datos.indicadores.nombre,
@@ -253,7 +280,30 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         }
       }
 
+      function llenarDatosFichaEncuentro(datos: Encuentro) {
+        if (datos.id) {
+          datosFicha.encuentros = `Encuentro ${datos.id}`;
+        }
+
+        if (datos.sedes) {
+          const sede = listasEncuentros?.sedes.find((s) => s.slug === datos.sedes?.slug);
+          if (sede)
+            datosFicha.sedes = [{ nombre: datos.sedes.nombre, conteo: 1, id: sede.id, color: sede.color || '#CCC' }];
+        }
+
+        if (datos.categorias) {
+          const categoria = listasEncuentros?.categorias.find((c) => c.slug === datos.categorias?.slug);
+          if (categoria)
+            datosFicha.categorias = [
+              { nombre: datos.categorias.nombre, conteo: 1, id: categoria.id, color: categoria.color || '#CCC' },
+            ];
+        }
+
+        console.log(datos);
+      }
+
       function llenarDatosFicha(datos: ElementoLista) {
+        console.log('llenarDatosFicha', datos);
         datosFicha.titulo = datos.nombre;
 
         if (datos.colectivos && colectivos) {
@@ -280,6 +330,18 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           });
         }
 
+        if (datos.encuentros && encuentros) {
+          datosFicha.publicaciones = [];
+
+          datos.encuentros.forEach((id) => {
+            const encuentro = encuentros.find((obj) => obj.id === id);
+
+            if (encuentro && datosFicha.encuentros) {
+              datosFicha.encuentros.push({ nombre: encuentro.id, conteo: 1, id, color: '' });
+            }
+          });
+        }
+
         if (tipo === 'indicadores') {
           let indicador: Indicador | undefined;
 
@@ -287,6 +349,9 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             indicador = indicadoresColectivos?.find((obj) => obj.slug === datos?.slug);
           } else if (paginaActual === 'publicaciones') {
             indicador = indicadoresPublicaciones?.find((obj) => obj.slug === datos?.slug);
+          } else if (paginaActual === 'encuentros') {
+            console.log('hey');
+            indicador = indicadoresEncuentros?.find((obj) => obj.slug === datos?.slug);
           }
 
           if (indicador && indicador.definicion) {
@@ -308,6 +373,13 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             }
           } else if (paginaActual === 'publicaciones' && listasPublicaciones) {
             const datos = listasPublicaciones[obj.tipo as LlavesPublicaciones].find((p) => p.id === obj.id);
+            if (datos) {
+              nombre = datos.nombre;
+              color = datos.color || '#CCC';
+            }
+          } else if (paginaActual === 'encuentros' && listasEncuentros) {
+            const datos = listasEncuentros[obj.tipo as LlavesEncuentros].find((p) => p.id === obj.id);
+            console.log(obj.tipo, datos);
             if (datos) {
               nombre = datos.nombre;
               color = datos.color || '#CCC';

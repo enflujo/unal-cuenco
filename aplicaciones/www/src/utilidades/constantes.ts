@@ -1,5 +1,11 @@
 import { TiposNodo, TiposNodoSinRelaciones } from '@/tipos';
-import { LlavesCaracterizacion, LlavesColectivos, LlavesEncuentro, LlavesPublicaciones } from '@/tipos/compartidos';
+import {
+  LlavesCaracterizacion,
+  LlavesColectivos,
+  LlavesEncuentro,
+  LlavesEncuentros,
+  LlavesPublicaciones,
+} from '@/tipos/compartidos';
 
 export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: string } = {
   publicaciones: 'Publicaciones',
@@ -17,6 +23,11 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   fechaFin: 'Activo hasta',
   enlaceFuente: 'Enlace Fuente',
   contacto: 'Contacto',
+  tecnicas: 'Técnicas',
+  categorias: 'Categorías',
+  tematicas: 'Temáticas',
+  participantes: 'Participantes',
+  encuentros: 'Encuentros',
 };
 
 export const nombresListasCaracterizacion: { [llave in LlavesCaracterizacion]: string } = {
@@ -41,6 +52,14 @@ export const llavesRelacionesColectivos: LlavesColectivos[] = [
   'dependencias',
   'modalidades',
   'indicadores',
+];
+
+export const llavesRelacionesEncuentros: LlavesEncuentros[] = [
+  'sedes',
+  'tecnicas',
+  'categorias',
+  'tematicas',
+  'participantes',
 ];
 
 export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'cargos', 'tiposSede', 'sedes', 'roles'];

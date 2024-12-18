@@ -8,6 +8,9 @@ import type {
   Publicacion,
   ListasCaracterizacion,
   EncuentroCaracterizacionConteo,
+  ListasEncuentros,
+  Encuentro,
+  LlavesEncuentros,
 } from '@/tipos/compartidos';
 import type { FeatureCollection, Point } from 'geojson';
 
@@ -28,7 +31,7 @@ export type PropiedadesGeoColectivos = {
 export type GeoColectivos = FeatureCollection<Point, PropiedadesGeoColectivos>;
 
 export interface CerebroDatos {
-  listaElegida: LlavesColectivos | LlavesPublicaciones | null;
+  listaElegida: LlavesColectivos | LlavesPublicaciones | LlavesEncuentros | null;
   extremosFechasPublicaciones: TMinMax | null;
   // COLECTIVOS
   colectivos: Colectivo[] | null;
@@ -54,6 +57,14 @@ export interface CerebroDatos {
   cargandoEncuentroCaracterizacion: boolean;
   listasCaracterizacion: ListasCaracterizacion | null;
   cargandoCaracterizacionConteo: boolean;
+
+  // ENCUENTROS
+  encuentros: Encuentro[] | null;
+  indicadoresEncuentros: Indicador[] | null;
+  cargandoEncuentros: boolean;
+  listasEncuentros: ListasEncuentros | null;
+  cargandoListasEncuentros: boolean;
+  listasEncuentrosOrdenadas: ListasEncuentros | null;
 }
 
 export interface CerebroFicha {
@@ -65,8 +76,14 @@ export interface CerebroFicha {
 }
 
 export type TiposDeVistas = 'mapa' | 'graficas';
-export type TiposNodo = LlavesColectivos | LlavesPublicaciones | 'publicaciones' | 'colectivos';
-export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto';
+export type TiposNodo =
+  | LlavesColectivos
+  | LlavesPublicaciones
+  | LlavesEncuentros
+  | 'publicaciones'
+  | 'colectivos'
+  | 'encuentros';
+export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto' | 'encuentro';
 export type ELementoFicha = { nombre: string; conteo: number; id: string; color: string };
 
 export interface DatosFicha {
@@ -98,6 +115,7 @@ export interface DatosFicha {
   tematicas?: ELementoFicha[];
   fragmento?: string;
   participantes?: ELementoFicha[];
+  encuentros?: ELementoFicha[];
 }
 
 export interface IDona {

@@ -13,6 +13,9 @@ import type {
   LlavesCaracterizacion,
   EncuentroCaracterizacionConteo,
   ElementoLista,
+  LlavesEncuentros,
+  ListasEncuentros,
+  Encuentro,
 } from '@/tipos/compartidos';
 import { colores } from '@/utilidades/constantes';
 
@@ -55,6 +58,14 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
 
       listasCaracterizacion: null,
       cargandoCaracterizacionConteo: false,
+
+      // ENCUENTROS
+      encuentros: null,
+      indicadoresEncuentros: null,
+      cargandoEncuentros: false,
+      listasEncuentros: null,
+      cargandoListasEncuentros: false,
+      listasEncuentrosOrdenadas: null,
     };
   },
 
@@ -64,7 +75,7 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
      *
      * @param llaveLista Llave de la lista a cambiar.
      */
-    cambiarLista(llaveLista: LlavesColectivos | LlavesPublicaciones) {
+    cambiarLista(llaveLista: LlavesColectivos | LlavesPublicaciones | LlavesEncuentros) {
       this.listaElegida = llaveLista;
     },
 
@@ -183,6 +194,49 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
         this.cargandoListasColectivos = false;
       } catch (error) {
         console.error('Problema cargando datos de listasColectivos', JSON.stringify(error));
+      }
+    },
+
+    async cargarDatosEncuentros() {
+      if (this.encuentros || this.cargandoEncuentros) return;
+      this.cargandoEncuentros = true;
+
+      try {
+        this.encuentros = await pedirDatos<Encuentro[]>('datos/encuentros2.json');
+        this.indicadoresEncuentros = await pedirDatos<Indicador[]>('datos/categoriasEncuentros.json');
+        this.cargandoEncuentros = false;
+      } catch (error) {
+        console.error('Problema cargando datos de encuentros', JSON.stringify(error));
+      }
+
+      await this.cargarDatosListaEncuentros();
+    },
+
+    async cargarDatosListaEncuentros() {
+      if (this.listasEncuentros || this.cargandoListasEncuentros) return;
+      this.cargandoListasEncuentros = true;
+
+      try {
+        const listas = await pedirDatos<ListasEncuentros>('datos/listasEncuentros2.json');
+        this.listasEncuentrosOrdenadas = {
+          sedes: [],
+          tecnicas: [],
+          categorias: [],
+          tematicas: [],
+          participantes: [],
+        };
+
+        for (const tipo in listas) {
+          const lista = [...listas[tipo as LlavesEncuentros]];
+          const largo = lista.length;
+          ordenarRapido(lista, 0, largo - 1, largo);
+          asignarColor(lista);
+          this.listasEncuentrosOrdenadas[tipo as LlavesEncuentros] = lista;
+        }
+        this.listasEncuentros = listas;
+        this.cargandoListasEncuentros = false;
+      } catch (error) {
+        console.error('Problema cargando datos de listasEncuentros', JSON.stringify(error));
       }
     },
 

@@ -15,6 +15,7 @@ const ficha: Ref<HTMLDivElement | null> = ref(null);
  */
 const secciones: Array<TiposNodo | TiposNodoSinRelaciones> = [
   'publicaciones',
+  'encuentros',
   'colectivos',
   'fuente',
   'enlaceFuente',
@@ -23,11 +24,15 @@ const secciones: Array<TiposNodo | TiposNodoSinRelaciones> = [
   'contacto',
   'dependencias',
   'indicadores',
+  'categorias',
+  'participantes',
+  'tematicas',
   'modalidades',
   'sedes',
   'tipos',
   'años',
   'referencia',
+  'tecnicas',
 ];
 
 onMounted(() => {

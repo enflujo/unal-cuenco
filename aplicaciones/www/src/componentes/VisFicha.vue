@@ -5,6 +5,7 @@ import { usarCerebroGeneral } from '@/cerebros/general';
 import {
   colores,
   llavesRelacionesColectivos,
+  llavesRelacionesEncuentros,
   llavesRelacionesPublicaciones,
   nombresListas,
 } from '@/utilidades/constantes';
@@ -81,6 +82,30 @@ function crearDonas(datos: DatosFicha) {
     if (datos.tipo === 'publicaciones') {
     } else {
       total.value = datos.publicaciones ? datos.publicaciones.length : 0;
+      tituloTotal.value = 'Total publicaciones: ';
+    }
+  } else if (cerebroGeneral.paginaActual === 'encuentros') {
+    llavesRelacionesEncuentros.forEach((llave) => {
+      const datosSeccion = datos[llave];
+
+      if (datosSeccion) {
+        const total = datosSeccion.reduce((acumulado, actual) => acumulado + actual.conteo, 0);
+        const datosDona = datosSeccion.map((obj, i) => {
+          return {
+            nombre: obj.nombre,
+            valor: obj.conteo,
+            porcentaje: (obj.conteo / total) * 100,
+            color: obj.color || colores[i],
+          };
+        });
+
+        nuevasDonas.push({ tipo: llave, valores: datosDona });
+      }
+    });
+
+    if (datos.tipo === 'publicaciones') {
+    } else {
+      total.value = datos.encuentros ? datos.encuentros.length : 0;
       tituloTotal.value = 'Total publicaciones: ';
     }
   }

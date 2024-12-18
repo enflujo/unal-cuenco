@@ -4,17 +4,19 @@ import { usarCerebroGeneral } from '@/cerebros/general';
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { onMounted, onUnmounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { EncuentroCaracterizacionConteo, LlavesEncuentro } from '@/tipos/compartidos';
+import type { EncuentroCaracterizacionConteo, LlavesEncuentro } from '@/tipos/compartidos';
 import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { colores, llavesEncuentro } from '../utilidades/constantes';
 import { primeraMayuscula } from '@/utilidades/ayudas';
+import { nombresListas } from '@/utilidades/constantes';
+import ListaNodos from '@/componentes/ListaNodos.vue';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const cerebroDatos = usarCerebroDatos();
 
-const { encuentrosCaracterizacionConteo } = storeToRefs(cerebroDatos);
+const { encuentrosCaracterizacionConteo, listasEncuentros } = storeToRefs(cerebroDatos);
 const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
 
 const info: Ref<string | null> = ref(null);
@@ -82,6 +84,7 @@ onMounted(async () => {
   cerebroGeneral.paginaActual = 'encuentros';
   await cerebroDatos.cargarListasCaracterizacion();
   await cerebroDatos.cargarDatosCaracterizacion();
+  await cerebroDatos.cargarDatosEncuentros();
 
   crearDonas(encuentrosCaracterizacionConteo.value);
 });
@@ -111,6 +114,12 @@ function elegirFragmento(fragmento: string) {
 
 <template>
   <main>
+    <nav class="columna columna1 contenedorListas" v-if="listasEncuentros">
+      <ListaNodos v-for="(lista, llave) in listasEncuentros" :tipo="llave" :lista="lista" tipoLista="menu">
+        <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
+      </ListaNodos>
+    </nav>
+
     <div id="contenedorEncuentros">
       <h1>Caracterización por encuentro</h1>
 

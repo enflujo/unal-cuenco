@@ -207,7 +207,7 @@ function elegirFragmento(fragmento: string) {
     flex-direction: row;
 
     .dona {
-      width: 30vw;
+      width: 30%;
     }
 
     .contenedorLeyendas {
