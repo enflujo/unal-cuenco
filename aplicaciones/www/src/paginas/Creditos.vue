@@ -40,8 +40,6 @@ onUnmounted(() => {
       <h2>Diseño y desarrollo</h2>
       <p>Juan Camilo González y Antonia Bustamante - <a href="https://enflujo.com/">Laboratorio EnFlujo</a></p>
     </div>
-
-    <p>Colombia, 2024.</p>
   </main>
 </template>
 
