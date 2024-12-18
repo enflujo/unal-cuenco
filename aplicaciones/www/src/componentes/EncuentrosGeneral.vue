@@ -63,10 +63,10 @@ function crearDonas(datos: ListasCaracterizacion | null) {
       };
       valores.push(valor);
       valores = valores.sort((a, b) => {
-    if (a.valor < b.valor) return 1 ;
-    else if (a.valor > b.valor) return -1;
-    return 0;
-  });
+        if (a.valor < b.valor) return 1;
+        else if (a.valor > b.valor) return -1;
+        return 0;
+      });
     });
 
     nuevasDonas.push({ tipo: llave, valores: valores });
