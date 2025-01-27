@@ -83,7 +83,7 @@ export type TiposNodo =
   | 'publicaciones'
   | 'colectivos'
   | 'encuentros';
-export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto' | 'encuentro';
+export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto' | 'encuentros';
 export type ELementoFicha = { nombre: string; conteo: number; id: string; color: string };
 
 export interface DatosFicha {

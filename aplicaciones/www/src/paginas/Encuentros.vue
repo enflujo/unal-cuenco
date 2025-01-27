@@ -155,17 +155,6 @@ function elegirFragmento(fragmento: string) {
         </li>
         <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
       </div>
-      <div>
-        <!-- <h2>Caracterización total</h2>
-        <h3>Asistencia total por sede:</h3>
-        <li v-for="lista in listasCaracterizacion?.sedes">{{ lista.nombre }}: {{ lista.conteo }}</li>
-
-        <h3>Asistencia total por roles:</h3>
-        <li v-for="lista in listasCaracterizacion?.roles">{{ lista.nombre }}: {{ lista.conteo }}</li>
-
-        <h3>Asistencia total por cargo:</h3>
-        <li v-for="lista in listasCaracterizacion?.cargos">{{ lista.nombre }}: {{ lista.conteo }}</li> -->
-      </div>
     </div>
   </main>
 </template>
@@ -177,7 +166,6 @@ function elegirFragmento(fragmento: string) {
   width: 200px;
   top: 0;
   left: 0;
-  //transform: translate(-150%, -100%);
   pointer-events: none;
   padding: 0.6em;
 }

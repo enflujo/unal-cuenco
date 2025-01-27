@@ -97,7 +97,6 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         listasEncuentros,
       } = usarCerebroDatos();
       const { paginaActual } = usarCerebroGeneral();
-
       const datosFicha: DatosFicha = {
         id,
         tipo,
@@ -129,11 +128,10 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
       } else if (paginaActual === 'encuentros') {
         if (tipo === 'encuentros' && encuentros) {
           const encuentro = encuentros.find((obj) => obj.id === id);
-          if (encuentro) llenarDatosFicha(encuentro);
+          if (encuentro) llenarDatosFichaEncuentro(encuentro);
           this.totalNodos = encuentros.length;
         } else if (listasEncuentros) {
           const datos = listasEncuentros[tipo as LlavesEncuentros].find((obj) => obj.id === id);
-          console.log('listasEncuentros', datos);
           if (datos) llenarDatosFicha(datos);
           this.totalNodos = listasEncuentros[tipo as LlavesEncuentros].length;
         }
@@ -298,12 +296,9 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
               { nombre: datos.categorias.nombre, conteo: 1, id: categoria.id, color: categoria.color || '#CCC' },
             ];
         }
-
-        console.log(datos);
       }
 
       function llenarDatosFicha(datos: ElementoLista) {
-        console.log('llenarDatosFicha', datos);
         datosFicha.titulo = datos.nombre;
 
         if (datos.colectivos && colectivos) {
@@ -331,7 +326,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         }
 
         if (datos.encuentros && encuentros) {
-          datosFicha.publicaciones = [];
+          datosFicha.encuentros = [];
 
           datos.encuentros.forEach((id) => {
             const encuentro = encuentros.find((obj) => obj.id === id);
@@ -350,7 +345,6 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           } else if (paginaActual === 'publicaciones') {
             indicador = indicadoresPublicaciones?.find((obj) => obj.slug === datos?.slug);
           } else if (paginaActual === 'encuentros') {
-            console.log('hey');
             indicador = indicadoresEncuentros?.find((obj) => obj.slug === datos?.slug);
           }
 
@@ -379,7 +373,6 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             }
           } else if (paginaActual === 'encuentros' && listasEncuentros) {
             const datos = listasEncuentros[obj.tipo as LlavesEncuentros].find((p) => p.id === obj.id);
-            console.log(obj.tipo, datos);
             if (datos) {
               nombre = datos.nombre;
               color = datos.color || '#CCC';
