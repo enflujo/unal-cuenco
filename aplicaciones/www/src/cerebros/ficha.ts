@@ -180,7 +180,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         if (datos.indicadores) {
           const lista = listaActual();
 
-          if (lista) {
+          if (lista && lista.indicadores) {
             datosFicha.indicadores = [];
             const existe = lista.indicadores.find((obj) => obj.slug === datos.indicadores?.slug);
 
@@ -198,7 +198,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         if (datos.tipos) {
           const lista = listaActual();
 
-          if (lista) {
+          if (lista && lista.tipos) {
             datosFicha.tipos = [];
             const existe = lista.tipos.find((obj) => obj.slug === datos.tipos?.slug);
             if (existe) {
@@ -280,7 +280,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
       function llenarDatosFichaEncuentro(datos: Encuentro) {
         if (datos.id) {
-          datosFicha.encuentros = `Encuentro ${datos.id}`;
+          datosFicha.encuentros = [{ nombre: `Encuentro ${datos.id}`, id: datos.id, conteo: 1, color: '#CCC' }];
         }
 
         if (datos.sedes) {

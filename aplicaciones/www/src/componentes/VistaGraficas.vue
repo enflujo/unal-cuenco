@@ -6,6 +6,7 @@ import type {
   ListasColectivos,
   ListasPublicaciones,
   LlavesColectivos,
+  LlavesEncuentros,
   LlavesPublicaciones,
   Relacion,
 } from '@/tipos/compartidos';
@@ -23,11 +24,13 @@ const { listaElegida } = storeToRefs(cerebroDatos);
 const listaVisible: Ref<ElementoLista[] | null> = ref(null);
 const valorMaximo = ref(0);
 const listas: Ref<ListasColectivos | ListasPublicaciones | null> = ref(null);
-const listaActual: Ref<LlavesColectivos | LlavesPublicaciones | null> = ref(null);
+const listaActual: Ref<LlavesColectivos | LlavesPublicaciones | LlavesEncuentros | null> = ref(null);
 const etiquetaCortada: Ref<HTMLDivElement | null> = ref(null);
-const listaFiltros = computed<{ llave: LlavesColectivos | LlavesPublicaciones; nombre: string }[] | null>(() => {
+const listaFiltros = computed<
+  { llave: LlavesColectivos | LlavesPublicaciones | LlavesEncuentros; nombre: string }[] | null
+>(() => {
   if (listas.value) {
-    return (Object.keys(listas.value) as (LlavesColectivos | LlavesPublicaciones)[])
+    return (Object.keys(listas.value) as (LlavesColectivos | LlavesPublicaciones | LlavesEncuentros)[])
       .sort()
       .map((llave) => ({ llave, nombre: nombresListas[llave] }));
   }
@@ -43,7 +46,7 @@ watch(listaElegida, (llaveLista) => {
   if (!llaveLista || llaveLista === listaActual.value) return;
   listaActual.value = llaveLista;
 
-  // Cambiar lista elegida al hacer click en una lista del menú
+  // Cambiar lista elegida al hacer clic en una lista del menú
   if (listas.value) {
     if (paginaActual === 'colectivos') {
       listaVisible.value = (listas.value as ListasColectivos)[llaveLista as LlavesColectivos];

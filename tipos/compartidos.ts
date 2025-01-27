@@ -40,7 +40,14 @@ export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias'
 export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 export type LlavesCaracterizacion = 'sedes' | 'tiposSede' | 'roles' | 'cargos';
 export type LlavesEncuentro = 'id' | 'numero' | 'cargos' | 'sedes' | 'tiposSede' | 'roles' | 'sedes';
-export type LlavesEncuentros = 'sedes' | 'tecnicas' | 'categorias' | 'tematicas' | 'participantes';
+export type LlavesEncuentros =
+  | 'sedes'
+  | 'tecnicas'
+  | 'categorias'
+  | 'tematicas'
+  | 'participantes'
+  | 'indicadores'
+  | 'tipos';
 
 export type ListasPublicaciones = {
   [llave in LlavesPublicaciones]: ElementoLista[];

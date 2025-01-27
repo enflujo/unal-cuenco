@@ -219,6 +219,8 @@ export const usarCerebroDatos = defineStore('cerebroDatos', {
       try {
         const listas = await pedirDatos<ListasEncuentros>('datos/listasEncuentros2.json');
         this.listasEncuentrosOrdenadas = {
+          tipos: [],
+          indicadores: [],
           sedes: [],
           tecnicas: [],
           categorias: [],
