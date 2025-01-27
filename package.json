@@ -1,6 +1,6 @@
 {
   "name": "unal-cuenco",
-  "packageManager": "yarn@4.5.1",
+  "packageManager": "yarn@4.6.0",
   "version": "0.0.2",
   "private": true,
   "workspaces": [
@@ -16,13 +16,13 @@
     "lint:fix": "prettier --write --list-different ."
   },
   "devDependencies": {
-    "@types/geojson": "^7946.0.14",
+    "@types/geojson": "^7946.0.16",
     "geojson": "^0.5.0",
-    "prettier": "^3.3.3",
-    "typescript": "^5.6.3"
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
     "@enflujo/alquimia": "^2.0.0",
-    "pinia": "^2.2.6"
+    "pinia": "^2.3.1"
   }
 }
