@@ -135,4 +135,6 @@ export interface Encuentro {
   tematicas?: DefinicionSimple;
   fragmento?: string;
   participantes?: DefinicionSimple[];
+  indicadores?: DefinicionSimple[];
+  tipos?: DefinicionSimple[];
 }

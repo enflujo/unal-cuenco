@@ -2,7 +2,7 @@
 
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import { ordenarListaObjetos, limpiarTextoSimple, esNumero, esUrl, aplanarDefinicionesASlugs } from './ayudas';
+import { ordenarListaObjetos, limpiarTextoSimple, esNumero, aplanarDefinicionesASlugs } from './ayudas';
 import type { ElementoLista, Encuentro, Indicador, ListasEncuentros, LlavesEncuentros } from '@/tipos/compartidos';
 import type { Errata, FilaCategoriasEncuentro, FilaEncuentro } from './tipos';
 
@@ -180,7 +180,15 @@ export default async (
 
   function construirRelacionesDePublicaciones() {
     // Estos campos son los que se usan para crear relaciones
-    const campos: LlavesEncuentros[] = ['sedes', 'tecnicas', 'categorias', 'tematicas', 'participantes'];
+    const campos: LlavesEncuentros[] = [
+      'sedes',
+      'tecnicas',
+      'categorias',
+      'tematicas',
+      'participantes',
+      'indicadores',
+      'tipos',
+    ];
 
     encuentros.forEach((entrada) => {
       // Pasar por cada campo sobre los que queremos construir relaciones

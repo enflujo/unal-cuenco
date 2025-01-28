@@ -81,8 +81,10 @@ async function inicio() {
     categorias: [],
     tematicas: [],
     participantes: [],
+    tipos: [],
+    indicadores: [],
   };
-  const rutaEncuentro1 = './datos/1EncuentroIntersedesVrt_CategorizacionVisualizacionGraficasCSLMR_20240906.xlsx';
+  const rutaEncuentro1 = './datos/1EncuentroIntersedesVrt_CategorizacionVisualizacionGraficasCSLMR_ 20240831.xlsx';
   const encuentro1 = await procesarEncuentro(rutaEncuentro1, 'UA01A', 'UA01B', [], [], listasEncuentros);
   const rutaEncuentro2 = './datos/2EncuentroIntersedesVrt_CategorizacionVisualizacionGraficasCSLMR_ 20240930.xlsx';
   const encuentro2A = await procesarEncuentro(
@@ -168,14 +170,88 @@ async function inicio() {
     encuentro3E.listas
   );
 
-  const rutaEncuentro5 = './datos/5EncuentroIntersedesCrb_CategorizacionVisualizacionCSLMR_20240206009.xlsx';
-  const encuentro5A = await procesarEncuentro(
-    rutaEncuentro5,
+  const rutaEncuentro4 = './datos/4EncuentroIntersedesAmz_CategorizacionVisualizacionDEJG_20241225.xlsx';
+  const encuentro4A = await procesarEncuentro(
+    rutaEncuentro4,
     'UA01A',
     'UA01B',
     encuentro3F.categorias,
     encuentro3F.datos,
     encuentro3F.listas
+  );
+  const encuentro4B = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA02A',
+    'UA02B ',
+    encuentro4A.categorias,
+    encuentro4A.datos,
+    encuentro4A.listas
+  );
+  const encuentro4C = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA03A',
+    'UA03B',
+    encuentro4B.categorias,
+    encuentro4B.datos,
+    encuentro4B.listas
+  );
+  const encuentro4D = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA04A',
+    'UA04B',
+    encuentro4C.categorias,
+    encuentro4C.datos,
+    encuentro4C.listas
+  );
+  const encuentro4E = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA05A',
+    'UA05B',
+    encuentro4D.categorias,
+    encuentro4D.datos,
+    encuentro4D.listas
+  );
+  const encuentro4F = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA06A',
+    'UA06B',
+    encuentro4E.categorias,
+    encuentro4E.datos,
+    encuentro4E.listas
+  );
+  const encuentro4G = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA07A',
+    'UA07B ',
+    encuentro4F.categorias,
+    encuentro4F.datos,
+    encuentro4F.listas
+  );
+  const encuentro4H = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA08A',
+    'UA08B ',
+    encuentro4G.categorias,
+    encuentro4G.datos,
+    encuentro4G.listas
+  );
+  const encuentro4I = await procesarEncuentro(
+    rutaEncuentro4,
+    'UA09A',
+    'UA09B',
+    encuentro4H.categorias,
+    encuentro4H.datos,
+    encuentro4H.listas
+  );
+
+  const rutaEncuentro5 = './datos/5EncuentroIntersedesCrb_CategorizacionVisualizacionCSLMR_20240206009.xlsx';
+  const encuentro5A = await procesarEncuentro(
+    rutaEncuentro5,
+    'UA01A',
+    'UA01B',
+    encuentro4I.categorias,
+    encuentro4I.datos,
+    encuentro4I.listas
   );
   const encuentro5B = await procesarEncuentro(
     rutaEncuentro5,
@@ -526,6 +602,216 @@ async function inicio() {
     encuentro8O.categorias,
     encuentro8O.datos,
     encuentro8O.listas
+  );
+  const rutaEncuentro9 =
+    './datos/9EncuentroIntersedesMzl_CategorizacionVisualizacionGraficasMRT_DEJG_SHA_202411121315.xlsx';
+  const encuentro9A = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA01A',
+    'UA01B',
+    encuentro8P.categorias,
+    encuentro8P.datos,
+    encuentro8P.listas
+  );
+  const encuentro9B = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA02A',
+    'UA02B ',
+    encuentro9A.categorias,
+    encuentro9A.datos,
+    encuentro9A.listas
+  );
+  const encuentro9C = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA03A',
+    'UA03B',
+    encuentro9B.categorias,
+    encuentro9B.datos,
+    encuentro9B.listas
+  );
+  const encuentro9D = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA04A',
+    'UA04B ',
+    encuentro9C.categorias,
+    encuentro9C.datos,
+    encuentro9C.listas
+  );
+  const encuentro9E = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA05A',
+    'UA05B',
+    encuentro9D.categorias,
+    encuentro9D.datos,
+    encuentro9D.listas
+  );
+  const encuentro9F = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA06A',
+    'UA06B ',
+    encuentro9E.categorias,
+    encuentro9E.datos,
+    encuentro9E.listas
+  );
+  const encuentro9G = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA07A',
+    'UA07B',
+    encuentro9F.categorias,
+    encuentro9F.datos,
+    encuentro9F.listas
+  );
+  const encuentro9H = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA08A',
+    'UA08B ',
+    encuentro9G.categorias,
+    encuentro9G.datos,
+    encuentro9G.listas
+  );
+  const encuentro9I = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA09A',
+    'UA09B ',
+    encuentro9H.categorias,
+    encuentro9H.datos,
+    encuentro9H.listas
+  );
+  const encuentro9J = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA10A',
+    'UA10B  ',
+    encuentro9I.categorias,
+    encuentro9I.datos,
+    encuentro9I.listas
+  );
+  const encuentro9K = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA11A',
+    'UA11B ',
+    encuentro9J.categorias,
+    encuentro9J.datos,
+    encuentro9J.listas
+  );
+  const encuentro9L = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA12A',
+    'UA12B',
+    encuentro9K.categorias,
+    encuentro9K.datos,
+    encuentro9K.listas
+  );
+  const encuentro9M = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA13A',
+    'UA13B',
+    encuentro9L.categorias,
+    encuentro9L.datos,
+    encuentro9L.listas
+  );
+  const encuentro9N = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA14A',
+    'UA14B',
+    encuentro9M.categorias,
+    encuentro9M.datos,
+    encuentro9M.listas
+  );
+  const encuentro9O = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA15A',
+    'UA15B',
+    encuentro9N.categorias,
+    encuentro9N.datos,
+    encuentro9N.listas
+  );
+  const encuentro9P = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA16A',
+    'UA16B',
+    encuentro9O.categorias,
+    encuentro9O.datos,
+    encuentro9O.listas
+  );
+  const encuentro9Q = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA17A',
+    'UA17B ',
+    encuentro9P.categorias,
+    encuentro9P.datos,
+    encuentro9P.listas
+  );
+  const encuentro9R = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA18A ',
+    'UA18B',
+    encuentro9Q.categorias,
+    encuentro9Q.datos,
+    encuentro9Q.listas
+  );
+  const encuentro9S = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA19A',
+    'UA19B',
+    encuentro9R.categorias,
+    encuentro9R.datos,
+    encuentro9R.listas
+  );
+  const encuentro9T = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA20A',
+    'UA20B',
+    encuentro9S.categorias,
+    encuentro9S.datos,
+    encuentro9S.listas
+  );
+  const encuentro9U = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA21A',
+    'UA21B ',
+    encuentro9T.categorias,
+    encuentro9T.datos,
+    encuentro9T.listas
+  );
+  const encuentro9V = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA22A',
+    'UA22B',
+    encuentro9U.categorias,
+    encuentro9U.datos,
+    encuentro9U.listas
+  );
+  const encuentro9W = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA23A ',
+    'UA23B ',
+    encuentro9V.categorias,
+    encuentro9V.datos,
+    encuentro9V.listas
+  );
+  const encuentro9X = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA24A',
+    'UA24B',
+    encuentro9W.categorias,
+    encuentro9W.datos,
+    encuentro9W.listas
+  );
+  const encuentro9Y = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA25A',
+    'UA25B ',
+    encuentro9X.categorias,
+    encuentro9X.datos,
+    encuentro9X.listas
+  );
+  const encuentro9Z = await procesarEncuentro(
+    rutaEncuentro9,
+    'UA26A',
+    'UA26B',
+    encuentro9Y.categorias,
+    encuentro9Y.datos,
+    encuentro9Y.listas
   );
 
   guardar(encuentro1.categorias, [], 'categoriasEncuentros', 'errataCategoriasEncuentros');
