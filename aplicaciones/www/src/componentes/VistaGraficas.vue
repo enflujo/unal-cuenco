@@ -172,7 +172,7 @@ const titulo = computed(() => {
         class="contenedorElemFiltrados"
         v-if="listaVisible"
         v-for="(elementos, j) in filtrados"
-        :v-on="(posicionIzq = 0)"
+        :v-on="posicionIzq = 0"
       >
         <p class="leyenda">{{ listaVisible[j].nombre }}</p>
 

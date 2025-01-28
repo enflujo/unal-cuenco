@@ -1,3 +1,4 @@
+import { IDona } from '@/tipos';
 import { ElementoLista } from '@/tipos/compartidos';
 
 export async function pedirDatos<Esquema>(ruta: string) {
@@ -83,4 +84,8 @@ export function ordenarListaObjetos(lista: any[], llave: string, descendente = f
     else if (a[llave] > b[llave]) return descendente ? 1 : -1;
     return 0;
   });
+}
+
+export function idPedazoDona(trozo: IDona) {
+  return JSON.stringify({ nombre: trozo.nombre, valor: trozo.valor, porcentaje: trozo.porcentaje });
 }

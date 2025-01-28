@@ -3,6 +3,7 @@ import type { DonaProcesada, IDona } from '@/tipos';
 import { onMounted, ref, toRefs, watch } from 'vue';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { storeToRefs } from 'pinia';
+import { idPedazoDona } from '@/utilidades/ayudas';
 
 interface Esquema {
   secciones: IDona[];
@@ -19,9 +20,9 @@ const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
 
 onMounted(actualizarDonas);
 watch(secciones, actualizarDonas);
-watch(fragmentoDonaElegido, () => {
-  if (!fragmentoDonaElegido.value) return;
-  const indiceTrozo = valoresDona.value.findIndex((trozo) => trozo.nombre === fragmentoDonaElegido.value);
+watch(fragmentoDonaElegido, (valor) => {
+  if (!valor) return;
+  const indiceTrozo = valoresDona.value.findIndex((trozo) => idPedazoDona(trozo) === valor);
 
   if (indiceTrozo >= 0) {
     traerAlFrente(indiceTrozo);
@@ -102,7 +103,7 @@ function polarACartesiano(centroX: number, centroY: number, radio: number, angul
         ref="trozosDona"
         :d="generarArcoDona(25, 25, 20, 10, trozo.ajuste, trozo.anguloFinal)"
         :fill="trozo.color"
-        :class="{ elegido: trozo.nombre === fragmentoDonaElegido }"
+        :class="{ elegido: idPedazoDona(trozo) === fragmentoDonaElegido }"
         @mouseenter="
           () => {
             mostrarInfo(trozo);

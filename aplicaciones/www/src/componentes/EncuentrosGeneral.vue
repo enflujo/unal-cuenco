@@ -9,7 +9,7 @@ import { onMounted, ref, Ref, watch } from 'vue';
 import { ListasCaracterizacion, LlavesCaracterizacion } from '@/tipos/compartidos';
 import { colores, llavesCaracterizacion } from '../utilidades/constantes';
 import { usarCerebroGeneral } from '@/cerebros/general';
-import { primeraMayuscula } from '@/utilidades/ayudas';
+import { idPedazoDona, primeraMayuscula } from '@/utilidades/ayudas';
 
 const cerebroGeneral = usarCerebroGeneral();
 const cerebroDatos = usarCerebroDatos();
@@ -83,9 +83,17 @@ function esconderInfo() {
   info.value = null;
 }
 
-function elegirFragmento(fragmento: string) {
-  if (fragmentoElegido.value === '' || fragmento !== cerebroGeneral.fragmentoDonaElegido) {
-    fragmentoElegido.value = fragmento;
+function elegirFragmento(datosFragmento?: IDona) {
+  if (!datosFragmento) {
+    fragmentoElegido.value = '';
+    cerebroGeneral.fragmentoDonaElegido = '';
+    return;
+  }
+
+  const id = idPedazoDona(datosFragmento);
+
+  if (fragmentoElegido.value === '' || id !== cerebroGeneral.fragmentoDonaElegido) {
+    fragmentoElegido.value = id;
   } else {
     fragmentoElegido.value = '';
   }
@@ -96,9 +104,7 @@ function elegirFragmento(fragmento: string) {
 <template>
   <div>
     <h2>Caracterización general de los encuentros</h2>
-    <!--   <p v-if="listasCaracterizacion">{{ Object.keys(listasCaracterizacion) }}</p> -->
-    <!--       <div v-for="(elemento, i) in listasCaracterizacion"> -->
-    <!--  <p v-if="listasCaracterizacion">Por {{ Object.keys(listasCaracterizacion[i]) }}</p> -->
+
     <div class="donas">
       <section class="contenedorDona" v-for="dona in donas" :key="`dona-${dona.tipo}`">
         <h3>{{ dona.tipo !== 'tiposSede' ? primeraMayuscula(dona.tipo) : 'Tipos de sede' }}</h3>
@@ -108,10 +114,10 @@ function elegirFragmento(fragmento: string) {
             <ul class="leyendaDona" v-for="valor in dona.valores">
               <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
               <p
-                @mouseenter="elegirFragmento(valor.nombre)"
-                @mouseleave="elegirFragmento('')"
+                @mouseenter="elegirFragmento(valor)"
+                @mouseleave="elegirFragmento()"
                 class="textoLeyenda"
-                :class="valor.nombre === fragmentoElegido ? 'elegido' : ''"
+                :class="idPedazoDona(valor) === fragmentoElegido ? 'elegido' : ''"
               >
                 {{ valor.nombre }}: {{ Math.ceil(valor.porcentaje) }}% ({{ valor.valor }})
               </p>
@@ -120,7 +126,6 @@ function elegirFragmento(fragmento: string) {
         </div>
       </section>
     </div>
-    <!-- </div> -->
 
     <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
   </div>

@@ -8,7 +8,7 @@ import type { EncuentroCaracterizacionConteo, LlavesEncuentro } from '@/tipos/co
 import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { colores, llavesEncuentro } from '../utilidades/constantes';
-import { primeraMayuscula } from '@/utilidades/ayudas';
+import { idPedazoDona, primeraMayuscula } from '@/utilidades/ayudas';
 import { nombresListas } from '@/utilidades/constantes';
 import ListaNodos from '@/componentes/ListaNodos.vue';
 
@@ -94,17 +94,25 @@ onUnmounted(() => {
 });
 
 function mostrarInfo(trozo: DonaProcesada) {
-  cerebroGeneral.fragmentoDonaElegido = trozo.nombre;
-  //info.value = `${trozo.nombre} (${redondearDecimal(trozo.porcentaje)}%)`;
+  cerebroGeneral.fragmentoDonaElegido = idPedazoDona(trozo);
 }
+
 function esconderInfo() {
   cerebroGeneral.fragmentoDonaElegido = '';
   info.value = null;
 }
 
-function elegirFragmento(fragmento: string) {
-  if (fragmentoElegido.value === '' || fragmento !== cerebroGeneral.fragmentoDonaElegido) {
-    fragmentoElegido.value = fragmento;
+function elegirFragmento(datosFragmento?: IDona) {
+  if (!datosFragmento) {
+    fragmentoElegido.value = '';
+    cerebroGeneral.fragmentoDonaElegido = '';
+    return;
+  }
+
+  const id = idPedazoDona(datosFragmento);
+
+  if (fragmentoElegido.value === '' || id !== cerebroGeneral.fragmentoDonaElegido) {
+    fragmentoElegido.value = id;
   } else {
     fragmentoElegido.value = '';
   }
@@ -140,10 +148,10 @@ function elegirFragmento(fragmento: string) {
                   <ul class="leyendaDona" v-for="valor in dona.valores">
                     <span class="codigoColor" :style="`background-color:${valor.color}`"></span>
                     <p
-                      @mouseenter="elegirFragmento(valor.nombre)"
-                      @mouseleave="elegirFragmento('')"
+                      @mouseenter="elegirFragmento(valor)"
+                      @mouseleave="elegirFragmento()"
                       class="textoLeyenda"
-                      :class="valor.nombre === fragmentoDonaElegido ? 'elegido' : ''"
+                      :class="idPedazoDona(valor) === fragmentoDonaElegido ? 'elegido' : ''"
                     >
                       {{ valor.nombre }}: {{ Math.ceil(valor.porcentaje) }}% ({{ valor.valor }})
                     </p>
