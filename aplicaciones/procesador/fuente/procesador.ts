@@ -57,7 +57,7 @@ async function inicio() {
   /**
    * ENCUENTROS
    */
-  const rutaCaracterizacion = './datos/Visualización_Caracterización_20240909.xlsx';
+  const rutaCaracterizacion = './datos/Visualización_Caracterización_20240131.xlsx';
   const caracterizacion = await procesadorCaracterizacion(rutaCaracterizacion, 'Hoja1');
   guardar(caracterizacion.datos, caracterizacion.errata, 'encuentros', 'errataEncuentros');
 
