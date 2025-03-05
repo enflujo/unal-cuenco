@@ -65,8 +65,8 @@ export default async (
   ruta: string,
   tabla: string,
   tablaCategorias: string,
-  categorias: Indicador[] = [],
-  encuentros: Encuentro[] = [],
+  categorias: Indicador[],
+  encuentros: Encuentro[],
   listas: ListasEncuentros
 ): Promise<{ datos: Encuentro[]; errata: Errata[]; listas: ListasEncuentros; categorias: Indicador[] }> => {
   await procesarCategorias(ruta, tablaCategorias, categorias);
@@ -79,6 +79,7 @@ export default async (
   });
   const errata: Errata[] = [];
   let numeroFila = 1;
+  let idFragmentoAnterior: string | null = null;
 
   return new Promise((resolver) => {
     flujo.on('data', async ({ raw }) => {
@@ -91,11 +92,35 @@ export default async (
       const idEncuentro = esNumero(fila[1]);
 
       if (idEncuentro) {
-        const encuentro: Encuentro = { id: `${fila[1]}` };
+        // Buscarlo a ver si existe
+        let encuentro = encuentros.find((encuentro) => encuentro.id === `${fila[1]}`);
+        // console.log('buscando encuentro', idEncuentro, encuentro, encuentros.length);
+        let nuevoEncuentro = false;
+        // Si no existe, crearlo antes de continuar
+        if (!encuentro) {
+          encuentro = { id: `${fila[1]}`, fragmentos: [] };
+          console.log('creando encuentro', encuentro.id);
+          nuevoEncuentro = true;
+        }
+
+        let idFragmento = fila[0] ? `${fila[0]}` : null;
+
+        if (!idFragmento) {
+          if (!idFragmentoAnterior) {
+            errata.push({ fila: numeroFila, error: `No hay id de fragmento: ${fila[0]} del encuentro ${fila[1]}` });
+            console.log(ruta, tabla, numeroFila, fila, idFragmentoAnterior);
+            throw new Error(`No hay id de fragmento: ${fila[0]} del encuentro ${fila[1]}`);
+          }
+
+          idFragmento = `${idFragmentoAnterior}_`;
+        }
+
+        idFragmentoAnterior = idFragmento;
+
         const fragmento = limpiarTextoSimple(fila[7]);
 
         if (fragmento) {
-          encuentro.fragmento = fragmento;
+          encuentro.fragmentos.push({ id: idFragmento, fragmento });
         } else {
           errata.push({ fila: numeroFila, error: `No hay fragmento: ${fila[7]}` });
         }
@@ -103,7 +128,15 @@ export default async (
         /** Categoria */
         if (fila[6]) {
           const { nombre, slug } = procesarLista('categorias', fila[6], listas);
-          encuentro.categorias = { nombre, slug };
+          if (!encuentro.categorias) encuentro.categorias = [];
+
+          const existe = encuentro.categorias.find((categoria) => categoria.slug === slug);
+
+          if (!existe) {
+            encuentro.categorias.push({ nombre, slug, idFragmento: [idFragmento] });
+          } else {
+            existe.idFragmento.push(idFragmento);
+          }
         } else {
           errata.push({ fila: numeroFila, error: `No hay categoría: ${fila[6]}` });
         }
@@ -127,7 +160,15 @@ export default async (
         /** Temática */
         if (fila[5]) {
           const { nombre, slug } = procesarLista('tematicas', fila[5], listas);
-          encuentro.tematicas = { nombre, slug };
+          if (!encuentro.tematicas) encuentro.tematicas = [];
+
+          const existe = encuentro.tematicas.find((tematica) => tematica.slug === slug);
+
+          if (!existe) {
+            encuentro.tematicas.push({ nombre, slug, idFragmento: [idFragmento] });
+          } else {
+            existe.idFragmento.push(idFragmento);
+          }
         } else {
           errata.push({ fila: numeroFila, error: `No hay temática: ${fila[5]}` });
         }
@@ -142,13 +183,20 @@ export default async (
             if (!encuentro.participantes) {
               encuentro.participantes = [];
             }
-            encuentro.participantes.push({ nombre, slug });
+
+            const existe = encuentro.participantes.find((participante) => participante.slug === slug);
+
+            if (!existe) {
+              encuentro.participantes.push({ nombre, slug, idFragmento: [idFragmento] });
+            } else {
+              existe.idFragmento.push(idFragmento);
+            }
           });
         } else {
           errata.push({ fila: numeroFila, error: `No hay participantes: ${fila[8]}` });
         }
 
-        encuentros.push(encuentro);
+        if (nuevoEncuentro) encuentros.push(encuentro);
       } else {
         errata.push({ fila: numeroFila, error: `No hay id de encuentro: ${fila[1]}` });
       }
@@ -158,7 +206,7 @@ export default async (
 
     flujo.on('close', () => {
       // Aquí ya terminó de leer toda la tabla
-      construirRelacionesDePublicaciones();
+      construirRelacionesDeEncuentros();
 
       for (const lista in listas) {
         ordenarListaObjetos(listas[lista as keyof ListasEncuentros], 'slug', true);
@@ -178,7 +226,7 @@ export default async (
     });
   });
 
-  function construirRelacionesDePublicaciones() {
+  function construirRelacionesDeEncuentros() {
     // Estos campos son los que se usan para crear relaciones
     const campos: LlavesEncuentros[] = [
       'sedes',

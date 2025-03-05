@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usarCerebroFicha } from '@/cerebros/ficha';
-import { TiposNodo, TiposNodoSinRelaciones } from '@/tipos';
+import { ELementoFicha, TiposNodo, TiposNodoSinRelaciones } from '@/tipos';
 import { nombresListas } from '@/utilidades/constantes';
 import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, type Ref, ref, watch } from 'vue';
@@ -33,6 +33,7 @@ const secciones: Array<TiposNodo | TiposNodoSinRelaciones> = [
   'años',
   'referencia',
   'tecnicas',
+  'fragmentos',
 ];
 
 onMounted(() => {
@@ -111,18 +112,29 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
         <div v-for="tipo in secciones" :key="`seccion-${tipo}`">
           <section class="seccionFicha" v-if="datosFicha[tipo]">
             <div class="contenedorPegajoso">
-              <h3 class="tituloSeccion">{{ nombresListas[tipo] }}</h3>
+              <h3 v-if="tipo === 'fragmentos' && datosFicha[tipo].length > 0" class="tituloSeccion">Fragmentos</h3>
+              <h3 v-else class="tituloSeccion">{{ nombresListas[tipo] }}</h3>
             </div>
 
             <ul class="contenidoSeccion">
               <li
-                v-if="Array.isArray(datosFicha[tipo])"
-                v-for="obj in datosFicha[tipo]"
-                :key="`${tipo}-${obj.id}`"
-                class="enlace"
-                @click="abrirElemento($event, obj.id, tipo as TiposNodo)"
+                v-if="tipo === 'fragmentos' && datosFicha[tipo].length > 0"
+                class="framento"
+                v-for="(fragmento, i) in datosFicha[tipo]"
+                :key="`e${datosFicha.id}${i}`"
               >
-                {{ obj.nombre }} {{ tipo === 'estados' && datosFicha.fechaFin ? ` (${datosFicha.fechaFin})` : '' }}
+                <span class="fragmentoEncuentro">{{ fragmento.encuentro }}</span>
+                <p class="fragmentoTexto">{{ fragmento.fragmento }}</p>
+              </li>
+              <li
+                v-else-if="Array.isArray(datosFicha[tipo])"
+                v-for="obj in datosFicha[tipo]"
+                :key="`${tipo}-${(obj as ELementoFicha).id}`"
+                class="enlace"
+                @click="abrirElemento($event, (obj as ELementoFicha).id, tipo as TiposNodo)"
+              >
+                {{ (obj as ELementoFicha).nombre }}
+                {{ tipo === 'estados' && datosFicha.fechaFin ? ` (${datosFicha.fechaFin})` : '' }}
               </li>
 
               <li v-else v-html="datosFicha[tipo]"></li>
@@ -189,6 +201,10 @@ $margenY: 10px;
     color: white;
     padding: 1em 2em;
   }
+}
+
+.framento {
+  margin-bottom: 1em;
 }
 
 .negrita {

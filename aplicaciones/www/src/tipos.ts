@@ -82,7 +82,8 @@ export type TiposNodo =
   | LlavesEncuentros
   | 'publicaciones'
   | 'colectivos'
-  | 'encuentros';
+  | 'encuentros'
+  | 'fragmentos';
 export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto' | 'encuentros';
 export type ELementoFicha = { nombre: string; conteo: number; id: string; color: string };
 
@@ -113,7 +114,7 @@ export interface DatosFicha {
   tecnicas?: ELementoFicha[];
   categorias?: ELementoFicha[];
   tematicas?: ELementoFicha[];
-  fragmento?: string;
+  fragmentos?: { fragmento: string; encuentro: string }[];
   participantes?: ELementoFicha[];
   encuentros?: ELementoFicha[];
 }

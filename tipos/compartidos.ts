@@ -127,14 +127,18 @@ export interface OpcionBuscadorDatos {
   vista: 'publicaciones' | 'colectivos' | 'encuentros';
 }
 
+export interface DefinicionConFragmentos extends DefinicionSimple {
+  idFragmento: string[];
+}
+
 export interface Encuentro {
   id: string;
   sedes?: DefinicionSimple;
   tecnicas?: DefinicionSimple;
-  categorias?: DefinicionSimple;
-  tematicas?: DefinicionSimple;
-  fragmento?: string;
-  participantes?: DefinicionSimple[];
-  indicadores?: DefinicionSimple[];
-  tipos?: DefinicionSimple[];
+  categorias?: DefinicionConFragmentos[];
+  tematicas?: DefinicionConFragmentos[];
+  fragmentos: { id: string; fragmento: string }[];
+  participantes?: DefinicionConFragmentos[];
+  indicadores?: DefinicionConFragmentos[];
+  tipos?: DefinicionConFragmentos[];
 }
