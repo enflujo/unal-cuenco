@@ -1,6 +1,6 @@
 {
   "name": "unal-cuenco",
-  "packageManager": "yarn@4.6.0",
+  "packageManager": "yarn@4.7.0",
   "version": "0.0.2",
   "private": true,
   "workspaces": [
@@ -18,8 +18,8 @@
   "devDependencies": {
     "@types/geojson": "^7946.0.16",
     "geojson": "^0.5.0",
-    "prettier": "^3.4.2",
-    "typescript": "^5.7.3"
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
     "@enflujo/alquimia": "^2.0.0",
