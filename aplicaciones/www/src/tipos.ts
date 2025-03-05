@@ -82,8 +82,7 @@ export type TiposNodo =
   | LlavesEncuentros
   | 'publicaciones'
   | 'colectivos'
-  | 'encuentros'
-  | 'fragmentos';
+  | 'encuentros';
 export type TiposNodoSinRelaciones = 'referencia' | 'fuente' | 'fechaFin' | 'enlaceFuente' | 'contacto' | 'encuentros';
 export type ELementoFicha = { nombre: string; conteo: number; id: string; color: string };
 

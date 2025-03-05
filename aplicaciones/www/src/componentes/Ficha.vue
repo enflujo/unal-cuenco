@@ -13,7 +13,7 @@ const ficha: Ref<HTMLDivElement | null> = ref(null);
 /**
  * Las secciones de la ficha en el orden que se muestran
  */
-const secciones: Array<TiposNodo | TiposNodoSinRelaciones> = [
+const secciones: Array<TiposNodo | TiposNodoSinRelaciones | 'fragmentos'> = [
   'publicaciones',
   'encuentros',
   'colectivos',
@@ -113,7 +113,7 @@ function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
           <section class="seccionFicha" v-if="datosFicha[tipo]">
             <div class="contenedorPegajoso">
               <h3 v-if="tipo === 'fragmentos' && datosFicha[tipo].length > 0" class="tituloSeccion">Fragmentos</h3>
-              <h3 v-else class="tituloSeccion">{{ nombresListas[tipo] }}</h3>
+              <h3 v-else class="tituloSeccion">{{ nombresListas[tipo as TiposNodo | TiposNodoSinRelaciones] }}</h3>
             </div>
 
             <ul class="contenidoSeccion">
