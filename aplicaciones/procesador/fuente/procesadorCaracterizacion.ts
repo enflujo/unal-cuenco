@@ -44,19 +44,21 @@ export default async (
   });
   const errata: Errata[] = [];
   let numeroFila = 2;
+  let contador = 0;
 
   return new Promise((resolver) => {
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaCaracterizacion;
-      const id = fila[0];
+      const id = fila[1];
       const numero = limpiarTextoSimple(fila[1]);
       let encuentro: EncuentroCaracterizacionConteo;
 
       if (numero) {
-        const existeEncuentro = encuentrosCaracterizacion.find((encuentro) => encuentro.id === id);
+        const existeEncuentro = encuentrosCaracterizacion.find((encuentro) => encuentro.numero === numero);
 
         if (!existeEncuentro) {
-          encuentro = { id: fila[0], numero: numero, sedes: [], tiposSede: [], roles: [], cargos: [] };
+          contador++;
+          encuentro = { id: `${contador}`, numero, sedes: [], tiposSede: [], roles: [], cargos: [] };
           encuentrosCaracterizacion.push(encuentro);
         } else {
           encuentro = existeEncuentro;

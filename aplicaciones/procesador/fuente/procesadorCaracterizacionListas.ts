@@ -1,24 +1,12 @@
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import {
-  ordenarListaObjetos,
-  guardarJSON,
-  limpiarTextoSimple,
-  esUrl,
-  extraerUrls,
-  esNumero,
-  aplanarDefinicionesASlugs,
-} from './ayudas';
+import { ordenarListaObjetos, guardarJSON, limpiarTextoSimple, aplanarDefinicionesASlugs } from './ayudas';
 import type {
-  Colectivo,
   DefinicionSimple,
   ElementoLista,
   EncuentroCaracterizacion,
-  Indicador,
   ListasCaracterizacion,
-  ListasColectivos,
   LlavesCaracterizacion,
-  LlavesColectivos,
 } from '@/tipos/compartidos';
 import type { Errata, FilaCaracterizacion, FilaColectivos } from './tipos';
 
