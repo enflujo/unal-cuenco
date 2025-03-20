@@ -124,7 +124,7 @@ function elegirFragmento(datosFragmento?: IDona) {
   <main>
     <nav class="columna columna1 contenedorListas" v-if="listasEncuentros">
       <ListaNodos v-for="(lista, llave) in listasEncuentros" :tipo="llave" :lista="lista" tipoLista="menu">
-        <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
+        <h2 v-if="llave !== 'indicadores' && llave !== 'tipos'" class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
       </ListaNodos>
     </nav>
 

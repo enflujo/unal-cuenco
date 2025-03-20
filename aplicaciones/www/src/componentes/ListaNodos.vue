@@ -3,7 +3,6 @@ import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import type { TiposNodo } from '@/tipos';
 import type { Colectivo, ElementoLista, Publicacion } from '@/tipos/compartidos';
-// import { storeToRefs } from 'pinia';
 
 interface Esquema {
   tipo: TiposNodo;
@@ -12,7 +11,6 @@ interface Esquema {
 }
 
 const cerebroDatos = usarCerebroDatos();
-// const { publicaciones } = storeToRefs(cerebroDatos);
 
 defineProps<Esquema>();
 const cerebroFicha = usarCerebroFicha();
