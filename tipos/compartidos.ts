@@ -6,7 +6,7 @@ export interface ElementoLista {
   slug: string;
   coordenadas?: Position;
   conteo: number;
-  relaciones: Relacion[];
+  relaciones?: Relacion[];
   publicaciones?: string[];
   colectivos?: string[];
   encuentrosCaracterizacion?: string[];

@@ -212,11 +212,11 @@ function elegirFragmento(datosFragmento?: IDona) {
     flex-direction: row;
 
     .dona {
-      width: 30%;
+      width: 50%;
     }
 
     .contenedorLeyendas {
-      width: 25vw;
+      width: 18vw;
     }
     .leyendaDona {
       display: flex;

@@ -124,7 +124,13 @@ function elegirFragmento(datosFragmento?: IDona) {
   <main>
     <nav class="columna columna1 contenedorListas" v-if="listasEncuentros">
       <ListaNodos v-for="(lista, llave) in listasEncuentros" :tipo="llave" :lista="lista" tipoLista="menu">
-        <h2 class="titulo" @click="cerebroDatos.cambiarLista(llave)">{{ nombresListas[llave] }}</h2>
+        <h2
+          v-if="llave !== 'indicadores' && llave !== 'tipos'"
+          class="titulo"
+          @click="cerebroDatos.cambiarLista(llave)"
+        >
+          {{ nombresListas[llave] }}
+        </h2>
       </ListaNodos>
     </nav>
 
@@ -189,7 +195,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 
 .contenidoDona {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 
   .dona {
     width: 250px;
@@ -229,7 +235,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 
 #contenedorEncuentros {
   width: 80vw;
-  margin-left: 10vw;
+  margin-left: 5vw;
   margin-top: 5vw;
 }
 

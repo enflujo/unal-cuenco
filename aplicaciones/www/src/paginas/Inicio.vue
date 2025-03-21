@@ -136,12 +136,13 @@ h1 {
 @media screen and (min-width: $minTablet) {
   #presentacion {
     margin: 0 2em;
-    padding-right: 1em;
+    padding-right: 2em;
     width: 40vw;
   }
   .contenedorCentral {
     width: 65vw;
     padding-bottom: 0;
+    margin-left: 2em;
   }
 
   .icono {
