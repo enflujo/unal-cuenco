@@ -93,7 +93,8 @@ function elegirFiltro(filtro: string) {
   }
 
   listaVisible.value.forEach((elementoElegido) => {
-    const filtrado = elementoElegido.relaciones.filter((relacion) => relacion.tipo === `${filtroElegido.value}`);
+    const filtrado = elementoElegido.relaciones?.filter((relacion) => relacion.tipo === `${filtroElegido.value}`);
+    if (!filtrado) return;
     filtrado.sort((a, b) => b.conteo - a.conteo);
 
     filtrados.value.push(filtrado);

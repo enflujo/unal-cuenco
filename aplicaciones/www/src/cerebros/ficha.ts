@@ -438,7 +438,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           datosFicha.resumen = datos.descripcion;
         }
 
-        datos.relaciones.forEach((obj) => {
+        datos.relaciones?.forEach((obj) => {
           let nombre = '';
           let color = '#CCC';
 
