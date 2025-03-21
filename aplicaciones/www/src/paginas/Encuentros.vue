@@ -229,7 +229,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 
 #contenedorEncuentros {
   width: 80vw;
-  margin-left: 10vw;
+  margin-left: 5vw;
   margin-top: 5vw;
 }
 
