@@ -9,6 +9,7 @@ import type {
 import { alerta, chulo, guardarJSON, logAviso, logNaranjaPulso } from './ayudas';
 import { procesarIndicadores } from './indicadores';
 import procesadorCaracterizacion from './procesadorCaracterizacion';
+import procesadorCaracterizacionGeneral from './procesadorCaracterizacionGeneral';
 import procesadorColectivos from './procesadorColectivos';
 import procesadorPublicaciones from './procesadorPublicaciones';
 import type { Errata } from './tipos';
@@ -60,6 +61,13 @@ async function inicio() {
   const rutaCaracterizacion = './datos/Visualización_Caracterización_20240131.xlsx';
   const caracterizacion = await procesadorCaracterizacion(rutaCaracterizacion, 'Hoja1');
   guardar(caracterizacion.datos, caracterizacion.errata, 'encuentros', 'errataEncuentros');
+
+  /**
+   * ENCUENTROS GENERAL
+   */
+  const rutaCaracterizacionListas = './datos/Visualización_Caracterización_20240131.xlsx';
+  const caracterizacionListas = await procesadorCaracterizacionGeneral(rutaCaracterizacionListas, 'Hoja1');
+  guardar(caracterizacionListas.datos, caracterizacionListas.errata, 'listasEncuentros', 'errataEncuentros');
 
   /**
    * DATOS BUSCADOR

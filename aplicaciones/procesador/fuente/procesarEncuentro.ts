@@ -284,10 +284,10 @@ export default async (
       const elementoALlenar = lista.find((obj) => obj.slug === slugHacia);
 
       if (elementoALlenar) {
-        const existe = elementoALlenar.relaciones.find((obj) => obj.id === idDesde && obj.tipo === tipoRelacion);
+        const existe = elementoALlenar.relaciones?.find((obj) => obj.id === idDesde && obj.tipo === tipoRelacion);
 
         if (!existe) {
-          elementoALlenar.relaciones.push({ conteo: 1, id: idDesde, tipo: tipoRelacion });
+          elementoALlenar.relaciones?.push({ conteo: 1, id: idDesde, tipo: tipoRelacion });
         } else {
           existe.conteo++;
         }

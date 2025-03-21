@@ -5,6 +5,7 @@ import type { EncuentroCaracterizacionConteo, ListasCaracterizacion, LlavesCarac
 import type { Errata, FilaCaracterizacion } from './tipos';
 
 const encuentrosCaracterizacion: EncuentroCaracterizacionConteo[] = [];
+
 let listas: ListasCaracterizacion = {
   sedes: [],
   tiposSede: [],
@@ -13,23 +14,21 @@ let listas: ListasCaracterizacion = {
 };
 
 function reiniciarListas() {
-  listas = { sedes: [],
-    tiposSede: [],
-    roles: [],
-    cargos: [],}
+  listas = { sedes: [], tiposSede: [], roles: [], cargos: [] };
 }
 
 function procesarLista(llaveLista: LlavesCaracterizacion, valor: string) {
   const nombre = limpiarTextoSimple(valor);
   const slug = slugificar(nombre);
   const existe = listas[llaveLista].find((obj) => obj.slug === slug);
+
   if (!existe) {
+    // llenar listas por encuentro
     listas[llaveLista].push({
       id: `${listas[llaveLista].length + 1}`,
       nombre,
       slug,
       conteo: 1,
-      relaciones: [],
       encuentrosCaracterizacion: [],
     });
   } else {
@@ -125,7 +124,6 @@ export default async (
               existeCargo.conteo = conteo;
             }
           }
-
         } else {
           encuentro = existeEncuentro;
 
@@ -186,7 +184,6 @@ export default async (
             }
           }
         }
-        //   encuentrosCaracterizacion.push(encuentro);
       }
 
       numeroFila++;
