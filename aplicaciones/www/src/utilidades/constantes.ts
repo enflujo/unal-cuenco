@@ -34,7 +34,7 @@ export const nombresListasCaracterizacion: { [llave in LlavesCaracterizacion]: s
   roles: 'Roles',
   tiposSede: 'Tipos de Sede',
   sedes: 'Sedes',
-  cargos: 'Cargos',
+  cargos: 'Cargos o Áreas',
 };
 
 export const llavesRelacionesPublicaciones: LlavesPublicaciones[] = [

@@ -7,7 +7,7 @@ import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { onMounted, ref, Ref, watch } from 'vue';
 import { ListasCaracterizacion, LlavesCaracterizacion } from '@/tipos/compartidos';
-import { colores, llavesCaracterizacion } from '../utilidades/constantes';
+import { colores, llavesCaracterizacion, nombresListasCaracterizacion } from '../utilidades/constantes';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { idPedazoDona, primeraMayuscula } from '@/utilidades/ayudas';
 
@@ -107,7 +107,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 
     <div class="donas">
       <section class="contenedorDona" v-for="dona in donas" :key="`dona-${dona.tipo}`">
-        <h3>{{ dona.tipo !== 'tiposSede' ? primeraMayuscula(dona.tipo) : 'Tipos de sede' }}</h3>
+        <h3>{{ nombresListasCaracterizacion[dona.tipo] }}</h3>
         <div class="contenidoDona">
           <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores ? dona.valores : []" :esconderInfo="esconderInfo" />
           <div class="contenedorLeyendas">
