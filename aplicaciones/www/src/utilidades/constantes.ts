@@ -37,6 +37,16 @@ export const nombresListasCaracterizacion: { [llave in LlavesCaracterizacion]: s
   cargos: 'Cargos o Áreas',
 };
 
+export const nombresDonasEncuentros: { [llave in LlavesEncuentro]: string } = {
+  id: 'ID',
+  roles: 'Roles',
+  tiposSede: 'Tipos de Sede',
+  sedes: 'Sedes',
+  cargos: 'Cargos o Áreas',
+  numero: 'Número'
+};
+
+
 export const llavesRelacionesPublicaciones: LlavesPublicaciones[] = [
   'autores',
   'años',
