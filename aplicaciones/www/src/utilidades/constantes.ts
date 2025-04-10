@@ -43,9 +43,8 @@ export const nombresDonasEncuentros: { [llave in LlavesEncuentro]: string } = {
   tiposSede: 'Tipos de Sede',
   sedes: 'Sedes',
   cargos: 'Cargos o Áreas',
-  numero: 'Número'
+  numero: 'Número',
 };
-
 
 export const llavesRelacionesPublicaciones: LlavesPublicaciones[] = [
   'autores',

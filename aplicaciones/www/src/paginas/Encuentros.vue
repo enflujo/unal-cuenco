@@ -143,7 +143,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 
           <div class="donas">
             <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
-              <h3>{{ dona.tipo ? nombresDonasEncuentros[dona.tipo] : ''}}</h3>
+              <h3>{{ dona.tipo ? nombresDonasEncuentros[dona.tipo] : '' }}</h3>
               <div class="contenidoDona">
                 <Dona
                   :mostrarInfo="mostrarInfo"
