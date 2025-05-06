@@ -62,7 +62,16 @@ function crearMapa() {
       paint: {
         'circle-radius': props.pagina === 'inicio' ? 7 : ['step', ['get', 'conteo'], 12, 20, 25, 100, 35],
         'circle-stroke-width': 2,
-        'circle-color': ['case', ['boolean', ['feature-state', 'hover'], false], '#c30a93', '#00bc96'],
+        //'circle-color': ['case', ['boolean', ['feature-state', 'hover'], false], '#c30a93', '#00bc96'],
+         'circle-color': [
+          'match',
+          ['get', 'nombre'],
+          'Nivel Nacional',
+          '#c30a93',
+          'Nivel Internacional',
+          '#c30a93',
+          /* otros */ '#00bc96',
+        ],
         'circle-stroke-color': 'white',
       },
     });
@@ -76,6 +85,7 @@ function crearMapa() {
         filter: ['has', 'conteo'],
         paint: {
           'text-color': '#000',
+          // 'circle-color': ['case', ['get', 'nombre', 'Nivel Nacional'], '#c30a93', '#00bc00'],
         },
         layout: {
           'text-field': ['get', 'conteo'],
