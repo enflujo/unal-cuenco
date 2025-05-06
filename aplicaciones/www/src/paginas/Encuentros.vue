@@ -23,6 +23,20 @@ const info: Ref<string | null> = ref(null);
 const contenedorInfo: Ref<HTMLDivElement | null> = ref(null);
 const fragmentoElegido: Ref<string> = ref('');
 
+const tematicaEncuentros = [
+  'Construcción colaborativa de un Instituto Nacional',
+  'Construcción colaborativa misión, visión y objetivos',
+  'Conformación espacio colaborativo inter y transdisciplinar',
+  'Construcción colaborativa Cuenco y Pilares',
+  'Gobernanza',
+  'Inclusión',
+  'Inclusión, equidad y diversidad',
+  'Arte, Ciencias, Humanidades y Tecnologías',
+  'Proceso de Creación',
+  'Creación y visualización',
+
+];
+
 const donas: Ref<{ tipo?: LlavesEncuentro; valores?: IDona[] }[][]> = ref([]);
 
 function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
@@ -139,7 +153,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 
       <div>
         <li class="encuentro" v-for="(encuentro, i) in encuentrosCaracterizacionConteo">
-          <h2>{{ encuentro?.numero }}:</h2>
+          <h2>{{ `${encuentro?.id}. ${tematicaEncuentros[i]}` }}:</h2>
 
           <div class="donas">
             <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
