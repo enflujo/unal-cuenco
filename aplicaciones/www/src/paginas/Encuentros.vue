@@ -34,7 +34,6 @@ const tematicaEncuentros = [
   'Arte, Ciencias, Humanidades y Tecnologías',
   'Proceso de Creación',
   'Creación y visualización',
-
 ];
 
 const donas: Ref<{ tipo?: LlavesEncuentro; valores?: IDona[] }[][]> = ref([]);
