@@ -15,7 +15,7 @@ import type {
   Publicacion,
 } from '@/tipos/compartidos';
 import { crearUrlsEnTexto } from '@/utilidades/ayudas';
-import { nombresListas } from '@/utilidades/constantes';
+import { nombresListas, tematicasEncuentros } from '@/utilidades/constantes';
 
 export const usarCerebroFicha = defineStore('cerebroFichas', {
   state: (): CerebroFicha => {
@@ -139,7 +139,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
                         .forEach((f) => {
                           datosFicha.fragmentos?.push({
                             fragmento: f.fragmento,
-                            encuentro: `Encuentro ${encuentro.id}`,
+                            encuentro: `Encuentro ${encuentro.id}. ${tematicasEncuentros[+encuentro.id]}`,
                           });
                         });
                     }
@@ -151,7 +151,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
                       encuentro.fragmentos.forEach((f) => {
                         datosFicha.fragmentos?.push({
                           fragmento: f.fragmento,
-                          encuentro: `Encuentro ${encuentro.id}`,
+                          encuentro: `Encuentro ${encuentro.id}. ${tematicasEncuentros[+encuentro.id]}`,
                         });
                       });
                     }
@@ -308,8 +308,10 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
       function llenarDatosFichaEncuentro(datos: Encuentro) {
         if (datos.id) {
-          datosFicha.encuentros = [{ nombre: `Encuentro ${datos.id}`, id: datos.id, conteo: 1, color: '#CCC' }];
-          datosFicha.titulo = `Encuentro ${datos.id}`;
+          datosFicha.encuentros = [
+            { nombre: `${datos.id}. ${tematicasEncuentros[+datos.id]}`, id: datos.id, conteo: 1, color: '#CCC' },
+          ];
+          datosFicha.titulo = `${datos.id}. ${tematicasEncuentros[+datos.id]}`;
         }
 
         if (datos.participantes) {
@@ -354,7 +356,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           datosFicha.fragmentos = datos.fragmentos.map((obj) => {
             return {
               fragmento: obj.fragmento,
-              encuentro: `Encuentro ${datos.id}`,
+              encuentro: `Encuentro ${datos.id}. ${tematicasEncuentros[+datos.id]}`,
             };
           });
         }
@@ -415,7 +417,12 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             const encuentro = encuentros.find((obj) => obj.id === id);
 
             if (encuentro && datosFicha.encuentros) {
-              datosFicha.encuentros.push({ nombre: encuentro.id, conteo: 1, id, color: '' });
+              datosFicha.encuentros.push({
+                nombre: `${encuentro.id}. ${tematicasEncuentros[+encuentro.id]}`,
+                conteo: 1,
+                id,
+                color: '',
+              });
             }
           });
         }

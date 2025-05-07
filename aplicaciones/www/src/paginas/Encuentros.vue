@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia';
 import type { EncuentroCaracterizacionConteo, LlavesEncuentro } from '@/tipos/compartidos';
 import { DonaProcesada, IDona } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
-import { colores, llavesEncuentro, nombresDonasEncuentros } from '../utilidades/constantes';
+import { colores, llavesEncuentro, nombresDonasEncuentros, tematicasEncuentros } from '../utilidades/constantes';
 import { idPedazoDona } from '@/utilidades/ayudas';
 import { nombresListas } from '@/utilidades/constantes';
 import ListaNodos from '@/componentes/ListaNodos.vue';
@@ -139,7 +139,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 
       <div>
         <li class="encuentro" v-for="(encuentro, i) in encuentrosCaracterizacionConteo">
-          <h2>{{ encuentro?.numero }}:</h2>
+          <h2>{{ `${encuentro?.id}. ${tematicasEncuentros[i]}` }}:</h2>
 
           <div class="donas">
             <section class="contenedorDona" v-for="dona in donas[i]" :key="`dona-${dona.tipo}`">
