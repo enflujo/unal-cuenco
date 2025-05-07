@@ -71,6 +71,19 @@ export const llavesRelacionesEncuentros: LlavesEncuentros[] = [
   'participantes',
 ];
 
+export const tematicasEncuentros = [
+  'Construcción colaborativa de un Instituto Nacional',
+  'Construcción colaborativa misión, visión y objetivos',
+  'Conformación espacio colaborativo inter y transdisciplinar',
+  'Construcción colaborativa Cuenco y Pilares',
+  'Gobernanza',
+  'Inclusión',
+  'Inclusión, equidad y diversidad',
+  'Arte, Ciencias, Humanidades y Tecnologías',
+  'Proceso de Creación',
+  'Creación y visualización',
+];
+
 export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'cargos', 'tiposSede', 'sedes', 'roles'];
 export const llavesCaracterizacion: LlavesCaracterizacion[] = ['cargos', 'tiposSede', 'sedes', 'roles'];
 
