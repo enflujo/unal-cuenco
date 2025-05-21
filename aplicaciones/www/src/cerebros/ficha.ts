@@ -417,6 +417,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             const encuentro = encuentros.find((obj) => obj.id === id);
 
             if (encuentro && datosFicha.encuentros) {
+              console.log(encuentro.id);
               datosFicha.encuentros.push({
                 nombre: `${+encuentro.id + 1}. ${tematicasEncuentros[+encuentro.id]}`,
                 conteo: 1,
