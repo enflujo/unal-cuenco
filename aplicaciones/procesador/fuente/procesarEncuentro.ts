@@ -6,14 +6,14 @@ import { ordenarListaObjetos, limpiarTextoSimple, esNumero, aplanarDefinicionesA
 import type { ElementoLista, Encuentro, Indicador, ListasEncuentros, LlavesEncuentros } from '@/tipos/compartidos';
 import type { Errata, FilaCategoriasEncuentro, FilaEncuentro, LlavesSede } from './tipos';
 
-const nombresSedes: {[llave in LlavesSede]: string}  = {
-          amz: 'Amazonas',
-          crb: 'Caribe',
-          mzl: 'Manizales',
-          orq: 'Orinoquia',
-          tmc: 'Tumaco',
-          vrt: 'Virtual'
-        }
+const nombresSedes: { [llave in LlavesSede]: string } = {
+  amz: 'Amazonas',
+  crb: 'Caribe',
+  mzl: 'Manizales',
+  orq: 'Orinoquia',
+  tmc: 'Tumaco',
+  vrt: 'Virtual',
+};
 
 function procesarLista(llaveLista: LlavesEncuentros, valor: string, listas: ListasEncuentros) {
   const nombre = limpiarTextoSimple(valor);
@@ -153,7 +153,7 @@ export default async (
         /** Sedes */
         if (fila[2] && nombresSedes[fila[2].toLowerCase() as LlavesSede]) {
           const { nombre, slug } = procesarLista('sedes', nombresSedes[fila[2].toLowerCase() as LlavesSede], listas);
-         encuentro.sedes = { nombre, slug };
+          encuentro.sedes = { nombre, slug };
         } else {
           errata.push({ fila: numeroFila, error: `No hay sede: ${fila[2]}` });
         }
