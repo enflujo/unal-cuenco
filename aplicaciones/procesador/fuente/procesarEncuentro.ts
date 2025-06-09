@@ -141,10 +141,22 @@ export default async (
           errata.push({ fila: numeroFila, error: `No hay categoría: ${fila[6]}` });
         }
 
+        type llavesSede = 'amz' | 'crb' | 'mzl' | 'orq' | 'tmc' | 'vrt';
+
+        const nombresSedes: {[llave in llavesSede]: string}  = {
+          amz: 'Amazonas',
+          crb: 'Caribe',
+          mzl: 'Manizales',
+          orq: 'Orinoquia',
+          tmc: 'Tumaco',
+          vrt: 'Virtual'
+        }
+
         /** Sedes */
-        if (fila[2]) {
-          const { nombre, slug } = procesarLista('sedes', fila[2], listas);
-          encuentro.sedes = { nombre, slug };
+        if (fila[2] && nombresSedes[fila[2].toLowerCase() as llavesSede]) {
+          const { nombre, slug } = procesarLista('sedes', nombresSedes[fila[2].toLowerCase() as llavesSede], listas);
+         // const { nombre, slug } = procesarLista('sedes', fila[2], listas); 
+         encuentro.sedes = { nombre, slug };
         } else {
           errata.push({ fila: numeroFila, error: `No hay sede: ${fila[2]}` });
         }
