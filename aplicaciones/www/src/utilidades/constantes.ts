@@ -15,7 +15,7 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   años: 'Años',
   dependencias: 'Dependencias',
   indicadores: 'Indicadores',
-  sedes: 'Sedes',
+  sedes: 'Sede del encuentro',
   modalidades: 'Modalidades',
   estados: 'Estado',
   referencia: 'Referencia',
@@ -32,17 +32,17 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
 
 export const nombresListasCaracterizacion: { [llave in LlavesCaracterizacion]: string } = {
   roles: 'Roles',
-  tiposSede: 'Tipos de Sede',
+  tiposSede: 'Tipos de sede',
   sedes: 'Sedes',
-  cargos: 'Cargos o Áreas',
+  cargos: 'Cargos o áreas',
 };
 
 export const nombresDonasEncuentros: { [llave in LlavesEncuentro]: string } = {
   id: 'ID',
   roles: 'Roles',
-  tiposSede: 'Tipos de Sede',
-  sedes: 'Sedes',
-  cargos: 'Cargos o Áreas',
+  tiposSede: 'Tipos de sede',
+  sedes: 'Sedes participantes',
+  cargos: 'Cargos o áreas',
   numero: 'Número',
 };
 
