@@ -64,3 +64,5 @@ export type FilaEncuentro = [
   fragmento: string,
   participantes: string,
 ];
+
+export  type LlavesSede = 'amz' | 'crb' | 'mzl' | 'orq' | 'tmc' | 'vrt';

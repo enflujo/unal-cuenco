@@ -4,7 +4,16 @@ import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
 import { ordenarListaObjetos, limpiarTextoSimple, esNumero, aplanarDefinicionesASlugs } from './ayudas';
 import type { ElementoLista, Encuentro, Indicador, ListasEncuentros, LlavesEncuentros } from '@/tipos/compartidos';
-import type { Errata, FilaCategoriasEncuentro, FilaEncuentro } from './tipos';
+import type { Errata, FilaCategoriasEncuentro, FilaEncuentro, LlavesSede } from './tipos';
+
+const nombresSedes: {[llave in LlavesSede]: string}  = {
+          amz: 'Amazonas',
+          crb: 'Caribe',
+          mzl: 'Manizales',
+          orq: 'Orinoquia',
+          tmc: 'Tumaco',
+          vrt: 'Virtual'
+        }
 
 function procesarLista(llaveLista: LlavesEncuentros, valor: string, listas: ListasEncuentros) {
   const nombre = limpiarTextoSimple(valor);
@@ -141,21 +150,9 @@ export default async (
           errata.push({ fila: numeroFila, error: `No hay categoría: ${fila[6]}` });
         }
 
-        type llavesSede = 'amz' | 'crb' | 'mzl' | 'orq' | 'tmc' | 'vrt';
-
-        const nombresSedes: {[llave in llavesSede]: string}  = {
-          amz: 'Amazonas',
-          crb: 'Caribe',
-          mzl: 'Manizales',
-          orq: 'Orinoquia',
-          tmc: 'Tumaco',
-          vrt: 'Virtual'
-        }
-
         /** Sedes */
-        if (fila[2] && nombresSedes[fila[2].toLowerCase() as llavesSede]) {
-          const { nombre, slug } = procesarLista('sedes', nombresSedes[fila[2].toLowerCase() as llavesSede], listas);
-         // const { nombre, slug } = procesarLista('sedes', fila[2], listas); 
+        if (fila[2] && nombresSedes[fila[2].toLowerCase() as LlavesSede]) {
+          const { nombre, slug } = procesarLista('sedes', nombresSedes[fila[2].toLowerCase() as LlavesSede], listas);
          encuentro.sedes = { nombre, slug };
         } else {
           errata.push({ fila: numeroFila, error: `No hay sede: ${fila[2]}` });
