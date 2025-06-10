@@ -43,7 +43,7 @@ export const nombresDonasEncuentros: { [llave in LlavesEncuentro]: string } = {
   tiposSede: 'Tipos de sede',
   sedes: 'Sedes participantes',
   cargos: 'Cargos o áreas',
-  numero: 'Número',
+  titulo: 'Número',
 };
 
 export const llavesRelacionesPublicaciones: LlavesPublicaciones[] = [
@@ -84,7 +84,7 @@ export const tematicasEncuentros = [
   'Creación y visualización',
 ];
 
-export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'cargos', 'tiposSede', 'sedes', 'roles'];
+export const llavesEncuentro: LlavesEncuentro[] = ['id', 'titulo', 'cargos', 'tiposSede', 'sedes', 'roles'];
 export const llavesCaracterizacion: LlavesCaracterizacion[] = ['cargos', 'tiposSede', 'sedes', 'roles'];
 
 export const coloresFiltros: string[] = [

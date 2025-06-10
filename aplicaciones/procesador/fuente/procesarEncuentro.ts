@@ -2,18 +2,16 @@
 
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import { ordenarListaObjetos, limpiarTextoSimple, esNumero, aplanarDefinicionesASlugs } from './ayudas';
+import {
+  ordenarListaObjetos,
+  limpiarTextoSimple,
+  esNumero,
+  aplanarDefinicionesASlugs,
+  nombresSedes,
+  tematicasEncuentros,
+} from './ayudas';
 import type { ElementoLista, Encuentro, Indicador, ListasEncuentros, LlavesEncuentros } from '@/tipos/compartidos';
 import type { Errata, FilaCategoriasEncuentro, FilaEncuentro, LlavesSede } from './tipos';
-
-const nombresSedes: { [llave in LlavesSede]: string } = {
-  amz: 'Amazonas',
-  crb: 'Caribe',
-  mzl: 'Manizales',
-  orq: 'Orinoquia',
-  tmc: 'Tumaco',
-  vrt: 'Virtual',
-};
 
 function procesarLista(llaveLista: LlavesEncuentros, valor: string, listas: ListasEncuentros) {
   const nombre = limpiarTextoSimple(valor);
@@ -107,7 +105,11 @@ export default async (
         let nuevoEncuentro = false;
         // Si no existe, crearlo antes de continuar
         if (!encuentro) {
-          encuentro = { id: `${fila[1]}`, fragmentos: [] };
+          encuentro = {
+            id: `${fila[1]}`,
+            titulo: { nombre: tematicasEncuentros[fila[1] - 1], slug: slugificar(`${fila[1]}`) },
+            fragmentos: [],
+          };
           console.log('creando encuentro', encuentro.id);
           nuevoEncuentro = true;
         }
