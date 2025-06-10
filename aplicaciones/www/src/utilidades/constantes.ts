@@ -23,7 +23,7 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   fechaFin: 'Activo hasta',
   enlaceFuente: 'Enlace Fuente',
   contacto: 'Contacto',
-  tecnicas: 'Técnicas',
+  tecnicas: 'Técnicas / Momentos',
   categorias: 'Categorías',
   tematicas: 'Temáticas',
   participantes: 'Participantes',
