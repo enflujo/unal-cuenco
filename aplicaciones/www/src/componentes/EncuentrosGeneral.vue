@@ -223,7 +223,7 @@ function elegirFragmento(datosFragmento?: IDona) {
       align-items: baseline;
 
       .textoLeyenda {
-        max-width: 15vw;
+        max-width: 7vw;
       }
     }
   }

@@ -2,11 +2,11 @@
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { usarCerebroFicha } from '@/cerebros/ficha';
 import type { TiposNodo } from '@/tipos';
-import type { Colectivo, ElementoLista, Publicacion } from '@/tipos/compartidos';
+import type { Colectivo, ElementoLista, Encuentro, Publicacion } from '@/tipos/compartidos';
 
 interface Esquema {
   tipo: TiposNodo;
-  lista: ElementoLista[] | Colectivo[] | Publicacion[];
+  lista: ElementoLista[] | Colectivo[] | Publicacion[] | Encuentro[];
   tipoLista: 'menu' | 'lista';
 }
 

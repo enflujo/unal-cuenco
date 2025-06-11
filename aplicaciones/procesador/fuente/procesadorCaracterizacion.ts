@@ -56,16 +56,16 @@ export default async (
     flujo.on('data', async ({ raw }) => {
       const fila = raw.arr as FilaCaracterizacion;
       const id = fila[1];
-      const numero = limpiarTextoSimple(fila[1]);
+      const titulo = limpiarTextoSimple(fila[1]);
       let encuentro: EncuentroCaracterizacionConteo;
 
-      if (numero) {
-        const existeEncuentro = encuentrosCaracterizacion.find((encuentro) => encuentro.numero === numero);
+      if (titulo) {
+        const existeEncuentro = encuentrosCaracterizacion.find((encuentro) => encuentro.titulo === titulo);
 
         if (!existeEncuentro) {
           reiniciarListas();
           contador++;
-          encuentro = { id: `${contador}`, numero, sedes: [], tiposSede: [], roles: [], cargos: [] };
+          encuentro = { id: `${contador}`, titulo, sedes: [], tiposSede: [], roles: [], cargos: [] };
           encuentrosCaracterizacion.push(encuentro);
 
           /**

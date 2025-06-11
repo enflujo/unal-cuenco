@@ -39,7 +39,7 @@ export type DefinicionSimple = { nombre: string; slug: string };
 export type LlavesPublicaciones = 'autores' | 'años' | 'tipos' | 'dependencias' | 'indicadores';
 export type LlavesColectivos = 'tipos' | 'estados' | 'sedes' | 'dependencias' | 'modalidades' | 'indicadores';
 export type LlavesCaracterizacion = 'sedes' | 'tiposSede' | 'roles' | 'cargos';
-export type LlavesEncuentro = 'id' | 'numero' | 'cargos' | 'sedes' | 'tiposSede' | 'roles' | 'sedes';
+export type LlavesEncuentro = 'id' | 'titulo' | 'cargos' | 'sedes' | 'tiposSede' | 'roles' | 'sedes';
 export type LlavesEncuentros =
   | 'sedes'
   | 'tecnicas'
@@ -102,7 +102,7 @@ export interface PersonaCaracterizacion {
 
 export interface EncuentroCaracterizacion {
   id: string;
-  numero?: string;
+  titulo?: string;
   personas?: PersonaCaracterizacion[];
   sedes?: DefinicionSimple[];
   tiposSede?: DefinicionSimple[];
@@ -112,7 +112,7 @@ export interface EncuentroCaracterizacion {
 
 export interface EncuentroCaracterizacionConteo {
   id: string;
-  numero?: string;
+  titulo?: string;
   personas?: PersonaCaracterizacion[];
   sedes?: { slug: string; conteo: number; nombre: string }[];
   tiposSede?: { slug: string; conteo: number; nombre: string }[];
@@ -133,6 +133,7 @@ export interface DefinicionConFragmentos extends DefinicionSimple {
 
 export interface Encuentro {
   id: string;
+  titulo: DefinicionSimple;
   sedes?: DefinicionSimple;
   tecnicas?: DefinicionSimple;
   categorias?: DefinicionConFragmentos[];
