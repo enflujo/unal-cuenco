@@ -106,8 +106,11 @@ export default async (
         // Si no existe, crearlo antes de continuar
         if (!encuentro) {
           encuentro = {
+            titulo: {
+              nombre: `Encuentro ${fila[1]}. ${tematicasEncuentros[+fila[1] - 1]}`,
+              slug: `encuentro-${fila[1]}`,
+            },
             id: `${fila[1]}`,
-            titulo: { nombre: tematicasEncuentros[fila[1] - 1], slug: slugificar(`${fila[1]}`) },
             fragmentos: [],
           };
           console.log('creando encuentro', encuentro.id);

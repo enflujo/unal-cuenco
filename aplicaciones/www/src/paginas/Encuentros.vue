@@ -134,7 +134,7 @@ function elegirFragmento(datosFragmento?: IDona) {
       </ListaNodos>
     </nav>
 
-    <div id="contenedorEncuentros">
+    <div id="contenedorEncuentros" class="columna columna2">
       <h1>Caracterización por encuentro</h1>
 
       <div>
@@ -170,6 +170,7 @@ function elegirFragmento(datosFragmento?: IDona) {
         <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
       </div>
     </div>
+
     <div class="columna columna3 contenedorListas" v-if="encuentros">
       <ListaNodos tipo="encuentros" :lista="encuentros" tipoLista="lista">
         <h1 class="titulo">Encuentros</h1>
@@ -239,12 +240,6 @@ function elegirFragmento(datosFragmento?: IDona) {
   fill: white;
 }
 
-#contenedorEncuentros {
-  width: 90vw;
-  margin-left: 6vw;
-  margin-top: 5vw;
-}
-
 .encuentro {
   list-style: none;
 }
@@ -253,11 +248,7 @@ function elegirFragmento(datosFragmento?: IDona) {
   .contenedorDona {
     flex-basis: 50%;
   }
-  #contenedorEncuentros {
-    width: 55vw;
-    margin-left: 2vw;
-    margin-top: 5vw;
-  }
+
   .contenidoDona {
     .dona {
       width: 200px;
@@ -268,8 +259,5 @@ function elegirFragmento(datosFragmento?: IDona) {
       }
     }
   }
-}
-
-@media screen and (min-width: $minPantalla) {
 }
 </style>

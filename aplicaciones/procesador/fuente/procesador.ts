@@ -1,5 +1,6 @@
 import type {
   Colectivo,
+  Encuentro,
   ListasColectivos,
   ListasEncuentros,
   ListasPublicaciones,
@@ -68,17 +69,6 @@ async function inicio() {
   const rutaCaracterizacionListas = './datos/Visualización_Caracterización_20240131.xlsx';
   const caracterizacionListas = await procesadorCaracterizacionGeneral(rutaCaracterizacionListas, 'Hoja1');
   guardar(caracterizacionListas.datos, caracterizacionListas.errata, 'listasEncuentros', 'errataEncuentros');
-
-  /**
-   * DATOS BUSCADOR
-   */
-  const datosBuscador = procesarDatosBuscador(
-    publicaciones.datos,
-    colectivos.datos,
-    publicaciones.listas,
-    colectivos.listas
-  );
-  guardar(datosBuscador, [], 'buscador', 'errataBuscador');
 
   /**
    * DATOS ENCUENTROS
@@ -826,6 +816,19 @@ async function inicio() {
   guardar(encuentro1.categorias, [], 'categoriasEncuentros', 'errataCategoriasEncuentros');
   guardar(encuentro1.listas, [], 'listasEncuentros2', 'errataCategoriasEncuentros2');
   guardar(encuentro1.datos, encuentro1.errata, 'encuentros2', 'errataEncuentros2');
+
+  /**
+   * DATOS BUSCADOR
+   */
+  const datosBuscador = procesarDatosBuscador(
+    publicaciones.datos,
+    colectivos.datos,
+    encuentro1.datos,
+    publicaciones.listas,
+    colectivos.listas,
+    encuentro1.listas
+  );
+  guardar(datosBuscador, [], 'buscador', 'errataBuscador');
 }
 
 inicio().catch(console.error);
@@ -849,8 +852,10 @@ function guardar(datos: any, errata: Errata[], nombre: string, nombreErrata = `e
 function procesarDatosBuscador(
   publicaciones: Publicacion[],
   colectivos: Colectivo[],
+  encuentros: Encuentro[],
   listaPublicaciones: ListasPublicaciones,
-  listaColectivos: ListasColectivos
+  listaColectivos: ListasColectivos,
+  listaEncuentros: ListasEncuentros
 ) {
   const opciones: OpcionBuscadorDatos[] = [];
 
@@ -866,6 +871,28 @@ function procesarDatosBuscador(
   colectivos.forEach((colectivo, i) => {
     opciones.push({ nombre: colectivo.titulo.nombre, tipo: 'colectivos', id: colectivo.id, vista: 'colectivos' });
   });
+
+  encuentros.forEach((encuentro, i) => {
+    opciones.push({
+      nombre: encuentro.titulo.nombre,
+      tipo: 'encuentros',
+      id: encuentro.id,
+      vista: 'encuentros',
+    });
+  });
+
+  for (const llave in listaEncuentros) {
+    const lista = listaEncuentros[llave as keyof ListasEncuentros];
+    lista.forEach((elemento, i) => {
+      const elementoBuscador: OpcionBuscadorDatos = {
+        nombre: elemento.nombre,
+        tipo: llave,
+        id: elemento.id,
+        vista: 'encuentros',
+      };
+      opciones.push(elementoBuscador);
+    });
+  }
 
   for (const llave in listaPublicaciones) {
     const lista = listaPublicaciones[llave as keyof ListasPublicaciones];
