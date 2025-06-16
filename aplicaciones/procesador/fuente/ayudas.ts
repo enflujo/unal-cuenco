@@ -2,6 +2,7 @@ import { writeFileSync } from 'fs';
 import colores from 'cli-color';
 import { emojify } from 'node-emoji';
 import type { DefinicionSimple } from '@/tipos/compartidos';
+import { LlavesSede } from './tipos';
 
 export const logError = colores.red.bold;
 export const logAviso = colores.bold.xterm(214);
@@ -87,3 +88,25 @@ export function aplanarDefinicionesASlugs(datos: DefinicionSimple | DefinicionSi
     `Los datos no son de tipo DefinicionSimple o DefinicionSimple[], el dato es: ${JSON.stringify(datos)}`
   );
 }
+
+export const nombresSedes: { [llave in LlavesSede]: string } = {
+  amz: 'Amazonas',
+  crb: 'Caribe',
+  mzl: 'Manizales',
+  orq: 'Orinoquia',
+  tmc: 'Tumaco',
+  vrt: 'Virtual',
+};
+
+export const tematicasEncuentros = [
+  'Construcción colaborativa de un Instituto Nacional',
+  'Construcción colaborativa misión, visión y objetivos',
+  'Conformación espacio colaborativo inter y transdisciplinar',
+  'Construcción colaborativa Cuenco y Pilares',
+  'Gobernanza',
+  'Inclusión',
+  'Inclusión, equidad y diversidad',
+  'Arte, Ciencias, Humanidades y Tecnologías',
+  'Proceso de Creación',
+  'Creación y visualización',
+];

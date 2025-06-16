@@ -16,7 +16,7 @@ const cerebroGeneral = usarCerebroGeneral();
 const cerebroFicha = usarCerebroFicha();
 const cerebroDatos = usarCerebroDatos();
 
-const { encuentrosCaracterizacionConteo, listasEncuentros } = storeToRefs(cerebroDatos);
+const { encuentrosCaracterizacionConteo, listasEncuentros, encuentros } = storeToRefs(cerebroDatos);
 const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
 
 const info: Ref<string | null> = ref(null);
@@ -44,7 +44,7 @@ function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
     llavesEncuentro.forEach((llave: LlavesEncuentro) => {
       let total = 0;
       let valores: IDona[] = [];
-      if (llave !== 'id' && llave !== 'numero') {
+      if (llave !== 'id' && llave !== 'titulo') {
         datosSeccion = encuentro[llave];
 
         if (datosSeccion) {
@@ -170,10 +170,16 @@ function elegirFragmento(datosFragmento?: IDona) {
         <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
       </div>
     </div>
+    <div class="columna columna3 contenedorListas" v-if="encuentros">
+      <ListaNodos tipo="encuentros" :lista="encuentros" tipoLista="lista">
+        <h1 class="titulo">Encuentros</h1>
+      </ListaNodos>
+    </div>
   </main>
 </template>
 
 <style lang="scss" scoped>
+@use '@/scss/constantes' as *;
 #contenedorInfo {
   position: fixed;
   background-color: rgba(255, 255, 255, 0.8);
@@ -190,7 +196,7 @@ function elegirFragmento(datosFragmento?: IDona) {
 }
 
 .contenedorDona {
-  flex-basis: 50%;
+  flex-basis: 100%;
 }
 
 .contenidoDona {
@@ -211,7 +217,7 @@ function elegirFragmento(datosFragmento?: IDona) {
     align-items: baseline;
 
     .textoLeyenda {
-      max-width: 15vw;
+      max-width: 30vw;
       margin: 0;
       cursor: pointer;
 
@@ -234,12 +240,36 @@ function elegirFragmento(datosFragmento?: IDona) {
 }
 
 #contenedorEncuentros {
-  width: 80vw;
-  margin-left: 5vw;
+  width: 90vw;
+  margin-left: 6vw;
   margin-top: 5vw;
 }
 
 .encuentro {
   list-style: none;
+}
+
+@media screen and (min-width: $minTablet) {
+  .contenedorDona {
+    flex-basis: 50%;
+  }
+  #contenedorEncuentros {
+    width: 55vw;
+    margin-left: 2vw;
+    margin-top: 5vw;
+  }
+  .contenidoDona {
+    .dona {
+      width: 200px;
+    }
+    .leyendaDona {
+      .textoLeyenda {
+        max-width: 9vw;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $minPantalla) {
 }
 </style>

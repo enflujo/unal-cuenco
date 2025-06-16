@@ -15,7 +15,7 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   años: 'Años',
   dependencias: 'Dependencias',
   indicadores: 'Indicadores',
-  sedes: 'Sedes',
+  sedes: 'Sede del encuentro',
   modalidades: 'Modalidades',
   estados: 'Estado',
   referencia: 'Referencia',
@@ -23,7 +23,7 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   fechaFin: 'Activo hasta',
   enlaceFuente: 'Enlace Fuente',
   contacto: 'Contacto',
-  tecnicas: 'Técnicas',
+  tecnicas: 'Técnicas / Momentos',
   categorias: 'Categorías',
   tematicas: 'Temáticas',
   participantes: 'Participantes',
@@ -32,18 +32,18 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
 
 export const nombresListasCaracterizacion: { [llave in LlavesCaracterizacion]: string } = {
   roles: 'Roles',
-  tiposSede: 'Tipos de Sede',
+  tiposSede: 'Tipos de sede',
   sedes: 'Sedes',
-  cargos: 'Cargos o Áreas',
+  cargos: 'Cargos o áreas',
 };
 
 export const nombresDonasEncuentros: { [llave in LlavesEncuentro]: string } = {
   id: 'ID',
   roles: 'Roles',
-  tiposSede: 'Tipos de Sede',
-  sedes: 'Sedes',
-  cargos: 'Cargos o Áreas',
-  numero: 'Número',
+  tiposSede: 'Tipos de sede',
+  sedes: 'Sedes participantes',
+  cargos: 'Cargos o áreas',
+  titulo: 'Número',
 };
 
 export const llavesRelacionesPublicaciones: LlavesPublicaciones[] = [
@@ -84,7 +84,7 @@ export const tematicasEncuentros = [
   'Creación y visualización',
 ];
 
-export const llavesEncuentro: LlavesEncuentro[] = ['id', 'numero', 'cargos', 'tiposSede', 'sedes', 'roles'];
+export const llavesEncuentro: LlavesEncuentro[] = ['id', 'titulo', 'cargos', 'tiposSede', 'sedes', 'roles'];
 export const llavesCaracterizacion: LlavesCaracterizacion[] = ['cargos', 'tiposSede', 'sedes', 'roles'];
 
 export const coloresFiltros: string[] = [

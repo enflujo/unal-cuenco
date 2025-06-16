@@ -139,7 +139,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
                         .forEach((f) => {
                           datosFicha.fragmentos?.push({
                             fragmento: f.fragmento,
-                            encuentro: `Encuentro ${encuentro.id}. ${tematicasEncuentros[+encuentro.id]}`,
+                            encuentro: `Encuentro ${+encuentro.id}. ${tematicasEncuentros[+encuentro.id - 1]}`,
                           });
                         });
                     }
@@ -151,7 +151,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
                       encuentro.fragmentos.forEach((f) => {
                         datosFicha.fragmentos?.push({
                           fragmento: f.fragmento,
-                          encuentro: `Encuentro ${encuentro.id}. ${tematicasEncuentros[+encuentro.id]}`,
+                          encuentro: `Encuentro ${+encuentro.id}. ${tematicasEncuentros[+encuentro.id - 1]}`,
                         });
                       });
                     }
@@ -309,9 +309,9 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
       function llenarDatosFichaEncuentro(datos: Encuentro) {
         if (datos.id) {
           datosFicha.encuentros = [
-            { nombre: `${datos.id}. ${tematicasEncuentros[+datos.id]}`, id: datos.id, conteo: 1, color: '#CCC' },
+            { nombre: `${datos.id}. ${tematicasEncuentros[+datos.id - 1]}`, id: datos.id, conteo: 1, color: '#CCC' },
           ];
-          datosFicha.titulo = `${datos.id}. ${tematicasEncuentros[+datos.id]}`;
+          datosFicha.titulo = `${datos.id}. ${tematicasEncuentros[+datos.id - 1]}`;
         }
 
         if (datos.participantes) {
@@ -356,7 +356,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           datosFicha.fragmentos = datos.fragmentos.map((obj) => {
             return {
               fragmento: obj.fragmento,
-              encuentro: `Encuentro ${datos.id}. ${tematicasEncuentros[+datos.id]}`,
+              encuentro: `Encuentro ${datos.id}. ${tematicasEncuentros[+datos.id - 1]}`,
             };
           });
         }
@@ -418,7 +418,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
             if (encuentro && datosFicha.encuentros) {
               datosFicha.encuentros.push({
-                nombre: `${encuentro.id}. ${tematicasEncuentros[+encuentro.id]}`,
+                nombre: `${+encuentro.id}. ${tematicasEncuentros[+encuentro.id - 1]}`,
                 conteo: 1,
                 id,
                 color: '',

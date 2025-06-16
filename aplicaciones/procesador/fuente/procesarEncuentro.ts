@@ -2,9 +2,16 @@
 
 import { getXlsxStream } from 'xlstream';
 import slugificar from 'slug';
-import { ordenarListaObjetos, limpiarTextoSimple, esNumero, aplanarDefinicionesASlugs } from './ayudas';
+import {
+  ordenarListaObjetos,
+  limpiarTextoSimple,
+  esNumero,
+  aplanarDefinicionesASlugs,
+  nombresSedes,
+  tematicasEncuentros,
+} from './ayudas';
 import type { ElementoLista, Encuentro, Indicador, ListasEncuentros, LlavesEncuentros } from '@/tipos/compartidos';
-import type { Errata, FilaCategoriasEncuentro, FilaEncuentro } from './tipos';
+import type { Errata, FilaCategoriasEncuentro, FilaEncuentro, LlavesSede } from './tipos';
 
 function procesarLista(llaveLista: LlavesEncuentros, valor: string, listas: ListasEncuentros) {
   const nombre = limpiarTextoSimple(valor);
@@ -98,7 +105,11 @@ export default async (
         let nuevoEncuentro = false;
         // Si no existe, crearlo antes de continuar
         if (!encuentro) {
-          encuentro = { id: `${fila[1]}`, fragmentos: [] };
+          encuentro = {
+            id: `${fila[1]}`,
+            titulo: { nombre: tematicasEncuentros[fila[1] - 1], slug: slugificar(`${fila[1]}`) },
+            fragmentos: [],
+          };
           console.log('creando encuentro', encuentro.id);
           nuevoEncuentro = true;
         }
@@ -142,8 +153,8 @@ export default async (
         }
 
         /** Sedes */
-        if (fila[2]) {
-          const { nombre, slug } = procesarLista('sedes', fila[2], listas);
+        if (fila[2] && nombresSedes[fila[2].toLowerCase() as LlavesSede]) {
+          const { nombre, slug } = procesarLista('sedes', nombresSedes[fila[2].toLowerCase() as LlavesSede], listas);
           encuentro.sedes = { nombre, slug };
         } else {
           errata.push({ fila: numeroFila, error: `No hay sede: ${fila[2]}` });
