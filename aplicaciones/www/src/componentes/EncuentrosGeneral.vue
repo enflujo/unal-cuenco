@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import { usarCerebroDatos } from '@/cerebros/datos';
 import { storeToRefs } from 'pinia';
-import { DonaProcesada, IDona } from '@/tipos';
+import { DonaProcesada, IDona, TiposNodo } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { onMounted, ref, Ref, watch } from 'vue';
 import { ListasCaracterizacion, LlavesCaracterizacion } from '@/tipos/compartidos';
@@ -59,6 +59,8 @@ function crearDonas(datos: ListasCaracterizacion | null) {
         valor: elemento.conteo,
         porcentaje: (elemento.conteo * 100) / total,
         color: elemento.color || colores[i],
+        id: elemento.slug,
+        tipo: llave as TiposNodo,
       };
       valores.push(valor);
       valores = valores.sort((a, b) => {
@@ -109,7 +111,12 @@ function elegirFragmento(datosFragmento?: IDona) {
       <section class="contenedorDona" v-for="dona in donas" :key="`dona-${dona.tipo}`">
         <h3>{{ dona.tipo ? nombresListasCaracterizacion[dona.tipo] : '' }}</h3>
         <div class="contenidoDona">
-          <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores ? dona.valores : []" :esconderInfo="esconderInfo" />
+          <Dona
+            :mostrarInfo="mostrarInfo"
+            :secciones="dona.valores ? dona.valores : []"
+            :esconderInfo="esconderInfo"
+            :conEnlace="false"
+          />
           <div class="contenedorLeyendas">
             <ul class="leyendaDona" v-for="valor in dona.valores">
               <span class="codigoColor" :style="`background-color:${valor.color}`"></span>

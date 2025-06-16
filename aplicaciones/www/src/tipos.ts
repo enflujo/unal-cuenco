@@ -123,6 +123,8 @@ export interface IDona {
   valor: number;
   porcentaje: number;
   color: string;
+  tipo: TiposNodo;
+  id: string;
 }
 
 export interface DonaProcesada extends IDona {

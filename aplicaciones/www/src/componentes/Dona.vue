@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import type { DonaProcesada, IDona } from '@/tipos';
+import type { DonaProcesada, IDona, TiposNodo } from '@/tipos';
 import { onMounted, ref, toRefs, watch } from 'vue';
 import { usarCerebroGeneral } from '@/cerebros/general';
 import { storeToRefs } from 'pinia';
 import { idPedazoDona } from '@/utilidades/ayudas';
+import { usarCerebroFicha } from '@/cerebros/ficha';
 
 interface Esquema {
   secciones: IDona[];
   mostrarInfo: (trozo: DonaProcesada) => void;
   esconderInfo: () => void;
+  conEnlace: boolean;
 }
 
 const props = defineProps<Esquema>();
@@ -17,6 +19,7 @@ const trozosDona = ref<SVGPathElement[]>([]);
 const valoresDona = ref<DonaProcesada[]>([]);
 const cerebroGeneral = usarCerebroGeneral();
 const { fragmentoDonaElegido } = storeToRefs(cerebroGeneral);
+const cerebroFicha = usarCerebroFicha();
 
 onMounted(actualizarDonas);
 watch(secciones, actualizarDonas);
@@ -28,6 +31,12 @@ watch(fragmentoDonaElegido, (valor) => {
     traerAlFrente(indiceTrozo);
   }
 });
+
+function abrirElemento(evento: MouseEvent, id: string, tipo: TiposNodo) {
+  evento.stopPropagation();
+  if (!props.conEnlace) return;
+  cerebroFicha.seleccionarNodo(id, tipo);
+}
 
 function actualizarDonas() {
   let anguloActual = 0; // Empezamos en 0 grados
@@ -111,6 +120,7 @@ function polarACartesiano(centroX: number, centroY: number, radio: number, angul
           }
         "
         @mouseleave="esconderInfo"
+        @click="abrirElemento($event, trozo.id, trozo.tipo)"
       ></path>
     </g>
   </svg>

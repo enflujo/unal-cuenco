@@ -5,7 +5,7 @@ import { usarCerebroDatos } from '@/cerebros/datos';
 import { onMounted, onUnmounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import type { EncuentroCaracterizacionConteo, LlavesEncuentro } from '@/tipos/compartidos';
-import { DonaProcesada, IDona } from '@/tipos';
+import { DonaProcesada, IDona, TiposNodo } from '@/tipos';
 import Dona from '@/componentes/Dona.vue';
 import { colores, llavesEncuentro, nombresDonasEncuentros, tematicasEncuentros } from '../utilidades/constantes';
 import { idPedazoDona } from '@/utilidades/ayudas';
@@ -59,6 +59,8 @@ function crearDonas(datos: EncuentroCaracterizacionConteo[] | null) {
               valor: elemento.conteo,
               porcentaje: Math.ceil((elemento.conteo * 100) / total),
               color: colores[i],
+              id: elemento.slug,
+              tipo: 'encuentros' as TiposNodo,
             };
             valores.push(valor);
             valores = valores.sort((a, b) => {
@@ -149,6 +151,7 @@ function elegirFragmento(datosFragmento?: IDona) {
                   :mostrarInfo="mostrarInfo"
                   :secciones="dona.valores ? dona.valores : []"
                   :esconderInfo="esconderInfo"
+                  :conEnlace="false"
                 />
                 <div class="contenedorLeyendas">
                   <ul class="leyendaDona" v-for="valor in dona.valores">

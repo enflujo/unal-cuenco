@@ -48,6 +48,8 @@ function crearDonas(datos: DatosFicha) {
             valor: obj.conteo,
             porcentaje: Math.ceil((obj.conteo / total) * 100),
             color: obj.color || colores[i],
+            id: obj.id,
+            tipo: llave,
           };
         });
 
@@ -72,6 +74,8 @@ function crearDonas(datos: DatosFicha) {
             valor: obj.conteo,
             porcentaje: (obj.conteo / total) * 100,
             color: obj.color || colores[i],
+            id: obj.id,
+            tipo: llave,
           };
         });
 
@@ -96,6 +100,8 @@ function crearDonas(datos: DatosFicha) {
             valor: obj.conteo,
             porcentaje: (obj.conteo / total) * 100,
             color: obj.color || colores[i],
+            id: obj.id,
+            tipo: llave,
           };
         });
 
@@ -136,7 +142,7 @@ function actualizarPosInfo(evento: MouseEvent) {
 
     <section class="contenedorDona" v-for="dona in donas" :key="`dona-${dona.tipo}`">
       <h3>{{ nombresListas[dona.tipo] }}</h3>
-      <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" />
+      <Dona :mostrarInfo="mostrarInfo" :secciones="dona.valores" :esconderInfo="esconderInfo" :conEnlace="true" />
     </section>
   </div>
   <div id="contenedorInfo" ref="contenedorInfo" v-html="info" v-if="info"></div>
