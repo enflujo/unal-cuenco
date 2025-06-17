@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
 import Ficha from './componentes/Ficha.vue';
-// import { usarCerebroGeneral } from './cerebros/general';
-// import { storeToRefs } from 'pinia';
 import { onMounted, onUnmounted, Ref, ref } from 'vue';
 import Buscador from './componentes/Buscador.vue';
-// const cerebroGeneral = usarCerebroGeneral();
-// const { paginaActual } = storeToRefs(cerebroGeneral);
+import { usarCerebroDatos } from './cerebros/datos';
 
+const cerebroDatos = usarCerebroDatos();
 const abierto = ref(false);
 const menu: Ref<HTMLDivElement | null> = ref(null);
 
@@ -27,7 +25,10 @@ function clicFuera(evento: MouseEvent) {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await cerebroDatos.cargarDatosEncuentros();
+  await cerebroDatos.cargarDatosColectivos();
+  await cerebroDatos.cargarDatosPublicaciones();
   document.body.addEventListener('click', clicFuera);
 });
 

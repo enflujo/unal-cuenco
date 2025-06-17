@@ -91,7 +91,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         listasEncuentros,
       } = usarCerebroDatos();
       const { paginaActual } = usarCerebroGeneral();
-      const datosFicha: DatosFicha = { id, tipo, nombreTipo: nombresListas[tipo], titulo: '', resumen: '' };
+      const _datosFicha: DatosFicha = { id, tipo, nombreTipo: nombresListas[tipo], titulo: '', resumen: '' };
 
       if (paginaActual === 'colectivos') {
         if (tipo === 'colectivos' && colectivos) {
@@ -124,7 +124,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             llenarDatosFicha(datos);
 
             if (encuentros) {
-              datosFicha.fragmentos = [];
+              _datosFicha.fragmentos = [];
 
               encuentros.forEach((encuentro) => {
                 const datosCampo = encuentro[tipo as LlavesEncuentros];
@@ -137,7 +137,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
                       encuentro.fragmentos
                         .filter((f) => campo.idFragmento.includes(f.id))
                         .forEach((f) => {
-                          datosFicha.fragmentos?.push({
+                          _datosFicha.fragmentos?.push({
                             fragmento: f.fragmento,
                             encuentro: encuentro.titulo.nombre,
                           });
@@ -149,7 +149,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
 
                     if (slugCampo === slugCampoEncuentro) {
                       encuentro.fragmentos.forEach((f) => {
-                        datosFicha.fragmentos?.push({
+                        _datosFicha.fragmentos?.push({
                           fragmento: f.fragmento,
                           encuentro: encuentro.titulo.nombre,
                         });
@@ -168,7 +168,7 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
       this.idActual = id;
       this.fichaVisible = true;
       this.llaveLista = tipo;
-      this.datosFicha = datosFicha;
+      this.datosFicha = _datosFicha;
 
       function listaActual() {
         if (paginaActual === 'colectivos' && listasColectivos) return listasColectivos;
@@ -178,20 +178,20 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
       }
 
       function llenarCamposCompartidos(datos: Colectivo | Publicacion) {
-        datosFicha.titulo = datos.titulo.nombre;
-        datosFicha.resumen = crearUrlsEnTexto(datos.resumen);
+        _datosFicha.titulo = datos.titulo.nombre;
+        _datosFicha.resumen = crearUrlsEnTexto(datos.resumen);
 
         if (datos.dependencias) {
           let lista: ListasColectivos | ListasPublicaciones | null = null;
           if (paginaActual === 'colectivos') lista = listasColectivos;
           else if (paginaActual === 'publicaciones') lista = listasPublicaciones;
 
-          datosFicha.dependencias = [];
+          _datosFicha.dependencias = [];
 
           datos.dependencias.forEach((obj) => {
             const existe = lista?.dependencias.find((dep) => dep.slug === obj.slug);
             if (existe) {
-              datosFicha.dependencias?.push({
+              _datosFicha.dependencias?.push({
                 nombre: obj.nombre,
                 conteo: 1,
                 id: existe.id,
@@ -202,18 +202,18 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         }
 
         if (datos.fuente) {
-          datosFicha.fuente = crearUrlsEnTexto(datos.fuente);
+          _datosFicha.fuente = crearUrlsEnTexto(datos.fuente);
         }
 
         if (datos.indicadores) {
           const lista = listaActual();
 
           if (lista && lista.indicadores) {
-            datosFicha.indicadores = [];
+            _datosFicha.indicadores = [];
             const existe = lista.indicadores.find((obj) => obj.slug === datos.indicadores?.slug);
 
             if (existe) {
-              datosFicha.indicadores.push({
+              _datosFicha.indicadores.push({
                 nombre: datos.indicadores.nombre,
                 conteo: 1,
                 id: existe.id,
@@ -227,10 +227,10 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           const lista = listaActual();
 
           if (lista && lista.tipos) {
-            datosFicha.tipos = [];
+            _datosFicha.tipos = [];
             const existe = lista.tipos.find((obj) => obj.slug === datos.tipos?.slug);
             if (existe) {
-              datosFicha.tipos.push({
+              _datosFicha.tipos.push({
                 nombre: datos.tipos.nombre,
                 conteo: 1,
                 id: existe.id,
@@ -245,39 +245,39 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         llenarCamposCompartidos(datos);
 
         if (datos.contacto) {
-          datosFicha.contacto = crearUrlsEnTexto(datos.contacto);
+          _datosFicha.contacto = crearUrlsEnTexto(datos.contacto);
         }
 
         if (datos.enlaceFuente) {
-          datosFicha.enlaceFuente = `<ul>${datos.enlaceFuente.map((enlace) => `<li>${crearUrlsEnTexto(enlace)}</li>`).join('')}</ul>`;
+          _datosFicha.enlaceFuente = `<ul>${datos.enlaceFuente.map((enlace) => `<li>${crearUrlsEnTexto(enlace)}</li>`).join('')}</ul>`;
         }
 
         if (datos.fechaFin) {
-          datosFicha.fechaFin = `${datos.fechaFin}`;
+          _datosFicha.fechaFin = `${datos.fechaFin}`;
         }
 
         if (datos.estados) {
           const estado = listasColectivos?.estados.find((obj) => obj.slug === datos.estados?.slug);
           if (estado)
-            datosFicha.estados = [
+            _datosFicha.estados = [
               { nombre: datos.estados.nombre, id: estado.id, conteo: 1, color: estado.color || '#CCC' },
             ];
         }
 
         if (datos.sedes) {
-          datosFicha.sedes = [];
+          _datosFicha.sedes = [];
 
           datos.sedes.forEach((obj) => {
             const sede = listasColectivos?.sedes.find((s) => s.slug === obj.slug);
             if (sede)
-              datosFicha.sedes?.push({ nombre: obj.nombre, conteo: 1, id: sede.id, color: sede.color || '#CCC' });
+              _datosFicha.sedes?.push({ nombre: obj.nombre, conteo: 1, id: sede.id, color: sede.color || '#CCC' });
           });
         }
 
         if (datos.modalidades) {
           const modalidad = listasColectivos?.modalidades.find((obj) => obj.slug === datos.modalidades?.slug);
           if (modalidad)
-            datosFicha.modalidades = [
+            _datosFicha.modalidades = [
               { nombre: datos.modalidades.nombre, id: modalidad.id, conteo: 1, color: modalidad.color || '#CCC' },
             ];
         }
@@ -287,40 +287,41 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         llenarCamposCompartidos(datos);
 
         if (datos.autores) {
-          datosFicha.autores = [];
+          _datosFicha.autores = [];
 
           datos.autores.forEach((obj) => {
             const autor = listasPublicaciones?.autores.find((a) => a.slug === obj.slug);
             if (autor)
-              datosFicha.autores?.push({ nombre: obj.nombre, conteo: 1, id: autor.id, color: autor.color || '#CCC' });
+              _datosFicha.autores?.push({ nombre: obj.nombre, conteo: 1, id: autor.id, color: autor.color || '#CCC' });
           });
         }
 
         if (datos.años) {
           const año = listasPublicaciones?.años.find((a) => a.slug === datos.años?.slug);
-          if (año) datosFicha.años = [{ nombre: datos.años.nombre, conteo: 1, id: año.id, color: año.color || '#CCC' }];
+          if (año)
+            _datosFicha.años = [{ nombre: datos.años.nombre, conteo: 1, id: año.id, color: año.color || '#CCC' }];
         }
 
         if (datos.referencia) {
-          datosFicha.referencia = crearUrlsEnTexto(datos.referencia);
+          _datosFicha.referencia = crearUrlsEnTexto(datos.referencia);
         }
       }
 
       function llenarDatosFichaEncuentro(datos: Encuentro) {
         if (datos.id) {
-          datosFicha.encuentros = [
+          _datosFicha.encuentros = [
             { nombre: `${datos.id}. ${tematicasEncuentros[+datos.id - 1]}`, id: datos.id, conteo: 1, color: '#CCC' },
           ];
-          datosFicha.titulo = datos.titulo.nombre;
+          _datosFicha.titulo = datos.titulo.nombre;
         }
 
         if (datos.participantes) {
-          datosFicha.participantes = [];
+          _datosFicha.participantes = [];
 
           datos.participantes.forEach((obj) => {
             const participante = listasEncuentros?.participantes.find((p) => p.slug === obj.slug);
             if (participante)
-              datosFicha.participantes?.push({
+              _datosFicha.participantes?.push({
                 nombre: obj.nombre,
                 conteo: 1,
                 id: participante.id,
@@ -330,12 +331,12 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         }
 
         if (datos.tematicas) {
-          datosFicha.tematicas = [];
+          _datosFicha.tematicas = [];
 
           datos.tematicas.forEach((obj) => {
             const tematica = listasEncuentros?.tematicas.find((t) => t.slug === obj.slug);
             if (tematica)
-              datosFicha.tematicas?.push({
+              _datosFicha.tematicas?.push({
                 nombre: obj.nombre,
                 conteo: 1,
                 id: tematica.id,
@@ -347,13 +348,13 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         if (datos.tecnicas) {
           const tecnica = listasEncuentros?.tecnicas.find((t) => t.slug === datos.tecnicas?.slug);
           if (tecnica)
-            datosFicha.tecnicas = [
+            _datosFicha.tecnicas = [
               { nombre: datos.tecnicas.nombre, conteo: 1, id: tecnica.id, color: tecnica.color || '#CCC' },
             ];
         }
 
         if (datos.fragmentos) {
-          datosFicha.fragmentos = datos.fragmentos.map((obj) => {
+          _datosFicha.fragmentos = datos.fragmentos.map((obj) => {
             return {
               fragmento: obj.fragmento,
               encuentro: `Encuentro ${datos.id}. ${tematicasEncuentros[+datos.id - 1]}`,
@@ -364,15 +365,15 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
         if (datos.sedes) {
           const sede = listasEncuentros?.sedes.find((s) => s.slug === datos.sedes?.slug);
           if (sede)
-            datosFicha.sedes = [{ nombre: datos.sedes.nombre, conteo: 1, id: sede.id, color: sede.color || '#CCC' }];
+            _datosFicha.sedes = [{ nombre: datos.sedes.nombre, conteo: 1, id: sede.id, color: sede.color || '#CCC' }];
         }
 
         if (datos.categorias) {
           datos.categorias.forEach((obj) => {
             const categoria = listasEncuentros?.categorias.find((c) => c.slug === obj.slug);
             if (categoria) {
-              if (!datosFicha.categorias) datosFicha.categorias = [];
-              datosFicha.categorias.push({
+              if (!_datosFicha.categorias) _datosFicha.categorias = [];
+              _datosFicha.categorias.push({
                 nombre: obj.nombre,
                 conteo: 1,
                 id: categoria.id,
@@ -384,40 +385,40 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
       }
 
       function llenarDatosFicha(datos: ElementoLista) {
-        datosFicha.titulo = datos.nombre;
+        _datosFicha.titulo = datos.nombre;
 
         if (datos.colectivos && colectivos) {
-          datosFicha.colectivos = [];
+          _datosFicha.colectivos = [];
 
           datos.colectivos.forEach((id) => {
             const colectivo = colectivos.find((obj) => obj.id === id);
 
-            if (colectivo && datosFicha.colectivos) {
-              datosFicha.colectivos.push({ nombre: colectivo.titulo.nombre, conteo: 1, id, color: '' });
+            if (colectivo && _datosFicha.colectivos) {
+              _datosFicha.colectivos.push({ nombre: colectivo.titulo.nombre, conteo: 1, id, color: '' });
             }
           });
         }
 
         if (datos.publicaciones && publicaciones) {
-          datosFicha.publicaciones = [];
+          _datosFicha.publicaciones = [];
 
           datos.publicaciones.forEach((id) => {
             const publicacion = publicaciones.find((obj) => obj.id === id);
 
-            if (publicacion && datosFicha.publicaciones) {
-              datosFicha.publicaciones.push({ nombre: publicacion.titulo.nombre, conteo: 1, id, color: '' });
+            if (publicacion && _datosFicha.publicaciones) {
+              _datosFicha.publicaciones.push({ nombre: publicacion.titulo.nombre, conteo: 1, id, color: '' });
             }
           });
         }
 
         if (datos.encuentros && encuentros) {
-          datosFicha.encuentros = [];
+          _datosFicha.encuentros = [];
 
           datos.encuentros.forEach((id) => {
             const encuentro = encuentros.find((obj) => obj.id === id);
 
-            if (encuentro && datosFicha.encuentros) {
-              datosFicha.encuentros.push({
+            if (encuentro && _datosFicha.encuentros) {
+              _datosFicha.encuentros.push({
                 nombre: `${encuentro.id}. ${tematicasEncuentros[+encuentro.id - 1]}`,
                 conteo: 1,
                 id,
@@ -439,10 +440,10 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
           }
 
           if (indicador && indicador.definicion) {
-            datosFicha.resumen = indicador.definicion;
+            _datosFicha.resumen = indicador.definicion;
           }
         } else if (datos.descripcion) {
-          datosFicha.resumen = datos.descripcion;
+          _datosFicha.resumen = datos.descripcion;
         }
 
         datos.relaciones?.forEach((obj) => {
@@ -469,11 +470,11 @@ export const usarCerebroFicha = defineStore('cerebroFichas', {
             }
           }
 
-          if (!datosFicha[obj.tipo]) {
-            datosFicha[obj.tipo] = [];
+          if (!_datosFicha[obj.tipo]) {
+            _datosFicha[obj.tipo] = [];
           }
 
-          datosFicha[obj.tipo]?.push({ nombre, conteo: obj.conteo, id: obj.id, color });
+          _datosFicha[obj.tipo]?.push({ nombre, conteo: obj.conteo, id: obj.id, color });
         });
       }
     },
