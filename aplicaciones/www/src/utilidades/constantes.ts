@@ -15,7 +15,7 @@ export const nombresListas: { [llave in TiposNodo | TiposNodoSinRelaciones]: str
   años: 'Años',
   dependencias: 'Dependencias',
   indicadores: 'Indicadores',
-  sedes: 'Sede del encuentro',
+  sedes: 'Sedes',
   modalidades: 'Modalidades',
   estados: 'Estado',
   referencia: 'Referencia',
