@@ -18,16 +18,13 @@ onUnmounted(() => {
 <template>
   <main>
     <div id="contenedorCreditos">
-      <h1>Créditos</h1>
-
-      <p>Página en construcción.</p>
-
       <!-- <p>Investigación</p>
       <p>Consolidación de datos</p>
       <p>...</p>
+      -->
 
-      <h2>Diseño y desarrollo</h2>
-      <p>Juan Camilo González y Antonia Bustamante - <a href="https://enflujo.com/">Laboratorio EnFlujo</a></p> -->
+      <h2>Diseño y desarrollo:</h2>
+      <p>Juan Camilo González y Antonia Bustamante | <a href="https://enflujo.com/">Laboratorio EnFlujo</a> | 2025</p>
     </div>
   </main>
 </template>
