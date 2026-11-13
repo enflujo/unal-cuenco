@@ -101,7 +101,6 @@ function polarACartesiano(centroX: number, centroY: number, radio: number, angul
     y: centroY + radio * Math.sin(anguloEnRadianes),
   };
 }
-
 </script>
 
 <template>
@@ -119,9 +118,11 @@ function polarACartesiano(centroX: number, centroY: number, radio: number, angul
             mostrarInfo(trozo);
           }
         "
-        @mouseleave="() => {
-          esconderInfo();
-          }"
+        @mouseleave="
+          () => {
+            esconderInfo();
+          }
+        "
         @click="abrirElemento($event, trozo.id, trozo.tipo)"
       ></path>
     </g>
