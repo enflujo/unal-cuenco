@@ -116,10 +116,13 @@ function polarACartesiano(centroX: number, centroY: number, radio: number, angul
         @mouseenter="
           () => {
             mostrarInfo(trozo);
-            traerAlFrente(i);
           }
         "
-        @mouseleave="esconderInfo"
+        @mouseleave="
+          () => {
+            esconderInfo();
+          }
+        "
         @click="abrirElemento($event, trozo.id, trozo.tipo)"
       ></path>
     </g>
